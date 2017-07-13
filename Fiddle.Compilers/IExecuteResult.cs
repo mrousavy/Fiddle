@@ -1,4 +1,6 @@
-﻿namespace Fiddle.Compilers
+﻿using System;
+
+namespace Fiddle.Compilers
 {
     /// <summary>
     /// A result from an execution
@@ -27,5 +29,9 @@
         /// The assembly's compile result
         /// </summary>
         ICompileResult CompileResult { get; }
+        /// <summary>
+        /// The thrown exception, if <see cref="Success"/> then this field is null
+        /// </summary>
+        Exception Exception { get; }
     }
 }

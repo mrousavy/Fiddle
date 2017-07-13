@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,24 +19,56 @@ namespace Fiddle.Compilers.Implementation.CSharp
         public string SourceCode { get; set; }
         public ICompileResult CompileResult { get; private set; }
         public IExecuteResult ExecuteResult { get; private set; }
+        public string[] Imports { get; set; }
 
         private Script<object> Script { get; set; }
 
         public CSharpCompiler(string code) : this(code, new ExecutionProperties(), new CompilerProperties())
-        {
-        }
+        { }
 
-        public CSharpCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps)
+        public CSharpCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps, string[] imports = null)
         {
             SourceCode = code;
             ExecuteProperties = execProps;
             CompilerProperties = compProps;
+            if (imports == null)
+                LoadReferences();
+            else
+                Imports = imports;
+
             Create();
+        }
+
+        /// <summary>
+        /// Load all references/namespaces that can be used in the script environment
+        /// </summary>
+        public void LoadReferences()
+        {
+            IEnumerable<string> ownNamespaces = Assembly.GetExecutingAssembly().GetTypes()
+                .Select(t => t.Namespace)
+                .Distinct();
+
+            List<string> allNamespaces = new List<string>();
+            IEnumerable<Type[]> types = AppDomain.CurrentDomain
+                .GetAssemblies()
+                .Where(a => Assembly.GetCallingAssembly().GetReferencedAssemblies().Select(ra => ra.FullName).Contains(a.FullName))
+                .Select(a => a.GetExportedTypes());
+            foreach (Type[] type in types)
+            {
+                allNamespaces.AddRange(type
+                    .Select(t => t.Namespace)
+                    .Where(n => n != null && !ownNamespaces.Contains(n))
+                    .Distinct());
+            }
+
+            Imports = allNamespaces.ToArray();
         }
 
         private void Create()
         {
-            ScriptOptions options = ScriptOptions.Default;
+            ScriptOptions options = ScriptOptions.Default
+                .WithReferences(Imports)
+                .WithImports(Imports);
             Script = CSharpScript.Create(SourceCode, options, typeof(Globals));
         }
 
@@ -104,10 +137,15 @@ namespace Fiddle.Compilers.Implementation.CSharp
 
         public async Task<IExecuteResult> Execute()
         {
-            if (CompileResult == default(ICompileResult))
+            if (CompileResult == default(ICompileResult) || SourceCode != Script.Code)
             {
                 await Compile();
             }
+            if (!CompileResult.Success)
+            {
+                return new CSharpExecuteResult(-1, null, null, CompileResult, new Exception("The compilation was not successful!"));
+            }
+
             StringBuilder builder = new StringBuilder();
             Globals globals = new Globals(builder);
 
@@ -118,7 +156,13 @@ namespace Fiddle.Compilers.Implementation.CSharp
             object returnValue = state.ReturnValue;
             string stdout = builder.ToString();
 
-            IExecuteResult result = new CSharpExecuteResult(sw.ElapsedMilliseconds, true, stdout, returnValue, CompileResult);
+            IExecuteResult result = new CSharpExecuteResult(
+                sw.ElapsedMilliseconds,
+                stdout,
+                returnValue,
+                CompileResult,
+                state.Exception);
+            ExecuteResult = result;
             return result;
         }
 

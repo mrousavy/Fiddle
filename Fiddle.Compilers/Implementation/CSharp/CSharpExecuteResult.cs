@@ -1,4 +1,6 @@
-﻿namespace Fiddle.Compilers.Implementation.CSharp
+﻿using System;
+
+namespace Fiddle.Compilers.Implementation.CSharp
 {
     public class CSharpExecuteResult : IExecuteResult
     {
@@ -7,14 +9,16 @@
         public string ConsoleOutput { get; }
         public object ReturnValue { get; }
         public ICompileResult CompileResult { get; }
+        public Exception Exception { get; }
 
-        public CSharpExecuteResult(long time, bool success, string stdout, object returnVal, ICompileResult cResult)
+        public CSharpExecuteResult(long time, string stdout, object returnVal, ICompileResult cResult, Exception exception)
         {
             Time = time;
-            Success = success;
             ConsoleOutput = stdout;
             ReturnValue = returnVal;
             CompileResult = cResult;
+            Exception = exception;
+            Success = exception == null;
         }
     }
 }
