@@ -18,7 +18,7 @@ namespace Fiddle.Compilers
         /// <summary>
         /// The source code for this compiler
         /// </summary>
-        string SourceCode { get; }
+        string SourceCode { get; set; }
         /// <summary>
         /// The result returned by <see cref="Compile()"/>, or null if not yet compiled
         /// </summary>

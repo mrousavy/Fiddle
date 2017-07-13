@@ -1,4 +1,11 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Fiddle.Compilers.Implementation.CSharp
@@ -7,27 +14,80 @@ namespace Fiddle.Compilers.Implementation.CSharp
     {
         public IExecutionProperties ExecuteProperties { get; }
         public ICompilerProperties CompilerProperties { get; }
-        public string SourceCode { get; }
+        public string SourceCode { get; set; }
         public ICompileResult CompileResult { get; private set; }
         public IExecuteResult ExecuteResult { get; private set; }
 
+        private Script<object> Script { get; set; }
 
         public CSharpCompiler(string code)
         {
             SourceCode = code;
+            Create();
         }
 
-        public async Task<ICompileResult> Compile()
+        private void Create()
         {
-            throw new NotImplementedException();
-            CompileResult = null;
+            ScriptOptions options = ScriptOptions.Default;
+            Script = CSharpScript.Create(SourceCode, options, typeof(Globals));
+        }
+
+        public Task<ICompileResult> Compile()
+        {
+            //Init
+            IEnumerable<Diagnostic> resultDiagnostics = null;
+
+            //Actual compilation
+            Stopwatch sw = Stopwatch.StartNew();
+            Thread compileThread = new Thread(() =>
+            {
+                Compilation compilation = Script.GetCompilation();
+                resultDiagnostics = compilation.GetDiagnostics();
+            });
+            compileThread.Start();
+            compileThread.Join((int)CompilerProperties.Timeout); //Wait until compile Thread finishes with given timeout
+            sw.Stop();
+
+            if (resultDiagnostics == null)
+                throw new CompileException("The compiler Thread was not returning any diagnostics!");
+
+            //Pre-Enumerate so it's not enumerating multiple times
+            IEnumerable<Diagnostic> diagnosticsEnum = resultDiagnostics as Diagnostic[] ?? resultDiagnostics.ToArray();
+            IEnumerable<CSharpDiagnostic> diagnostics = diagnosticsEnum
+                .Select(d => new CSharpDiagnostic(
+                    d.GetMessage(),
+                    d.Location.GetLineSpan().StartLinePosition.Line,
+                    d.Location.GetLineSpan().StartLinePosition.Character,
+                    d.Location.GetLineSpan().StartLinePosition.Character));
+            IEnumerable<CSharpDiagnostic> warnings = diagnosticsEnum
+                .Where(d => d.Severity == DiagnosticSeverity.Warning)
+                .Select(d => new CSharpDiagnostic(
+                    d.GetMessage(),
+                    d.Location.GetLineSpan().StartLinePosition.Line,
+                    d.Location.GetLineSpan().StartLinePosition.Character,
+                    d.Location.GetLineSpan().StartLinePosition.Character));
+            IEnumerable<Exception> errors = diagnosticsEnum
+                .Where(d => d.Severity == DiagnosticSeverity.Error)
+                .Select(d => new Exception(d.GetMessage()));
+
+            //Build compile result object
+            ICompileResult result = new CSharpCompileResult(
+                sw.ElapsedMilliseconds,
+                SourceCode,
+                Script,
+                diagnostics,
+                warnings,
+                errors);
+            CompileResult = result;
+
+            return Task.FromResult(result);
         }
 
         public async Task<IExecuteResult> Execute()
         {
             if (CompileResult == default(ICompileResult))
             {
-                Compile();
+                await Compile();
             }
             ExecuteResult = await CompileResult.Execute();
             return ExecuteResult;
