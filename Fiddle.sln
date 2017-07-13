@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fiddle.UI", "Fiddle.UI\Fidd
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fiddle.Compilers.NET", "Fiddle.Compilers.NET\Fiddle.Compilers.NET.csproj", "{87F3F578-1674-485E-9ACF-6137DE548C0A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{5AB3E00D-229C-425E-BB95-A93812F2592B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{87F3F578-1674-485E-9ACF-6137DE548C0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87F3F578-1674-485E-9ACF-6137DE548C0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87F3F578-1674-485E-9ACF-6137DE548C0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AB3E00D-229C-425E-BB95-A93812F2592B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AB3E00D-229C-425E-BB95-A93812F2592B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AB3E00D-229C-425E-BB95-A93812F2592B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AB3E00D-229C-425E-BB95-A93812F2592B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
