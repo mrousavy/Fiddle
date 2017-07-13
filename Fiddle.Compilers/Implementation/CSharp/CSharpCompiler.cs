@@ -5,6 +5,8 @@ namespace Fiddle.Compilers.Implementation.CSharp
 {
     public class CSharpCompiler : ICompiler
     {
+        public IExecutionProperties ExecuteProperties { get; }
+        public ICompilerProperties CompilerProperties { get; }
         public string SourceCode { get; }
         public ICompileResult CompileResult { get; private set; }
         public IExecuteResult ExecuteResult { get; private set; }

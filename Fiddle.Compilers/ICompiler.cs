@@ -8,6 +8,14 @@ namespace Fiddle.Compilers
     public interface ICompiler
     {
         /// <summary>
+        /// The execution properties to respect when executing
+        /// </summary>
+        IExecutionProperties ExecuteProperties { get; }
+        /// <summary>
+        /// The compiler properties to respect when compiling
+        /// </summary>
+        ICompilerProperties CompilerProperties { get; }
+        /// <summary>
         /// The source code for this compiler
         /// </summary>
         string SourceCode { get; }

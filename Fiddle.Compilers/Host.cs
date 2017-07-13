@@ -1,5 +1,6 @@
 ﻿using Fiddle.Compilers.Implementation.CSharp;
 using System;
+using System.Threading.Tasks;
 
 namespace Fiddle.Compilers
 {
@@ -14,14 +15,15 @@ namespace Fiddle.Compilers
         /// Create a new <see cref="ICompiler"/> with the given Language
         /// </summary>
         /// <param name="language">The language to use for compilation and execution</param>
+        /// <param name="code">The source code</param>
         /// <exception cref="LanguageNotFoundException">When the given <see cref="Language"/> could not be found</exception>
         /// <returns>The initialized Compiler</returns>
-        public static ICompiler NewCompiler(Language language)
+        public static ICompiler NewCompiler(Language language, string code)
         {
             switch (language)
             {
                 case Language.CSharp:
-                    return new CSharpCompiler();
+                    return new CSharpCompiler(code);
                 default:
                     throw new LanguageNotFoundException(language);
             }
@@ -34,12 +36,12 @@ namespace Fiddle.Compilers
         /// <param name="code">The whole source code</param>
         /// <exception cref="LanguageNotFoundException">When the given <see cref="Language"/> could not be found</exception>
         /// <returns>The execution result</returns>
-        public static ICompileResult Compile(Language language, string code)
+        public static async Task<ICompileResult> Compile(Language language, string code)
         {
             switch (language)
             {
                 case Language.CSharp:
-                    return new CSharpCompiler().Compile;
+                    return await new CSharpCompiler(code).Compile();
                 default:
                     throw new LanguageNotFoundException(language);
             }
@@ -52,12 +54,12 @@ namespace Fiddle.Compilers
         /// <param name="code">The whole source code</param>
         /// <exception cref="LanguageNotFoundException">When the given <see cref="Language"/> could not be found</exception>
         /// <returns>The execution result</returns>
-        public static IExecuteResult Execute(Language language, string code)
+        public static async Task<IExecuteResult> Execute(Language language, string code)
         {
             switch (language)
             {
                 case Language.CSharp:
-                    return new CSharpCompiler().Execute();
+                    return await new CSharpCompiler(code).Execute();
                 default:
                     throw new LanguageNotFoundException(language);
             }

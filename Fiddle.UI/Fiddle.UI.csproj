@@ -93,5 +93,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Fiddle.Compilers\Fiddle.Compilers.csproj">
+      <Project>{95c5b726-132c-4e8e-b291-0114657499a3}</Project>
+      <Name>Fiddle.Compilers</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

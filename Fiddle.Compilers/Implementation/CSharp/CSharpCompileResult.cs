@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Fiddle.Compilers.Implementation.CSharp
 {
@@ -29,7 +30,7 @@ namespace Fiddle.Compilers.Implementation.CSharp
 
         }
 
-        public IExecuteResult Execute()
+        public async Task<IExecuteResult> Execute()
         {
             Stopwatch sw = Stopwatch.StartNew();
             object returnValue = Assembly.EntryPoint.Invoke(null, null);
