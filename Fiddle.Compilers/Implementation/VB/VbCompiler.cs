@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using System;
 using System.Collections.Generic;
@@ -10,9 +9,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Fiddle.Compilers.Implementation.CSharp
+namespace Fiddle.Compilers.Implementation.VB
 {
-    public class CSharpCompiler : ICompiler
+    public class VbCompiler : ICompiler
     {
         public IExecutionProperties ExecuteProperties { get; }
         public ICompilerProperties CompilerProperties { get; }
@@ -23,10 +22,10 @@ namespace Fiddle.Compilers.Implementation.CSharp
 
         private Script<object> Script { get; set; }
 
-        public CSharpCompiler(string code) : this(code, new ExecutionProperties(), new CompilerProperties())
+        public VbCompiler(string code) : this(code, new ExecutionProperties(), new CompilerProperties())
         { }
 
-        public CSharpCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps, string[] imports = null)
+        public VbCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps, string[] imports = null)
         {
             SourceCode = code;
             ExecuteProperties = execProps;
@@ -74,7 +73,7 @@ namespace Fiddle.Compilers.Implementation.CSharp
             ScriptOptions options = ScriptOptions.Default
                 .WithReferences(Imports)
                 .WithImports(Imports);
-            Script = CSharpScript.Create(SourceCode, options, typeof(Globals));
+            Script = VisualBasicScript.Create(SourceCode, options, typeof(Globals));
         }
 
         public async Task<ICompileResult> Compile()
@@ -108,15 +107,15 @@ namespace Fiddle.Compilers.Implementation.CSharp
 
                 //Pre-Enumerate so it's not enumerating multiple times
                 IEnumerable<Diagnostic> diagnosticsEnum = resultDiagnostics as Diagnostic[] ?? resultDiagnostics.ToArray();
-                IEnumerable<CSharpDiagnostic> diagnostics = diagnosticsEnum
-                    .Select(d => new CSharpDiagnostic(
+                IEnumerable<VbDiagnostic> diagnostics = diagnosticsEnum
+                    .Select(d => new VbDiagnostic(
                         d.GetMessage(),
                         d.Location.GetLineSpan().StartLinePosition.Line,
                         d.Location.GetLineSpan().StartLinePosition.Character,
                         d.Location.GetLineSpan().StartLinePosition.Character));
-                IEnumerable<CSharpDiagnostic> warnings = diagnosticsEnum
+                IEnumerable<VbDiagnostic> warnings = diagnosticsEnum
                     .Where(d => d.Severity == DiagnosticSeverity.Warning)
-                    .Select(d => new CSharpDiagnostic(
+                    .Select(d => new VbDiagnostic(
                         d.GetMessage(),
                         d.Location.GetLineSpan().StartLinePosition.Line,
                         d.Location.GetLineSpan().StartLinePosition.Character,
@@ -126,7 +125,7 @@ namespace Fiddle.Compilers.Implementation.CSharp
                     .Select(d => new Exception(d.GetMessage()));
 
                 //Build compile result object
-                tcs.SetResult(new CSharpCompileResult(
+                tcs.SetResult(new VbCompileResult(
                         sw.ElapsedMilliseconds,
                         SourceCode,
                         Script,
@@ -148,7 +147,7 @@ namespace Fiddle.Compilers.Implementation.CSharp
             }
             if (!CompileResult.Success)
             {
-                return new CSharpExecuteResult(-1, null, null, CompileResult, new Exception("The compilation was not successful!"));
+                return new VbExecuteResult(-1, null, null, CompileResult, new Exception("The compilation was not successful!"));
             }
 
             StringBuilder builder = new StringBuilder();
@@ -161,7 +160,7 @@ namespace Fiddle.Compilers.Implementation.CSharp
             object returnValue = state.ReturnValue;
             string stdout = builder.ToString();
 
-            IExecuteResult result = new CSharpExecuteResult(
+            IExecuteResult result = new VbExecuteResult(
                 sw.ElapsedMilliseconds,
                 stdout,
                 returnValue,

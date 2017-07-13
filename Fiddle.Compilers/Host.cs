@@ -1,10 +1,12 @@
-﻿using Fiddle.Compilers.Implementation.CSharp;
+﻿using Fiddle.Compilers.Implementation.CPP;
+using Fiddle.Compilers.Implementation.CSharp;
+using Fiddle.Compilers.Implementation.VB;
 using System;
 using System.Threading.Tasks;
 
 namespace Fiddle.Compilers
 {
-    public enum Language { CSharp }
+    public enum Language { CSharp, Cpp, Vb }
 
     /// <summary>
     /// A static host class for compiling and executing
@@ -27,6 +29,10 @@ namespace Fiddle.Compilers
             {
                 case Language.CSharp:
                     return new CSharpCompiler(code);
+                case Language.Cpp:
+                    return new CppCompiler(code);
+                case Language.Vb:
+                    return new VbCompiler(code);
                 default:
                     throw new LanguageNotFoundException(language);
             }
@@ -45,6 +51,10 @@ namespace Fiddle.Compilers
             {
                 case Language.CSharp:
                     return await new CSharpCompiler(code).Compile();
+                case Language.Cpp:
+                    return await new CppCompiler(code).Compile();
+                case Language.Vb:
+                    return await new VbCompiler(code).Compile();
                 default:
                     throw new LanguageNotFoundException(language);
             }
@@ -63,6 +73,10 @@ namespace Fiddle.Compilers
             {
                 case Language.CSharp:
                     return await new CSharpCompiler(code).Execute();
+                case Language.Cpp:
+                    return await new CppCompiler(code).Execute();
+                case Language.Vb:
+                    return await new VbCompiler(code).Execute();
                 default:
                     throw new LanguageNotFoundException(language);
             }

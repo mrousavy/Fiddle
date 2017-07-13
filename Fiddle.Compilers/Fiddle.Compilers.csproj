@@ -43,6 +43,10 @@
     <Reference Include="Microsoft.CodeAnalysis.Scripting, Version=2.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeAnalysis.Scripting.Common.2.3.0\lib\netstandard1.3\Microsoft.CodeAnalysis.Scripting.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.VisualBasic, Version=2.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.VisualBasic.2.3.0\lib\netstandard1.3\Microsoft.CodeAnalysis.VisualBasic.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualC" />
     <Reference Include="System" />
     <Reference Include="System.AppContext, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.AppContext.4.3.0\lib\net46\System.AppContext.dll</HintPath>
@@ -116,6 +120,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompileException.cs" />
+    <Compile Include="Implementation\CPP\CppCompiler.cs" />
     <Compile Include="Implementation\CSharp\CSharpDiagnostic.cs" />
     <Compile Include="Implementation\CSharp\Globals.cs" />
     <Compile Include="Host.cs" />
@@ -130,6 +135,11 @@
     <Compile Include="Implementation\CSharp\CSharpCompiler.cs" />
     <Compile Include="Implementation\CSharp\CSharpExecuteResult.cs" />
     <Compile Include="Implementation\ExecutionProperties.cs" />
+    <Compile Include="Implementation\VB\VbCompiler.cs" />
+    <Compile Include="Implementation\VB\VbCompileResult.cs" />
+    <Compile Include="Implementation\VB\VbDiagnostic.cs" />
+    <Compile Include="Implementation\VB\VbExecuteResult.cs" />
+    <Compile Include="Implementation\VB\Globals.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
