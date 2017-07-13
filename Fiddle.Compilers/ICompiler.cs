@@ -1,10 +1,16 @@
-﻿namespace Fiddle.Compilers
+﻿using System.Threading.Tasks;
+
+namespace Fiddle.Compilers
 {
     /// <summary>
     /// A Code Compiler
     /// </summary>
     public interface ICompiler
     {
+        /// <summary>
+        /// The source code for this compiler
+        /// </summary>
+        string SourceCode { get; }
         /// <summary>
         /// The result returned by <see cref="Compile()"/>, or null if not yet compiled
         /// </summary>
@@ -19,12 +25,12 @@
         /// Compile this <see cref="ICompiler"/> instance
         /// </summary>
         /// <returns>The execution result</returns>
-        ICompileResult Compile();
+        Task<ICompileResult> Compile();
 
         /// <summary>
         /// Execute this compiled assembly
         /// </summary>
         /// <returns>The execution result</returns>
-        IExecuteResult Execute();
+        Task<IExecuteResult> Execute();
     }
 }
