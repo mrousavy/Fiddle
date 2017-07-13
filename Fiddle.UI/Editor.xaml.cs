@@ -17,11 +17,13 @@ namespace Fiddle.UI
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
+            compiler.SourceCode = SourceCode.Text;
             ICompileResult result = await compiler.Compile();
         }
 
         private async void Button_Click_1(object sender, RoutedEventArgs e)
         {
+            compiler.SourceCode = SourceCode.Text;
             IExecuteResult result = await compiler.Execute();
         }
     }

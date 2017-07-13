@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Fiddle.Compilers
 {
@@ -33,11 +32,5 @@ namespace Fiddle.Compilers
         /// All errors from the diagnostics
         /// </summary>
         IEnumerable<Exception> Errors { get; }
-
-        /// <summary>
-        /// Execute this Assembly
-        /// </summary>
-        /// <returns>The execution result</returns>
-        Task<IExecuteResult> Execute();
     }
 }

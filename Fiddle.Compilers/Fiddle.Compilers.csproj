@@ -115,6 +115,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompileException.cs" />
     <Compile Include="Implementation\CSharp\CSharpDiagnostic.cs" />
     <Compile Include="Implementation\CSharp\Globals.cs" />
     <Compile Include="Host.cs" />

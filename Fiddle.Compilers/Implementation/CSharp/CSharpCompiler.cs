@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,9 +21,15 @@ namespace Fiddle.Compilers.Implementation.CSharp
 
         private Script<object> Script { get; set; }
 
-        public CSharpCompiler(string code)
+        public CSharpCompiler(string code) : this(code, new ExecutionProperties(), new CompilerProperties())
+        {
+        }
+
+        public CSharpCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps)
         {
             SourceCode = code;
+            ExecuteProperties = execProps;
+            CompilerProperties = compProps;
             Create();
         }
 
@@ -32,55 +39,67 @@ namespace Fiddle.Compilers.Implementation.CSharp
             Script = CSharpScript.Create(SourceCode, options, typeof(Globals));
         }
 
-        public Task<ICompileResult> Compile()
+        public async Task<ICompileResult> Compile()
         {
-            //Init
-            IEnumerable<Diagnostic> resultDiagnostics = null;
-
-            //Actual compilation
-            Stopwatch sw = Stopwatch.StartNew();
-            Thread compileThread = new Thread(() =>
+            if (Script.Code != SourceCode)
             {
-                Compilation compilation = Script.GetCompilation();
-                resultDiagnostics = compilation.GetDiagnostics();
-            });
-            compileThread.Start();
-            compileThread.Join((int)CompilerProperties.Timeout); //Wait until compile Thread finishes with given timeout
-            sw.Stop();
+                Create();
+            }
 
-            if (resultDiagnostics == null)
-                throw new CompileException("The compiler Thread was not returning any diagnostics!");
+            TaskCompletionSource<ICompileResult> tcs = new TaskCompletionSource<ICompileResult>();
 
-            //Pre-Enumerate so it's not enumerating multiple times
-            IEnumerable<Diagnostic> diagnosticsEnum = resultDiagnostics as Diagnostic[] ?? resultDiagnostics.ToArray();
-            IEnumerable<CSharpDiagnostic> diagnostics = diagnosticsEnum
-                .Select(d => new CSharpDiagnostic(
-                    d.GetMessage(),
-                    d.Location.GetLineSpan().StartLinePosition.Line,
-                    d.Location.GetLineSpan().StartLinePosition.Character,
-                    d.Location.GetLineSpan().StartLinePosition.Character));
-            IEnumerable<CSharpDiagnostic> warnings = diagnosticsEnum
-                .Where(d => d.Severity == DiagnosticSeverity.Warning)
-                .Select(d => new CSharpDiagnostic(
-                    d.GetMessage(),
-                    d.Location.GetLineSpan().StartLinePosition.Line,
-                    d.Location.GetLineSpan().StartLinePosition.Character,
-                    d.Location.GetLineSpan().StartLinePosition.Character));
-            IEnumerable<Exception> errors = diagnosticsEnum
-                .Where(d => d.Severity == DiagnosticSeverity.Error)
-                .Select(d => new Exception(d.GetMessage()));
+            //bad hack for creating an "async" method:
+            new Thread(() =>
+            {
+                //Init
+                IEnumerable<Diagnostic> resultDiagnostics = null;
 
-            //Build compile result object
-            ICompileResult result = new CSharpCompileResult(
-                sw.ElapsedMilliseconds,
-                SourceCode,
-                Script,
-                diagnostics,
-                warnings,
-                errors);
-            CompileResult = result;
+                //Actual compilation
+                Stopwatch sw = Stopwatch.StartNew();
+                Thread compileThread = new Thread(() =>
+                {
+                    Compilation compilation = Script.GetCompilation();
+                    resultDiagnostics = compilation.GetDiagnostics();
+                });
+                compileThread.Start();
+                compileThread.Join((int)CompilerProperties.Timeout); //Wait until compile Thread finishes with given timeout
+                sw.Stop();
 
-            return Task.FromResult(result);
+                if (resultDiagnostics == null)
+                    throw new CompileException("The compiler Thread was not returning any diagnostics!");
+
+                //Pre-Enumerate so it's not enumerating multiple times
+                IEnumerable<Diagnostic> diagnosticsEnum = resultDiagnostics as Diagnostic[] ?? resultDiagnostics.ToArray();
+                IEnumerable<CSharpDiagnostic> diagnostics = diagnosticsEnum
+                    .Select(d => new CSharpDiagnostic(
+                        d.GetMessage(),
+                        d.Location.GetLineSpan().StartLinePosition.Line,
+                        d.Location.GetLineSpan().StartLinePosition.Character,
+                        d.Location.GetLineSpan().StartLinePosition.Character));
+                IEnumerable<CSharpDiagnostic> warnings = diagnosticsEnum
+                    .Where(d => d.Severity == DiagnosticSeverity.Warning)
+                    .Select(d => new CSharpDiagnostic(
+                        d.GetMessage(),
+                        d.Location.GetLineSpan().StartLinePosition.Line,
+                        d.Location.GetLineSpan().StartLinePosition.Character,
+                        d.Location.GetLineSpan().StartLinePosition.Character));
+                IEnumerable<Exception> errors = diagnosticsEnum
+                    .Where(d => d.Severity == DiagnosticSeverity.Error)
+                    .Select(d => new Exception(d.GetMessage()));
+
+                //Build compile result object
+                tcs.SetResult(new CSharpCompileResult(
+                        sw.ElapsedMilliseconds,
+                        SourceCode,
+                        Script,
+                        diagnostics,
+                        warnings,
+                        errors));
+            }).Start();
+
+            ICompileResult compileResult = await tcs.Task;
+            CompileResult = compileResult;
+            return compileResult;
         }
 
         public async Task<IExecuteResult> Execute()
@@ -89,8 +108,24 @@ namespace Fiddle.Compilers.Implementation.CSharp
             {
                 await Compile();
             }
-            ExecuteResult = await CompileResult.Execute();
-            return ExecuteResult;
+            StringBuilder builder = new StringBuilder();
+            Globals globals = new Globals(builder);
+
+            Stopwatch sw = Stopwatch.StartNew();
+            ScriptState<object> state = await Script.RunAsync(globals, CatchException);
+            sw.Stop();
+
+            object returnValue = state.ReturnValue;
+            string stdout = builder.ToString();
+
+            IExecuteResult result = new CSharpExecuteResult(sw.ElapsedMilliseconds, true, stdout, returnValue, CompileResult);
+            return result;
+        }
+
+
+        public bool CatchException(Exception ex)
+        {
+            return true;
         }
     }
 }

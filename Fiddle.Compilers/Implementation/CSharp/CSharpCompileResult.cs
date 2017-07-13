@@ -1,9 +1,7 @@
 ﻿using Microsoft.CodeAnalysis.Scripting;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Fiddle.Compilers.Implementation.CSharp
 {
@@ -32,27 +30,6 @@ namespace Fiddle.Compilers.Implementation.CSharp
             Errors = errors;
             if (Errors != null)
                 Success = !Errors.Any();
-        }
-
-        public async Task<IExecuteResult> Execute()
-        {
-            Globals globals = new Globals();
-
-            Stopwatch sw = Stopwatch.StartNew();
-            ScriptState<object> state = await Script.RunAsync(globals, CatchException);
-            sw.Stop();
-
-            object returnValue = state.ReturnValue;
-            string stdout = globals.Console.ToString();
-
-            IExecuteResult result = new CSharpExecuteResult(sw.ElapsedMilliseconds, true, stdout, returnValue, this);
-            return result;
-        }
-
-
-        public bool CatchException(Exception ex)
-        {
-            return true;
         }
     }
 }
