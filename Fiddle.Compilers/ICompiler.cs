@@ -27,7 +27,10 @@ namespace Fiddle.Compilers
         /// The result returned by <see cref="Execute()"/>, or null if not yet compiled
         /// </summary>
         IExecuteResult ExecuteResult { get; }
-
+        /// <summary>
+        /// This Compiler's Language
+        /// </summary>
+        Language Language { get; }
 
         /// <summary>
         /// Compile this <see cref="ICompiler"/> instance

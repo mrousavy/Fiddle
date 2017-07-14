@@ -67,7 +67,7 @@ namespace Fiddle.UI
         private void ButtonSave(object sender, RoutedEventArgs e)
         {
             LockUi();
-            Helper.SaveFile(SourceCode);
+            Helper.SaveFile(SourceCode, Compiler.Language);
             UnlockUi();
         }
 

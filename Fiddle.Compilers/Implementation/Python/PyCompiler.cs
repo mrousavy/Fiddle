@@ -15,6 +15,7 @@ namespace Fiddle.Compilers.Implementation.Python
         public string SourceCode { get; set; }
         public ICompileResult CompileResult { get; private set; }
         public IExecuteResult ExecuteResult { get; private set; }
+        public Language Language { get; } = Language.Python;
 
         private ScriptScope Scope { get; set; }
         private CompiledCode Compilation { get; set; }

@@ -11,6 +11,7 @@ namespace Fiddle.Compilers.Implementation.CPP
         public string SourceCode { get; set; }
         public ICompileResult CompileResult { get; private set; }
         public IExecuteResult ExecuteResult { get; private set; }
+        public Language Language { get; } = Language.Cpp;
 
         private CodeDomProvider Provider { get; set; }
 

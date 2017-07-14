@@ -19,6 +19,7 @@ namespace Fiddle.Compilers.Implementation.VB
         public ICompileResult CompileResult { get; private set; }
         public IExecuteResult ExecuteResult { get; private set; }
         public string[] Imports { get; set; }
+        public Language Language { get; } = Language.Vb;
 
         private Script<object> Script { get; set; }
 
