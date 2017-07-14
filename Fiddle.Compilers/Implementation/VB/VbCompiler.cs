@@ -27,7 +27,7 @@ namespace Fiddle.Compilers.Implementation.VB
 
         public VbCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps, string[] imports = null)
         {
-            throw new Exception("VB Roslyn Scripting is still in development");
+            throw new NotImplementedException("VB Roslyn Scripting is still in development");
             SourceCode = code;
             ExecuteProperties = execProps;
             CompilerProperties = compProps;

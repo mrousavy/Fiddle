@@ -135,6 +135,10 @@
     <Compile Include="Implementation\CSharp\CSharpCompiler.cs" />
     <Compile Include="Implementation\CSharp\CSharpExecuteResult.cs" />
     <Compile Include="Implementation\ExecutionProperties.cs" />
+    <Compile Include="Implementation\Python\PyCompiler.cs" />
+    <Compile Include="Implementation\Python\PyCompileResult.cs" />
+    <Compile Include="Implementation\Python\PyDiagnostic.cs" />
+    <Compile Include="Implementation\Python\PyExecuteResult.cs" />
     <Compile Include="Implementation\VB\VbCompiler.cs" />
     <Compile Include="Implementation\VB\VbCompileResult.cs" />
     <Compile Include="Implementation\VB\VbDiagnostic.cs" />

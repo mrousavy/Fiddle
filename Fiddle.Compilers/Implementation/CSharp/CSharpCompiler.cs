@@ -112,14 +112,12 @@ namespace Fiddle.Compilers.Implementation.CSharp
                     .Select(d => new CSharpDiagnostic(
                         d.GetMessage(),
                         d.Location.GetLineSpan().StartLinePosition.Line,
-                        d.Location.GetLineSpan().StartLinePosition.Character,
                         d.Location.GetLineSpan().StartLinePosition.Character));
                 IEnumerable<CSharpDiagnostic> warnings = diagnosticsEnum
                     .Where(d => d.Severity == DiagnosticSeverity.Warning)
                     .Select(d => new CSharpDiagnostic(
                         d.GetMessage(),
                         d.Location.GetLineSpan().StartLinePosition.Line,
-                        d.Location.GetLineSpan().StartLinePosition.Character,
                         d.Location.GetLineSpan().StartLinePosition.Character));
                 IEnumerable<Exception> errors = diagnosticsEnum
                     .Where(d => d.Severity == DiagnosticSeverity.Error)

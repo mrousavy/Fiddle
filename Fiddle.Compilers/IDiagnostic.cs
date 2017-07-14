@@ -13,10 +13,6 @@ namespace Fiddle.Compilers
         /// </summary>
         int Line { get; }
         /// <summary>
-        /// The column the diagnostic is referring to
-        /// </summary>
-        int Column { get; }
-        /// <summary>
         /// The char position the diagnostic is referring to
         /// </summary>
         int Char { get; }

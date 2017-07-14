@@ -1,17 +1,18 @@
 ﻿using System;
 
-namespace Fiddle.Compilers.Implementation.CSharp
+namespace Fiddle.Compilers.Implementation.Python
 {
-    public class CSharpDiagnostic : IDiagnostic
+    public class PyDiagnostic : IDiagnostic
     {
         public string Message { get; }
         public int Line { get; }
         public int Char { get; }
 
-        public CSharpDiagnostic(string message, int ln, int ch)
+
+        public PyDiagnostic(string message, int line, int ch)
         {
             Message = message;
-            Line = ln;
+            Line = line;
             Char = ch;
         }
 
