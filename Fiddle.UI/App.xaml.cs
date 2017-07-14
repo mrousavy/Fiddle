@@ -7,12 +7,17 @@ namespace Fiddle.UI
     /// </summary>
     public partial class App : Application
     {
-        public static Preferences Preferences { get; private set; }
+        public static Preferences Preferences { get; set; }
 
         public App()
         {
             //Load prefs
-            Preferences = new Preferences();
+            Preferences = PreferencesManager.Load();
+
+            Current.Exit += delegate
+            {
+                PreferencesManager.WriteOut(Preferences);
+            };
         }
     }
 }

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Fiddle.UI"
         mc:Ignorable="d"
-        Title="Editor"
+        Title="Fiddle"
         xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
@@ -16,38 +16,58 @@
         FontFamily="{DynamicResource MaterialDesignFont}"
         MinWidth="400" MinHeight="200"
         Width="700" Height="500">
-    <Grid>
+    
+    <Grid Name="EditorGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <ComboBox Grid.Row="0" Grid.Column="0" Margin="10"
+        <!--Language Selection-->
+        <ComboBox Grid.Row="0" Grid.Column="0" Margin="15 10 10 10"
                   md:HintAssist.Hint="Language" Name="ComboBoxLanguage"
-                  SelectionChanged="ComboBoxLanguageSelected"/>
+                  SelectionChanged="ComboBoxLanguageSelected">
+            <ComboBoxItem>C#</ComboBoxItem>
+            <ComboBoxItem>VB</ComboBoxItem>
+            <ComboBoxItem>C++</ComboBoxItem>
+            <ComboBoxItem>Python</ComboBoxItem>
+        </ComboBox>
 
-        <md:PackIcon Grid.Row="0" Grid.Column="1"
-                     HorizontalAlignment="Center" VerticalAlignment="Center"
-                     Cursor="Hand" MouseUp="ButtonCompile"/>
-        <md:PackIcon Grid.Row="0" Grid.Column="2"
-                     HorizontalAlignment="Center" VerticalAlignment="Center"
-                     Cursor="Hand" MouseUp="ButtonExecute"/>
+        <!--Compile Button-->
+        <Button Grid.Row="0" Grid.Column="1" Margin="10"
+                Background="#263238" Height="45" Width="45"
+                Click="ButtonCompile" BorderBrush="#263238"
+                Padding="-10" ToolTip="Compile">
+            <md:PackIcon Kind="AutoFix" Foreground="Gray"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Height="25" Width="25"/>
+        </Button>
+
+        <!--Execute Button-->
+        <Button Grid.Row="0" Grid.Column="2" Margin="10"
+                Background="#263238" Height="45" Width="45"
+                Click="ButtonExecute" BorderBrush="#263238"
+                Padding="-10" ToolTip="Execute">
+            <md:PackIcon Kind="Play" Foreground="Green"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center" 
+                         Height="25" Width="25"/>
+        </Button>
+
+        <!--Source Code Editor-->
+        <RichTextBox Grid.Row="1"
+                     Grid.Column="0" Grid.ColumnSpan="4"
+                    Name="TextBoxCode" Background="#374349" Margin="5"
+                     FontFamily="Consolas" FontSize="12" Foreground="White"
+                     AcceptsTab="True">
+        </RichTextBox>
     </Grid>
 </Window>

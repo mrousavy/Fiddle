@@ -4,40 +4,40 @@ using System.IO;
 
 namespace Fiddle.UI
 {
-    public struct Preferences
+    public class Preferences
     {
-        public int SelectedLanguage { get; set; }
-
-        public Preferences(int selectedLang)
-        {
-            SelectedLanguage = selectedLang;
-        }
+        public int SelectedLanguage { get; set; } = -1;
     }
 
-    public class PreferencesManager
+    public static class PreferencesManager
     {
-        public string PreferencesFile { get; set; }
+        public static string AppData { get; } = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Fiddle");
+        public static string PreferencesFile { get; set; } = Path.Combine(AppData, "Preferences.json");
 
-        public PreferencesManager()
+        public static Preferences Load()
         {
-            PreferencesFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "Fiddle", "Preferences.json");
-        }
-
-        public void Load()
-        {
+            if (!Directory.Exists(AppData))
+            {
+                Directory.CreateDirectory(AppData);
+            }
             if (!File.Exists(PreferencesFile))
             {
                 File.WriteAllText(PreferencesFile, JsonConvert.SerializeObject(new Preferences()));
             }
 
             string content = File.ReadAllText(PreferencesFile);
-
+            return JsonConvert.DeserializeObject<Preferences>(content);
         }
 
-        public void WriteOut()
+        public static void WriteOut(Preferences prefs)
         {
-
+            if (!Directory.Exists(AppData))
+            {
+                Directory.CreateDirectory(AppData);
+            }
+            string content = JsonConvert.SerializeObject(prefs);
+            File.WriteAllText(PreferencesFile, content);
         }
     }
 }
