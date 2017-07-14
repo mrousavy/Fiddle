@@ -12,10 +12,9 @@ namespace Fiddle.UI
             return true;
         }
 
-        public static async Task<bool> ShowErrorDialog(string message, DialogHost host)
+        public static async Task ShowErrorDialog(string message, DialogHost host)
         {
-            object result = await host.ShowDialog(new ErrorDialog(message).GetContent());
-            return true;
+            await host.ShowDialog(new ErrorDialog(message).GetContent());
         }
     }
 }

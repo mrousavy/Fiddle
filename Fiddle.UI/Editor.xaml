@@ -14,7 +14,8 @@
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         MinWidth="400" MinHeight="200"
-        Width="700" Height="500">
+        Width="700" Height="500"
+        Loaded="Window_Loaded">
 
     <md:DialogHost Name="EditorDialogHost">
         <Grid Name="EditorGrid">
@@ -83,8 +84,31 @@
                              FontFamily="Consolas" FontSize="14" Foreground="White"
                              AcceptsTab="True" BorderThickness="0"
                              VerticalScrollBarVisibility="Auto"
-                             HorizontalScrollBarVisibility="Auto"/>
+                             HorizontalScrollBarVisibility="Auto"
+                             KeyDown="TextBoxCode_KeyDown"/>
             </DockPanel>
+
+            <Grid Grid.Row="2" Margin="5"
+                  Grid.Column="0" Grid.ColumnSpan="4"
+                  Background="#374349"
+                  Name="GridResultsView">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Name="LabelStatusMessage"
+                       Grid.Column="0"
+                       Content="Loading.."/>
+                <Label Name="LabelCompileTime"
+                       Grid.Column="1"
+                       ToolTip="Compile time (ms)"/>
+                <Label Name="LabelExecuteTime"
+                       Grid.Column="2"
+                       ToolTip="Execute time (ms)"/>
+            </Grid>
         </Grid>
     </md:DialogHost>
 </Window>

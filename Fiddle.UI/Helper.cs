@@ -1,12 +1,31 @@
 ﻿using Fiddle.Compilers;
 using System;
 using System.IO;
+using System.Windows;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace Fiddle.UI
 {
     public static class Helper
     {
+
+        public static ICompiler GetCompiler(string language, string sourceCode)
+        {
+            switch (language)
+            {
+                case "C#":
+                    return Host.NewCompiler(Language.CSharp, sourceCode);
+                case "C++":
+                    return Host.NewCompiler(Language.Cpp, sourceCode);
+                case "VB":
+                    return Host.NewCompiler(Language.Vb, sourceCode);
+                case "Python":
+                    return Host.NewCompiler(Language.Python, sourceCode);
+                default:
+                    MessageBox.Show("Language not found!");
+                    return null;
+            }
+        }
 
         public static void SaveFile(string code, Language language)
         {

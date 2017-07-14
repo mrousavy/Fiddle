@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using System;
 using System.Collections.Generic;
@@ -28,7 +29,6 @@ namespace Fiddle.Compilers.Implementation.VB
 
         public VbCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps, string[] imports = null)
         {
-            throw new NotImplementedException("VB Roslyn Scripting is still in development");
             SourceCode = code;
             ExecuteProperties = execProps;
             CompilerProperties = compProps;
@@ -75,7 +75,8 @@ namespace Fiddle.Compilers.Implementation.VB
             ScriptOptions options = ScriptOptions.Default
                 .WithReferences(Imports)
                 .WithImports(Imports);
-            //Script = VisualBasicScript.Create(SourceCode, options, typeof(Globals));
+            //TODO: VisualBasicScript
+            Script = CSharpScript.Create(SourceCode, options, typeof(Globals));
         }
 
         public async Task<ICompileResult> Compile()

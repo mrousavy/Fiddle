@@ -10,25 +10,23 @@ namespace Fiddle.UI
     /// <summary>
     /// Interaction logic for Editor.xaml
     /// </summary>
-    public partial class Editor : Window
+    public partial class Editor
     {
         private ICompiler Compiler { get; set; }
 
-        private string SourceCode
-        {
-            get => new TextRange(TextBoxCode.Document.ContentStart, TextBoxCode.Document.ContentEnd).Text;
-            set
-            {
-                TextBoxCode.Document.Blocks.Clear();
-                TextBoxCode.Document.Blocks.Add(new Paragraph(new Run(value)));
-            }
-        }
+        private string SourceCode => new TextRange(TextBoxCode.Document.ContentStart, TextBoxCode.Document.ContentEnd).Text;
 
         public Editor()
         {
             InitializeComponent();
             LoadComboBox();
             LoadTextBox();
+            TextBoxCode.Focus();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            LabelStatusMessage.Content = "Ready";
         }
 
         private void LoadComboBox()
@@ -53,26 +51,50 @@ namespace Fiddle.UI
             };
         }
 
-        private async void ButtonExecute(object sender, RoutedEventArgs e)
-        {
-            LockUi();
-            Compiler.SourceCode = SourceCode;
-            IExecuteResult result = await Compiler.Execute();
-            UnlockUi();
-
-            if (!result.Success)
-                await DialogHelper.ShowErrorDialog($"Execution failed!\n({result.Exception.Message})", EditorDialogHost);
-        }
         private async void ButtonCompile(object sender, RoutedEventArgs e)
         {
+            LabelStatusMessage.Content = "Compiling..";
+
             LockUi();
             Compiler.SourceCode = SourceCode;
             ICompileResult result = await Compiler.Compile();
             UnlockUi();
 
-            if (!result.Success)
-                await DialogHelper.ShowErrorDialog($"Compilation failed!\n({result.Errors.First()})", EditorDialogHost);
+            LabelCompileTime.Content = $"C: {result.Time}ms";
+
+            if (result.Success)
+            {
+                LabelStatusMessage.Content = "Compilation successful!";
+            }
+            else
+            {
+                LabelStatusMessage.Content = "Compilation failed!";
+                await DialogHelper.ShowErrorDialog($"Compilation failed!\n{result.Errors.First()}", EditorDialogHost);
+            }
         }
+        private async void ButtonExecute(object sender, RoutedEventArgs e)
+        {
+            LabelStatusMessage.Content = "Executing..";
+
+            LockUi();
+            Compiler.SourceCode = SourceCode;
+            IExecuteResult result = await Compiler.Execute();
+            UnlockUi();
+
+            LabelCompileTime.Content = $"C: {result.CompileResult.Time}ms";
+            LabelExecuteTime.Content = $"X: {result.Time}ms";
+
+            if (result.Success)
+            {
+                LabelStatusMessage.Content = "Execution successful!";
+            }
+            else
+            {
+                LabelStatusMessage.Content = "Execution failed!";
+                await DialogHelper.ShowErrorDialog($"Execution failed!\n{result.Exception.Message}", EditorDialogHost);
+            }
+        }
+
         private void ButtonSave(object sender, RoutedEventArgs e)
         {
             LockUi();
@@ -81,32 +103,20 @@ namespace Fiddle.UI
 
         }
 
-        private void ComboBoxLanguageSelected(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void ComboBoxLanguageSelected(object sender, SelectionChangedEventArgs e)
         {
-            App.Preferences.SelectedLanguage = ComboBoxLanguage.SelectedIndex;
-
             LockUi();
             string value = ((ComboBoxItem)ComboBoxLanguage.SelectedValue).Content as string;
-            switch (value)
-            {
-                case "C#":
-                    Compiler = Host.NewCompiler(Compilers.Language.CSharp, SourceCode);
-                    break;
-                case "C++":
-                    Compiler = Host.NewCompiler(Compilers.Language.Cpp, SourceCode);
-                    break;
-                case "VB":
-                    Compiler = Host.NewCompiler(Compilers.Language.Vb, SourceCode);
-                    break;
-                case "Python":
-                    Compiler = Host.NewCompiler(Compilers.Language.Python, SourceCode);
-                    break;
-                default:
-                    MessageBox.Show("Language not found!");
-                    break;
-            }
+            Compiler = Helper.GetCompiler(value, SourceCode);
+            App.Preferences.SelectedLanguage = ComboBoxLanguage.SelectedIndex;
             Title = $"Fiddle - {value}";
             UnlockUi();
+        }
+        private void TextBoxCode_KeyDown(object sender, KeyEventArgs e)
+        {
+            LabelExecuteTime.Content = string.Empty;
+            LabelCompileTime.Content = string.Empty;
+            LabelStatusMessage.Content = "Ready";
         }
 
         private void LockUi()
@@ -125,6 +135,7 @@ namespace Fiddle.UI
                 element.IsEnabled = true;
             }
             Cursor = Cursors.Arrow;
+            TextBoxCode.Focus();
         }
     }
 }
