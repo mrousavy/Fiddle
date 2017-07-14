@@ -27,12 +27,29 @@ namespace Fiddle.UI
         {
             InitializeComponent();
             LoadComboBox();
+            LoadTextBox();
         }
 
         private void LoadComboBox()
         {
             if (App.Preferences.SelectedLanguage != -1)
                 ComboBoxLanguage.SelectedIndex = App.Preferences.SelectedLanguage;
+        }
+
+        private void LoadTextBox()
+        {
+            Paragraph paragraph = (Paragraph)TextBoxCode.Document.Blocks.FirstBlock;
+            paragraph.LineHeight = 3; //spacing between lines
+            DataObject.AddCopyingHandler(TextBoxCode, (s, e) =>
+            {
+                if (e.IsDragDrop) e.CancelCommand();
+            });
+            TextBoxCode.PreviewMouseLeftButtonDown += (s, e) =>
+            {
+                TextBoxCode.Selection.Select(
+                    TextBoxCode.Document.ContentStart,
+                    TextBoxCode.Document.ContentStart);
+            };
         }
 
         private async void ButtonExecute(object sender, RoutedEventArgs e)
@@ -45,6 +62,12 @@ namespace Fiddle.UI
         {
             LockUi();
             ICompileResult result = await Compiler.Compile();
+            UnlockUi();
+        }
+        private void ButtonSave(object sender, RoutedEventArgs e)
+        {
+            LockUi();
+            Helper.SaveFile(SourceCode);
             UnlockUi();
         }
 

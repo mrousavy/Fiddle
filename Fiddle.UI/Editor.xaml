@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Fiddle.UI"
         mc:Ignorable="d"
         Title="Fiddle"
         xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
@@ -16,7 +15,7 @@
         FontFamily="{DynamicResource MaterialDesignFont}"
         MinWidth="400" MinHeight="200"
         Width="700" Height="500">
-    
+
     <Grid Name="EditorGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -62,12 +61,28 @@
                          Height="25" Width="25"/>
         </Button>
 
+        <!--Save Button-->
+        <Button Grid.Row="0" Grid.Column="3" Margin="10"
+                Background="#263238" Height="45" Width="45"
+                Click="ButtonSave" BorderBrush="#263238"
+                Padding="-10" ToolTip="Save"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center" >
+            <md:PackIcon Kind="ContentSave" Foreground="DodgerBlue"
+                         HorizontalAlignment="Right"
+                         VerticalAlignment="Center" 
+                         Height="25" Width="25"/>
+        </Button>
+
         <!--Source Code Editor-->
-        <RichTextBox Grid.Row="1"
-                     Grid.Column="0" Grid.ColumnSpan="4"
-                    Name="TextBoxCode" Background="#374349" Margin="5"
-                     FontFamily="Consolas" FontSize="12" Foreground="White"
-                     AcceptsTab="True">
-        </RichTextBox>
+        <DockPanel Grid.Row="1"
+                   Grid.Column="0" Grid.ColumnSpan="4" Margin="5"
+                   Background="#374349">
+            <RichTextBox Name="TextBoxCode" Background="#374349" Margin="5"
+                         FontFamily="Consolas" FontSize="14" Foreground="White"
+                         AcceptsTab="True" BorderThickness="0"
+                         VerticalScrollBarVisibility="Auto"
+                         HorizontalScrollBarVisibility="Auto"/>
+        </DockPanel>
     </Grid>
 </Window>
