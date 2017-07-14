@@ -15,17 +15,21 @@ namespace Fiddle.Compilers.Implementation.Python
 
 
         public PyCompileResult(long time, string code,
-            IEnumerable<IDiagnostic> diagnostics,
-            IEnumerable<IDiagnostic> warnings,
-            IEnumerable<Exception> errors)
+            IEnumerable<IDiagnostic> diagnostics)
         {
             Time = time;
             SourceCode = code;
-            Diagnostics = diagnostics;
-            Warnings = warnings;
-            Errors = errors;
-            if (Errors != null)
-                Success = !Errors.Any();
+
+
+            IEnumerable<IDiagnostic> enumerable = diagnostics as IDiagnostic[] ?? diagnostics.ToArray();
+            Diagnostics = enumerable;
+            Warnings = enumerable.Where(d => d.Severity == Microsoft.Scripting.Severity.Warning);
+            Errors = enumerable
+                .Where(d => d.Severity == Microsoft.Scripting.Severity.Error)
+                .Select(dd => new Exception($"Ln{dd.Line} Ch{dd.Char}: {dd.Message}"));
+
+            if (!Errors.Any())
+                Success = true;
         }
     }
 }

@@ -100,8 +100,11 @@ namespace Fiddle.Compilers.Implementation.CSharp
                     resultDiagnostics = compilation.GetDiagnostics();
                 });
                 compileThread.Start();
-                compileThread.Join((int)CompilerProperties.Timeout); //Wait until compile Thread finishes with given timeout
+                bool graceful = compileThread.Join((int)CompilerProperties.Timeout); //Wait until compile Thread finishes with given timeout
                 sw.Stop();
+
+                if (!graceful)
+                    throw new CompileException("The compilation timed out!");
 
                 if (resultDiagnostics == null)
                     throw new CompileException("The compiler Thread was not returning any diagnostics!");
@@ -112,13 +115,16 @@ namespace Fiddle.Compilers.Implementation.CSharp
                     .Select(d => new CSharpDiagnostic(
                         d.GetMessage(),
                         d.Location.GetLineSpan().StartLinePosition.Line,
-                        d.Location.GetLineSpan().StartLinePosition.Character));
+                        d.Location.GetLineSpan().StartLinePosition.Character,
+                        (Microsoft.Scripting.Severity)((int)d.Severity + 1)));
+
                 IEnumerable<CSharpDiagnostic> warnings = diagnosticsEnum
                     .Where(d => d.Severity == DiagnosticSeverity.Warning)
                     .Select(d => new CSharpDiagnostic(
                         d.GetMessage(),
                         d.Location.GetLineSpan().StartLinePosition.Line,
-                        d.Location.GetLineSpan().StartLinePosition.Character));
+                        d.Location.GetLineSpan().StartLinePosition.Character,
+                        Microsoft.Scripting.Severity.Warning));
                 IEnumerable<Exception> errors = diagnosticsEnum
                     .Where(d => d.Severity == DiagnosticSeverity.Error)
                     .Select(d => new Exception(d.GetMessage()));

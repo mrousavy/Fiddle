@@ -12,7 +12,7 @@ namespace Fiddle.UI
         public Editor()
         {
             InitializeComponent();
-            compiler = Host.NewCompiler(Compilers.Language.Vb, "return \"Hello World!\";");
+            compiler = Host.NewCompiler(Compilers.Language.Python, "print 'hi'");
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)

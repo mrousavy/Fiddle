@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Scripting;
+using System;
 
 namespace Fiddle.Compilers
 {
@@ -16,6 +17,10 @@ namespace Fiddle.Compilers
         /// The char position the diagnostic is referring to
         /// </summary>
         int Char { get; }
+        /// <summary>
+        /// The Diagnostic's severity (Warning, Error, ..)
+        /// </summary>
+        Severity Severity { get; }
 
         /// <summary>
         /// Convert this <see cref="IDiagnostic"/> to an <see cref="Exception"/>

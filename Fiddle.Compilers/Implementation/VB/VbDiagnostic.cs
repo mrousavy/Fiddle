@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Scripting;
+using System;
 
 namespace Fiddle.Compilers.Implementation.VB
 {
@@ -6,20 +7,20 @@ namespace Fiddle.Compilers.Implementation.VB
     {
         public string Message { get; }
         public int Line { get; }
-        public int Column { get; }
         public int Char { get; }
+        public Severity Severity { get; }
 
-        public VbDiagnostic(string message, int ln, int col, int ch)
+        public VbDiagnostic(string message, int ln, int ch, Severity severity)
         {
             Message = message;
             Line = ln;
-            Column = col;
             Char = ch;
+            Severity = severity;
         }
 
         public Exception ToException()
         {
-            return new Exception($"Ln{Line} Col{Column} Ch{Char}: {Message}");
+            return new Exception($"[{Severity}] Ln{Line} Ch{Char}: {Message}");
         }
     }
 }
