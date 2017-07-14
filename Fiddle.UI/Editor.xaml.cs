@@ -1,4 +1,6 @@
 ﻿using Fiddle.Compilers;
+using System;
+using System.Collections.ObjectModel;
 using System.Windows;
 
 namespace Fiddle.UI
@@ -8,23 +10,40 @@ namespace Fiddle.UI
     /// </summary>
     public partial class Editor : Window
     {
-        private ICompiler compiler;
+        private ICompiler Compiler { get; set; }
+
         public Editor()
         {
             InitializeComponent();
-            compiler = Host.NewCompiler(Compilers.Language.Python, "print 'hi'");
+            FillComboBox();
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private void FillComboBox()
         {
-            compiler.SourceCode = SourceCode.Text;
-            ICompileResult result = await compiler.Compile();
+            ObservableCollection<string> list = new ObservableCollection<string>();
+            Language[] values = (Language[])Enum.GetValues(typeof(Language));
+            foreach (Language value in values)
+            {
+                list.Add(value.ToString());
+            }
+            ComboBoxLanguage.ItemsSource = list;
+
+            if (App.Preferences.SelectedLanguage != -1)
+                ComboBoxLanguage.SelectedIndex = App.Preferences.SelectedLanguage;
         }
 
-        private async void Button_Click_1(object sender, RoutedEventArgs e)
+        private async void ButtonExecute(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            compiler.SourceCode = SourceCode.Text;
-            IExecuteResult result = await compiler.Execute();
+            IExecuteResult result = await Compiler.Execute();
+        }
+        private async void ButtonCompile(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            ICompileResult result = await Compiler.Compile();
+        }
+
+        private void ComboBoxLanguageSelected(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            //App.Preferences.SelectedLanguage = e;
         }
     }
 }

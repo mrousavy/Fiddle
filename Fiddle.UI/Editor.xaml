@@ -5,15 +5,49 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Fiddle.UI"
         mc:Ignorable="d"
-        Title="Editor" Height="300" Width="300">
+        Title="Editor"
+        xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal" 
+        TextOptions.TextRenderingMode="Auto"        
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        MinWidth="400" MinHeight="200"
+        Width="700" Height="500">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal"
-                    HorizontalAlignment="Left" VerticalAlignment="Top">
-            <Button Click="Button_Click" Margin="5">Compile</Button>
-            <Button Click="Button_Click_1" Margin="5">Execute</Button>
-        </StackPanel>
-        <TextBox Margin="5,30,5,5" Name="SourceCode">
-        </TextBox>
+        <ComboBox Grid.Row="0" Grid.Column="0" Margin="10"
+                  md:HintAssist.Hint="Language" Name="ComboBoxLanguage"
+                  SelectionChanged="ComboBoxLanguageSelected"/>
+
+        <md:PackIcon Grid.Row="0" Grid.Column="1"
+                     HorizontalAlignment="Center" VerticalAlignment="Center"
+                     Cursor="Hand" MouseUp="ButtonCompile"/>
+        <md:PackIcon Grid.Row="0" Grid.Column="2"
+                     HorizontalAlignment="Center" VerticalAlignment="Center"
+                     Cursor="Hand" MouseUp="ButtonExecute"/>
     </Grid>
 </Window>
