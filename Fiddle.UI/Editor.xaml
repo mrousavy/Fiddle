@@ -16,73 +16,75 @@
         MinWidth="400" MinHeight="200"
         Width="700" Height="500">
 
-    <Grid Name="EditorGrid">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <md:DialogHost Name="EditorDialogHost">
+        <Grid Name="EditorGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <!--Language Selection-->
-        <ComboBox Grid.Row="0" Grid.Column="0" Margin="15 10 10 10"
-                  md:HintAssist.Hint="Language" Name="ComboBoxLanguage"
-                  SelectionChanged="ComboBoxLanguageSelected">
-            <ComboBoxItem>C#</ComboBoxItem>
-            <ComboBoxItem>VB</ComboBoxItem>
-            <ComboBoxItem>C++</ComboBoxItem>
-            <ComboBoxItem>Python</ComboBoxItem>
-        </ComboBox>
+            <!--Language Selection-->
+            <ComboBox Grid.Row="0" Grid.Column="0" Margin="15 10 10 10"
+                      md:HintAssist.Hint="Language" Name="ComboBoxLanguage"
+                      SelectionChanged="ComboBoxLanguageSelected">
+                <ComboBoxItem>C#</ComboBoxItem>
+                <ComboBoxItem>VB</ComboBoxItem>
+                <ComboBoxItem>C++</ComboBoxItem>
+                <ComboBoxItem>Python</ComboBoxItem>
+            </ComboBox>
 
-        <!--Compile Button-->
-        <Button Grid.Row="0" Grid.Column="1" Margin="10"
-                Background="#263238" Height="45" Width="45"
-                Click="ButtonCompile" BorderBrush="#263238"
-                Padding="-10" ToolTip="Compile">
-            <md:PackIcon Kind="AutoFix" Foreground="Gray"
-                         HorizontalAlignment="Center"
-                         VerticalAlignment="Center"
-                         Height="25" Width="25"/>
-        </Button>
+            <!--Compile Button-->
+            <Button Grid.Row="0" Grid.Column="1" Margin="10"
+                    Background="#263238" Height="45" Width="45"
+                    Click="ButtonCompile" BorderBrush="#263238"
+                    Padding="-10" ToolTip="Compile">
+                <md:PackIcon Kind="AutoFix" Foreground="Gray"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"
+                             Height="25" Width="25"/>
+            </Button>
 
-        <!--Execute Button-->
-        <Button Grid.Row="0" Grid.Column="2" Margin="10"
-                Background="#263238" Height="45" Width="45"
-                Click="ButtonExecute" BorderBrush="#263238"
-                Padding="-10" ToolTip="Execute">
-            <md:PackIcon Kind="Play" Foreground="Green"
-                         HorizontalAlignment="Center"
-                         VerticalAlignment="Center" 
-                         Height="25" Width="25"/>
-        </Button>
+            <!--Execute Button-->
+            <Button Grid.Row="0" Grid.Column="2" Margin="10"
+                    Background="#263238" Height="45" Width="45"
+                    Click="ButtonExecute" BorderBrush="#263238"
+                    Padding="-10" ToolTip="Execute">
+                <md:PackIcon Kind="Play" Foreground="Green"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center" 
+                             Height="25" Width="25"/>
+            </Button>
 
-        <!--Save Button-->
-        <Button Grid.Row="0" Grid.Column="3" Margin="10"
-                Background="#263238" Height="45" Width="45"
-                Click="ButtonSave" BorderBrush="#263238"
-                Padding="-10" ToolTip="Save"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center" >
-            <md:PackIcon Kind="ContentSave" Foreground="DodgerBlue"
-                         HorizontalAlignment="Right"
-                         VerticalAlignment="Center" 
-                         Height="25" Width="25"/>
-        </Button>
+            <!--Save Button-->
+            <Button Grid.Row="0" Grid.Column="3" Margin="10"
+                    Background="#263238" Height="45" Width="45"
+                    Click="ButtonSave" BorderBrush="#263238"
+                    Padding="-10" ToolTip="Save"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center" >
+                <md:PackIcon Kind="ContentSave" Foreground="DodgerBlue"
+                             HorizontalAlignment="Right"
+                             VerticalAlignment="Center" 
+                             Height="25" Width="25"/>
+            </Button>
 
-        <!--Source Code Editor-->
-        <DockPanel Grid.Row="1"
-                   Grid.Column="0" Grid.ColumnSpan="4" Margin="5"
-                   Background="#374349">
-            <RichTextBox Name="TextBoxCode" Background="#374349" Margin="5"
-                         FontFamily="Consolas" FontSize="14" Foreground="White"
-                         AcceptsTab="True" BorderThickness="0"
-                         VerticalScrollBarVisibility="Auto"
-                         HorizontalScrollBarVisibility="Auto"/>
-        </DockPanel>
-    </Grid>
+            <!--Source Code Editor-->
+            <DockPanel Grid.Row="1"
+                       Grid.Column="0" Grid.ColumnSpan="4" Margin="5"
+                       Background="#374349">
+                <RichTextBox Name="TextBoxCode" Background="#374349" Margin="5"
+                             FontFamily="Consolas" FontSize="14" Foreground="White"
+                             AcceptsTab="True" BorderThickness="0"
+                             VerticalScrollBarVisibility="Auto"
+                             HorizontalScrollBarVisibility="Auto"/>
+            </DockPanel>
+        </Grid>
+    </md:DialogHost>
 </Window>

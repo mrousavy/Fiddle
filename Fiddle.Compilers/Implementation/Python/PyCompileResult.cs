@@ -25,7 +25,7 @@ namespace Fiddle.Compilers.Implementation.Python
             Diagnostics = enumerable;
             Warnings = enumerable.Where(d => d.Severity == Microsoft.Scripting.Severity.Warning);
             Errors = enumerable
-                .Where(d => d.Severity == Microsoft.Scripting.Severity.Error)
+                .Where(d => (int)d.Severity >= 2) //Error=2 or FatalError=3
                 .Select(dd => new Exception($"Ln{dd.Line} Ch{dd.Char}: {dd.Message}"));
 
             if (!Errors.Any())

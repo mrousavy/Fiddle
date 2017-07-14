@@ -1,4 +1,5 @@
 ﻿using Fiddle.Compilers;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -55,20 +56,29 @@ namespace Fiddle.UI
         private async void ButtonExecute(object sender, RoutedEventArgs e)
         {
             LockUi();
+            Compiler.SourceCode = SourceCode;
             IExecuteResult result = await Compiler.Execute();
             UnlockUi();
+
+            if (!result.Success)
+                await DialogHelper.ShowErrorDialog($"Execution failed!\n({result.Exception.Message})", EditorDialogHost);
         }
         private async void ButtonCompile(object sender, RoutedEventArgs e)
         {
             LockUi();
+            Compiler.SourceCode = SourceCode;
             ICompileResult result = await Compiler.Compile();
             UnlockUi();
+
+            if (!result.Success)
+                await DialogHelper.ShowErrorDialog($"Compilation failed!\n({result.Errors.First()})", EditorDialogHost);
         }
         private void ButtonSave(object sender, RoutedEventArgs e)
         {
             LockUi();
             Helper.SaveFile(SourceCode, Compiler.Language);
             UnlockUi();
+
         }
 
         private void ComboBoxLanguageSelected(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
