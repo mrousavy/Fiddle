@@ -1,7 +1,11 @@
 ﻿using Fiddle.Compilers;
+using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using System;
 using System.IO;
 using System.Windows;
+using System.Xml;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace Fiddle.UI
@@ -9,23 +13,44 @@ namespace Fiddle.UI
     public static class Helper
     {
 
-        public static ICompiler GetCompiler(string language, string sourceCode)
+        public static ICompiler ChangeLanguage(string language, string sourceCode, TextEditor editor)
         {
             switch (language)
             {
                 case "C#":
+                    editor.SyntaxHighlighting = LoadXshd("CSharp.xshd");
                     return Host.NewCompiler(Language.CSharp, sourceCode);
                 case "C++":
+                    editor.SyntaxHighlighting = LoadXshd("Cpp.xshd");
                     return Host.NewCompiler(Language.Cpp, sourceCode);
                 case "VB":
+                    editor.SyntaxHighlighting = LoadXshd("Vb.xshd");
                     return Host.NewCompiler(Language.Vb, sourceCode);
                 case "Python":
+                    editor.SyntaxHighlighting = LoadXshd("Python.xshd");
                     return Host.NewCompiler(Language.Python, sourceCode);
                 default:
                     MessageBox.Show("Language not found!");
                     return null;
             }
         }
+
+
+        private static IHighlightingDefinition LoadXshd(string resourceName)
+        {
+            Type type = typeof(Helper);
+            string fullName = $"{type.Namespace}.Syntax.{resourceName}";
+            using (Stream stream = type.Assembly.GetManifestResourceStream(fullName))
+            {
+                if (stream == null)
+                    return null;
+                using (XmlTextReader reader = new XmlTextReader(stream))
+                {
+                    return HighlightingLoader.Load(reader, HighlightingManager.Instance);
+                }
+            }
+        }
+
 
         public static void SaveFile(string code, Language language)
         {

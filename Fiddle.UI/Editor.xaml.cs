@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
 
 namespace Fiddle.UI
@@ -14,7 +13,7 @@ namespace Fiddle.UI
     {
         private ICompiler Compiler { get; set; }
 
-        private string SourceCode => new TextRange(TextBoxCode.Document.ContentStart, TextBoxCode.Document.ContentEnd).Text;
+        private string SourceCode => TextBoxCode.Text;
 
         public Editor()
         {
@@ -37,17 +36,13 @@ namespace Fiddle.UI
 
         private void LoadTextBox()
         {
-            Paragraph paragraph = (Paragraph)TextBoxCode.Document.Blocks.FirstBlock;
-            paragraph.LineHeight = 3; //spacing between lines
             DataObject.AddCopyingHandler(TextBoxCode, (s, e) =>
             {
                 if (e.IsDragDrop) e.CancelCommand();
             });
             TextBoxCode.PreviewMouseLeftButtonDown += (s, e) =>
             {
-                TextBoxCode.Selection.Select(
-                    TextBoxCode.Document.ContentStart,
-                    TextBoxCode.Document.ContentStart);
+                TextBoxCode.Select(0, 0);
             };
         }
 
@@ -107,7 +102,7 @@ namespace Fiddle.UI
         {
             LockUi();
             string value = ((ComboBoxItem)ComboBoxLanguage.SelectedValue).Content as string;
-            Compiler = Helper.GetCompiler(value, SourceCode);
+            Compiler = Helper.ChangeLanguage(value, SourceCode, TextBoxCode);
             App.Preferences.SelectedLanguage = ComboBoxLanguage.SelectedIndex;
             Title = $"Fiddle - {value}";
             UnlockUi();

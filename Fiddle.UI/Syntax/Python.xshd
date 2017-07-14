@@ -1,0 +1,68 @@
+﻿<SyntaxDefinition name="Python" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+
+  <Color name="CommentSingle" foreground="LightGreen" />
+  <Color name="CommentMulti" foreground="Gray" />
+  <Color name="String" foreground="Orange" />
+  <Color name="Digits" foreground="DarkBlue"/>
+
+  <RuleSet>
+    <Span color="CommentSingle" begin="#" />
+    <Span color="CommentMulti" multiline="true"
+          begin="'''" end="'''" />
+
+    <Span color="String">
+      <Begin>"</Begin>
+      <End>"</End>
+      <RuleSet>
+        <!-- nested span for escape sequences -->
+        <Span begin="\\" end="." />
+      </RuleSet>
+    </Span>
+
+    <Keywords fontWeight="bold" foreground="LightBlue">
+      <Word>False</Word>
+      <Word>True</Word>
+      <Word>None</Word>
+      <Word>and</Word>
+      <Word>as</Word>
+      <Word>assert</Word>
+      <Word>break</Word>
+      <Word>class</Word>
+      <Word>continue</Word>
+      <Word>def</Word>
+      <Word>del</Word>
+      <Word>elif</Word>
+      <Word>else</Word>
+      <Word>except</Word>
+      <Word>finally</Word>
+      <Word>for</Word>
+      <Word>from</Word>
+      <Word>global</Word>
+      <Word>if</Word>
+      <Word>import</Word>
+      <Word>in</Word>
+      <Word>is</Word>
+      <Word>lambda</Word>
+      <Word>nonlocal</Word>
+      <Word>not</Word>
+      <Word>or</Word>
+      <Word>pass</Word>
+      <Word>raise</Word>
+      <Word>return</Word>
+      <Word>try</Word>
+      <Word>while</Word>
+      <Word>with</Word>
+      <Word>yield</Word>
+    </Keywords>
+
+    <!-- Digits -->
+    <Rule foreground="Blue">
+      \b0[xX][0-9a-fA-F]+  # hex number
+      |    \b
+      (    \d+(\.[0-9]+)?   #number with optional floating point
+      |    \.[0-9]+         #or just starting with floating point
+      )
+      ([eE][+-]?[0-9]+)? # optional exponent
+    </Rule>
+  </RuleSet>
+</SyntaxDefinition>
