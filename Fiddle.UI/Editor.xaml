@@ -108,19 +108,27 @@
                   Name="GridResultsView">
 
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
+                <md:PackIcon Name="IconStatus"
+                             Grid.Column="0"
+                             Kind="CodeBraces"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Stretch"
+                             Margin="5"/>
+                
                 <Label Name="LabelStatusMessage"
-                       Grid.Column="0"
+                       Grid.Column="1"
                        Content="Loading.."/>
                 <Label Name="LabelCompileTime"
-                       Grid.Column="1"
+                       Grid.Column="2"
                        ToolTip="Compile time (ms)"/>
                 <Label Name="LabelExecuteTime"
-                       Grid.Column="2"
+                       Grid.Column="3"
                        ToolTip="Execute time (ms)"/>
             </Grid>
         </Grid>

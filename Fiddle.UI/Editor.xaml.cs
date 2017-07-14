@@ -1,4 +1,5 @@
 ﻿using Fiddle.Compilers;
+using MaterialDesignThemes.Wpf;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,7 +26,7 @@ namespace Fiddle.UI
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            LabelStatusMessage.Content = "Ready";
+            ResetStatus();
         }
 
         private void LoadComboBox()
@@ -48,44 +49,38 @@ namespace Fiddle.UI
 
         private async void ButtonCompile(object sender, RoutedEventArgs e)
         {
-            LabelStatusMessage.Content = "Compiling..";
+            SetStatus(StatusType.Wait, "Compiling..");
 
             LockUi();
             Compiler.SourceCode = SourceCode;
             ICompileResult result = await Compiler.Compile();
             UnlockUi();
 
-            LabelCompileTime.Content = $"C: {result.Time}ms";
-
             if (result.Success)
             {
-                LabelStatusMessage.Content = "Compilation successful!";
+                SetStatus(StatusType.Success, "Compilation was successful!", result.Time);
             }
             else
             {
-                LabelStatusMessage.Content = "Compilation failed!";
+                SetStatus(StatusType.Failure, "Compilation failed!", result.Time);
                 await DialogHelper.ShowErrorDialog($"Compilation failed!\n{result.Errors.First()}", EditorDialogHost);
             }
         }
         private async void ButtonExecute(object sender, RoutedEventArgs e)
         {
-            LabelStatusMessage.Content = "Executing..";
+            SetStatus(StatusType.Wait, "Executing..");
 
             LockUi();
             Compiler.SourceCode = SourceCode;
             IExecuteResult result = await Compiler.Execute();
             UnlockUi();
-
-            LabelCompileTime.Content = $"C: {result.CompileResult.Time}ms";
-            LabelExecuteTime.Content = $"X: {result.Time}ms";
-
             if (result.Success)
             {
-                LabelStatusMessage.Content = "Execution successful!";
+                SetStatus(StatusType.Success, "Execution was successful!", result.CompileResult.Time, result.Time);
             }
             else
             {
-                LabelStatusMessage.Content = "Execution failed!";
+                SetStatus(StatusType.Failure, "Execution failed!", result.CompileResult.Time, result.Time);
                 await DialogHelper.ShowErrorDialog($"Execution failed!\n{result.Exception.Message}", EditorDialogHost);
             }
         }
@@ -109,9 +104,7 @@ namespace Fiddle.UI
         }
         private void TextBoxCode_KeyDown(object sender, KeyEventArgs e)
         {
-            LabelExecuteTime.Content = string.Empty;
-            LabelCompileTime.Content = string.Empty;
-            LabelStatusMessage.Content = "Ready";
+            ResetStatus();
         }
 
         private void LockUi()
@@ -132,5 +125,33 @@ namespace Fiddle.UI
             Cursor = Cursors.Arrow;
             TextBoxCode.Focus();
         }
+
+        private void SetStatus(StatusType type, string message = "Ready", long compileTime = -1, long execTime = -1)
+        {
+            switch (type)
+            {
+                case StatusType.Failure:
+                    IconStatus.Kind = PackIconKind.CloseCircleOutline;
+                    break;
+                case StatusType.Success:
+                    IconStatus.Kind = PackIconKind.CheckCircleOutline;
+                    break;
+                case StatusType.Wait:
+                    IconStatus.Kind = PackIconKind.Sync;
+                    break;
+                default:
+                    IconStatus.Kind = PackIconKind.CodeBraces;
+                    break;
+            }
+            LabelStatusMessage.Content = message;
+            if (compileTime > 0)
+                LabelCompileTime.Content = $"C: {compileTime}ms";
+            if (execTime > 0)
+                LabelExecuteTime.Content = $"X: {execTime}ms";
+        }
+
+        private void ResetStatus() => SetStatus(StatusType.Idle);
+
+        private enum StatusType { Idle, Success, Failure, Wait }
     }
 }
