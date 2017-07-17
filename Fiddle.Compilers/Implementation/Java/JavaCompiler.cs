@@ -136,7 +136,7 @@ namespace Fiddle.Compilers.Implementation.Java {
 
             if (output != null) {
                 diagnostics = new List<IDiagnostic> {
-                    new JavaDiagnostic(output, -1,-1, Microsoft.Scripting.Severity.Ignore)
+                    new JavaDiagnostic(output, -1, -1, -1, -1, Microsoft.Scripting.Severity.Ignore)
                 };
             }
             if (error != null) {

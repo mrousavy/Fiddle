@@ -3,23 +3,24 @@ using System;
 
 namespace Fiddle.Compilers.Implementation.Java {
     public class JavaDiagnostic : IDiagnostic {
-        public string Message { get; set; }
+        public string Message { get; }
+        public int LineFrom { get; }
+        public int LineTo { get; }
+        public int CharFrom { get; }
+        public int CharTo { get; }
+        public Severity Severity { get; }
 
-        public int Line { get; set; }
-
-        public int Char { get; set; }
-
-        public Severity Severity { get; set; }
-
-        public JavaDiagnostic(string message, int ln, int ch, Severity severity) {
+        public JavaDiagnostic(string message, int lnFrom, int lnTo, int chFrom, int chTo, Severity severity) {
             Message = message;
-            Line = ln;
-            Char = ch;
+            LineFrom = lnFrom;
+            LineTo = lnTo;
+            CharFrom = chFrom;
+            CharTo = chTo;
             Severity = severity;
         }
 
         public Exception ToException() {
-            return new Exception($"[{Severity}] Ln{Line} Ch{Char}: {Message}");
+            return new Exception($"[{Severity}] Ln{LineFrom}-{LineTo} Ch{CharFrom}-{CharTo}: {Message}");
         }
     }
 }

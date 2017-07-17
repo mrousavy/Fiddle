@@ -1,26 +1,26 @@
 ﻿using Microsoft.Scripting;
 using System;
 
-namespace Fiddle.Compilers.Implementation.CSharp
-{
-    public class CSharpDiagnostic : IDiagnostic
-    {
+namespace Fiddle.Compilers.Implementation.CSharp {
+    public class CSharpDiagnostic : IDiagnostic {
         public string Message { get; }
-        public int Line { get; }
-        public int Char { get; }
+        public int LineFrom { get; }
+        public int LineTo { get; }
+        public int CharFrom { get; }
+        public int CharTo { get; }
         public Severity Severity { get; }
 
-        public CSharpDiagnostic(string message, int ln, int ch, Severity severity)
-        {
+        public CSharpDiagnostic(string message, int lnFrom, int lnTo, int chFrom, int chTo, Severity severity) {
             Message = message;
-            Line = ln;
-            Char = ch;
+            LineFrom = lnFrom;
+            LineTo = lnTo;
+            CharFrom = chFrom;
+            CharTo = chTo;
             Severity = severity;
         }
 
-        public Exception ToException()
-        {
-            return new Exception($"[{Severity}] Ln{Line} Ch{Char}: {Message}");
+        public Exception ToException() {
+            return new Exception($"[{Severity}] Ln{LineFrom}-{LineTo} Ch{CharFrom}-{CharTo}: {Message}");
         }
     }
 }

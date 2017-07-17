@@ -101,6 +101,7 @@
                 Background="#374349" Margin="5"
                 VerticalScrollBarVisibility="Auto"
                 HorizontalScrollBarVisibility="Auto"
+                ShowLineNumbers="True"
                 KeyDown="TextBoxCode_KeyDown"/>
 
             <Grid Grid.Row="2" Margin="5"

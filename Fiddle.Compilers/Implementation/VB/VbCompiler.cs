@@ -10,10 +10,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Fiddle.Compilers.Implementation.VB
-{
-    public class VbCompiler : ICompiler
-    {
+namespace Fiddle.Compilers.Implementation.VB {
+    public class VbCompiler : ICompiler {
         public IExecutionProperties ExecuteProperties { get; }
         public ICompilerProperties CompilerProperties { get; }
         public string SourceCode { get; set; }
@@ -24,11 +22,9 @@ namespace Fiddle.Compilers.Implementation.VB
 
         private Script<object> Script { get; set; }
 
-        public VbCompiler(string code) : this(code, new ExecutionProperties(), new CompilerProperties())
-        { }
+        public VbCompiler(string code) : this(code, new ExecutionProperties(), new CompilerProperties()) { }
 
-        public VbCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps, string[] imports = null)
-        {
+        public VbCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps, string[] imports = null) {
             SourceCode = code;
             ExecuteProperties = execProps;
             CompilerProperties = compProps;
@@ -43,8 +39,7 @@ namespace Fiddle.Compilers.Implementation.VB
         /// <summary>
         /// Load all references/namespaces that can be used in the script environment
         /// </summary>
-        public void LoadReferences()
-        {
+        public void LoadReferences() {
             //Get all namespaces from this assembly (own project, own library, ..)
             IEnumerable<string> ownNamespaces = Assembly.GetExecutingAssembly().GetTypes()
                 .Select(t => t.Namespace)
@@ -59,8 +54,7 @@ namespace Fiddle.Compilers.Implementation.VB
                 .Select(a => a.GetExportedTypes());
 
             //Add all types where namespace is not own namespace (no own references)
-            foreach (Type[] type in types)
-            {
+            foreach (Type[] type in types) {
                 allNamespaces.AddRange(type
                     .Select(t => t.Namespace)
                     .Where(n => n != null && !ownNamespaces.Contains(n))
@@ -70,8 +64,7 @@ namespace Fiddle.Compilers.Implementation.VB
             Imports = allNamespaces.ToArray();
         }
 
-        private void Create()
-        {
+        private void Create() {
             ScriptOptions options = ScriptOptions.Default
                 .WithReferences(Imports)
                 .WithImports(Imports);
@@ -79,25 +72,21 @@ namespace Fiddle.Compilers.Implementation.VB
             Script = CSharpScript.Create(SourceCode, options, typeof(Globals));
         }
 
-        public async Task<ICompileResult> Compile()
-        {
-            if (Script.Code != SourceCode)
-            {
+        public async Task<ICompileResult> Compile() {
+            if (Script.Code != SourceCode) {
                 Create();
             }
 
             TaskCompletionSource<ICompileResult> tcs = new TaskCompletionSource<ICompileResult>();
 
             //bad hack for creating an "async" method:
-            new Thread(() =>
-            {
+            new Thread(() => {
                 //Init
                 IEnumerable<Diagnostic> resultDiagnostics = null;
 
                 //Actual compilation
                 Stopwatch sw = Stopwatch.StartNew();
-                Thread compileThread = new Thread(() =>
-                {
+                Thread compileThread = new Thread(() => {
                     Compilation compilation = Script.GetCompilation();
                     resultDiagnostics = compilation.GetDiagnostics();
                 });
@@ -117,7 +106,9 @@ namespace Fiddle.Compilers.Implementation.VB
                     .Select(d => new VbDiagnostic(
                         d.GetMessage(),
                         d.Location.GetLineSpan().StartLinePosition.Line,
+                        d.Location.GetLineSpan().EndLinePosition.Line,
                         d.Location.GetLineSpan().StartLinePosition.Character,
+                        d.Location.GetLineSpan().EndLinePosition.Character,
                         (Microsoft.Scripting.Severity)((int)d.Severity + 1)));
 
                 IEnumerable<VbDiagnostic> warnings = diagnosticsEnum
@@ -125,7 +116,9 @@ namespace Fiddle.Compilers.Implementation.VB
                     .Select(d => new VbDiagnostic(
                         d.GetMessage(),
                         d.Location.GetLineSpan().StartLinePosition.Line,
+                        d.Location.GetLineSpan().EndLinePosition.Line,
                         d.Location.GetLineSpan().StartLinePosition.Character,
+                        d.Location.GetLineSpan().EndLinePosition.Character,
                         Microsoft.Scripting.Severity.Warning));
                 IEnumerable<Exception> errors = diagnosticsEnum
                     .Where(d => d.Severity == DiagnosticSeverity.Error)
@@ -146,14 +139,11 @@ namespace Fiddle.Compilers.Implementation.VB
             return compileResult;
         }
 
-        public async Task<IExecuteResult> Execute()
-        {
-            if (CompileResult == default(ICompileResult) || SourceCode != Script.Code)
-            {
+        public async Task<IExecuteResult> Execute() {
+            if (CompileResult == default(ICompileResult) || SourceCode != Script.Code) {
                 await Compile();
             }
-            if (!CompileResult.Success)
-            {
+            if (!CompileResult.Success) {
                 return new VbExecuteResult(-1, null, null, CompileResult, new Exception("The compilation was not successful!"));
             }
 
@@ -178,8 +168,7 @@ namespace Fiddle.Compilers.Implementation.VB
         }
 
 
-        public bool CatchException(Exception ex)
-        {
+        public bool CatchException(Exception ex) {
             return true;
         }
     }
