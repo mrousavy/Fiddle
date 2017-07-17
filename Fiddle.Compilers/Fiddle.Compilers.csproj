@@ -159,6 +159,12 @@
     <Compile Include="Implementation\CSharp\CSharpCompiler.cs" />
     <Compile Include="Implementation\CSharp\CSharpExecuteResult.cs" />
     <Compile Include="Implementation\ExecutionProperties.cs" />
+    <Compile Include="Implementation\Java\JavaCompiler.cs" />
+    <Compile Include="Implementation\Java\JavaCompileResult.cs" />
+    <Compile Include="Implementation\Java\JavaDiagnostic.cs" />
+    <Compile Include="Implementation\Java\JavaExecuteResult.cs" />
+    <Compile Include="Implementation\Java\JdkHelper.cs" />
+    <Compile Include="Implementation\Java\JreHelper.cs" />
     <Compile Include="Implementation\Python\PyCompiler.cs" />
     <Compile Include="Implementation\Python\PyCompileResult.cs" />
     <Compile Include="Implementation\Python\PyDiagnostic.cs" />

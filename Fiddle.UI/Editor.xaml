@@ -39,6 +39,7 @@
                 <ComboBoxItem>VB</ComboBoxItem>
                 <ComboBoxItem>C++</ComboBoxItem>
                 <ComboBoxItem>Python</ComboBoxItem>
+                <ComboBoxItem>Java</ComboBoxItem>
             </ComboBox>
 
             <!--Compile Button-->

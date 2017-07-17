@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Fiddle.Compilers.Implementation.Python
-{
-    public class PyCompileResult : ICompileResult
-    {
+namespace Fiddle.Compilers.Implementation.Python {
+    public class PyCompileResult : ICompileResult {
         public long Time { get; }
-        public bool Success { get; }
+        public bool Success { get; } = true;
         public string SourceCode { get; }
         public IEnumerable<IDiagnostic> Diagnostics { get; }
         public IEnumerable<IDiagnostic> Warnings { get; }
@@ -15,8 +13,7 @@ namespace Fiddle.Compilers.Implementation.Python
 
 
         public PyCompileResult(long time, string code,
-            IEnumerable<IDiagnostic> diagnostics)
-        {
+            IEnumerable<IDiagnostic> diagnostics) {
             Time = time;
             SourceCode = code;
 
