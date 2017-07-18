@@ -1,13 +1,14 @@
 ﻿using Fiddle.Compilers.Implementation.CPP;
 using Fiddle.Compilers.Implementation.CSharp;
 using Fiddle.Compilers.Implementation.Java;
+using Fiddle.Compilers.Implementation.LUA;
 using Fiddle.Compilers.Implementation.Python;
 using Fiddle.Compilers.Implementation.VB;
 using System;
 using System.Threading.Tasks;
 
 namespace Fiddle.Compilers {
-    public enum Language { CSharp, Cpp, Vb, Python, Java }
+    public enum Language { Cpp, CSharp, Java, Lua, Python, Vb }
 
     /// <summary>
     /// A static host class for compiling and executing
@@ -35,6 +36,8 @@ namespace Fiddle.Compilers {
                     return new PyCompiler(code);
                 case Language.Java:
                     return new JavaCompiler(code);
+                case Language.Lua:
+                    return new LuaCompiler(code);
                 default:
                     throw new LanguageNotFoundException(language);
             }
