@@ -64,6 +64,39 @@ namespace Fiddle.Compilers {
         public static async Task<IExecuteResult> Execute(Language language, string code) {
             return await NewCompiler(language, code).Execute();
         }
+
+        /// <summary>
+        /// Convert severity enum
+        /// </summary>
+        internal static Severity ToSeverity(Microsoft.Scripting.Severity severity) {
+            switch (severity) {
+                case Microsoft.Scripting.Severity.Ignore:
+                    return Severity.Info;
+                case Microsoft.Scripting.Severity.Warning:
+                    return Severity.Warning;
+                case Microsoft.Scripting.Severity.Error:
+                case Microsoft.Scripting.Severity.FatalError:
+                    return Severity.Error;
+                default:
+                    throw new Exception("Severity not found!");
+            }
+        }
+        /// <summary>
+        /// Convert severity enum
+        /// </summary>
+        internal static Severity ToSeverity(Microsoft.CodeAnalysis.DiagnosticSeverity severity) {
+            switch (severity) {
+                case Microsoft.CodeAnalysis.DiagnosticSeverity.Info:
+                case Microsoft.CodeAnalysis.DiagnosticSeverity.Hidden:
+                    return Severity.Info;
+                case Microsoft.CodeAnalysis.DiagnosticSeverity.Warning:
+                    return Severity.Warning;
+                case Microsoft.CodeAnalysis.DiagnosticSeverity.Error:
+                    return Severity.Error;
+                default:
+                    throw new Exception("Severity not found!");
+            }
+        }
     }
 
     /// <summary>

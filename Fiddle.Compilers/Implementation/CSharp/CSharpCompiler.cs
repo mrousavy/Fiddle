@@ -108,7 +108,7 @@ namespace Fiddle.Compilers.Implementation.CSharp {
                         d.Location.GetLineSpan().EndLinePosition.Line,
                         d.Location.GetLineSpan().StartLinePosition.Character,
                         d.Location.GetLineSpan().EndLinePosition.Character,
-                        (Microsoft.Scripting.Severity)((int)d.Severity + 1)));
+                        Host.ToSeverity(d.Severity)));
 
                 IEnumerable<CSharpDiagnostic> warnings = diagnosticsEnum
                     .Where(d => d.Severity == DiagnosticSeverity.Warning)
@@ -118,7 +118,7 @@ namespace Fiddle.Compilers.Implementation.CSharp {
                         d.Location.GetLineSpan().EndLinePosition.Line,
                         d.Location.GetLineSpan().StartLinePosition.Character,
                         d.Location.GetLineSpan().EndLinePosition.Character,
-                        Microsoft.Scripting.Severity.Warning));
+                        Host.ToSeverity(d.Severity)));
                 IEnumerable<Exception> errors = diagnosticsEnum
                     .Where(d => d.Severity == DiagnosticSeverity.Error)
                     .Select(d => new Exception(d.GetMessage()));

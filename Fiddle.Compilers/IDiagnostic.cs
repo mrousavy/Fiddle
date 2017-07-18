@@ -1,7 +1,8 @@
-﻿using Microsoft.Scripting;
-using System;
+﻿using System;
 
 namespace Fiddle.Compilers {
+    public enum Severity { Info, Warning, Error }
+
     public interface IDiagnostic {
         /// <summary>
         /// The Diagnostic's Message

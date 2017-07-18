@@ -1,5 +1,4 @@
-﻿using Microsoft.Scripting;
-using System;
+﻿using System;
 
 namespace Fiddle.Compilers.Implementation.CSharp {
     public class CSharpDiagnostic : IDiagnostic {

@@ -101,8 +101,8 @@ namespace Fiddle.Compilers.Implementation.Python {
                 Diagnostics = new List<IDiagnostic>();
             }
 
-            public override void ErrorReported(ScriptSource source, string message, SourceSpan span, int errorCode, Severity severity) {
-                Diagnostics.Add(new PyDiagnostic(message, span.Start.Line, span.End.Line, span.Start.Column, span.Start.Column, severity));
+            public override void ErrorReported(ScriptSource source, string message, SourceSpan span, int errorCode, Microsoft.Scripting.Severity severity) {
+                Diagnostics.Add(new PyDiagnostic(message, span.Start.Line, span.End.Line, span.Start.Column, span.Start.Column, Host.ToSeverity(severity)));
             }
         }
     }

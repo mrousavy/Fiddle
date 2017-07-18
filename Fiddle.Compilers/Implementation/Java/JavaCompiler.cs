@@ -23,12 +23,11 @@ namespace Fiddle.Compilers.Implementation.Java {
         private string JdkPath { get; set; }
         private string JrePath { get; set; }
         private string ClassName { get; set; }
-        private string ByteCodePath { get; set; }
 
 
         public JavaCompiler(string code) : this(code, new ExecutionProperties(), new CompilerProperties()) { }
 
-        public JavaCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps, string[] imports = null) {
+        public JavaCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps) {
             SourceCode = code;
             ExecuteProperties = execProps;
             CompilerProperties = compProps;
@@ -37,51 +36,68 @@ namespace Fiddle.Compilers.Implementation.Java {
         }
 
         private void FindJdk() {
-            string[] path = Environment.GetEnvironmentVariable("path").Split(';');
-            if (path.FirstOrDefault(p => p.Contains("jdk")) is string jdk) {
-                JdkPath = Path.Combine(jdk, "javac.exe");
-                return;
-            } else if (Environment.GetEnvironmentVariable("JDK_HOME") is string jdkHome) {
+            string environmentVariable = Environment.GetEnvironmentVariable("path");
+            if (!string.IsNullOrWhiteSpace(environmentVariable)) {
+                string[] path = environmentVariable.Split(';');
+                string jdk = path.FirstOrDefault(p => p.Contains("jdk"));
+                if (!string.IsNullOrWhiteSpace(jdk)) {
+                    JdkPath = Path.Combine(jdk, "javac.exe");
+                    return;
+                }
+            }
+            string jdkHome = Environment.GetEnvironmentVariable("JDK_HOME");
+            if (!string.IsNullOrWhiteSpace(jdkHome)) {
                 JdkPath = jdkHome;
                 return;
-            } else {
-                string java86 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Java");
-                if (JdkHelper.SearchJavac(java86) is string javac86) {
-                    JdkPath = javac86;
-                    return;
-                }
-                string java = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Java");
-                if (JdkHelper.SearchJavac(java) is string javac) {
-                    JdkPath = javac;
-                    return;
-                }
+            }
+            string java86 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Java");
+            string javac86 = JdkHelper.SearchJavac(java86);
+            if (!string.IsNullOrWhiteSpace(javac86)) {
+                JdkPath = javac86;
+                return;
+            }
+            string java = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Java");
+            string javac = JdkHelper.SearchJavac(java);
+            if (!string.IsNullOrWhiteSpace(javac)) {
+                JdkPath = javac;
+                return;
             }
 
             throw new CompileException("Java Development Kit (JDK) could not be found on this System!");
         }
 
         private void FindJre() {
-            string[] path = Environment.GetEnvironmentVariable("path").Split(';');
-            if (path.FirstOrDefault(p => p.Contains("jdk")) is string jdk) {
-                JrePath = Path.Combine(jdk, "java.exe");
-                return;
-            } else if (path.FirstOrDefault(p => p.Contains("javapath")) is string javapath) {
-                JrePath = Path.Combine(javapath, "java.exe");
-                return;
-            } else if (Environment.GetEnvironmentVariable("JAVA_HOME") is string javaHome) {
+            string environmentVariable = Environment.GetEnvironmentVariable("path");
+            if (!string.IsNullOrWhiteSpace(environmentVariable)) {
+                string[] path = environmentVariable.Split(';');
+                string jdk = path.FirstOrDefault(p => p.Contains("jdk"));
+                if (!string.IsNullOrWhiteSpace(jdk)) {
+                    JrePath = Path.Combine(jdk, "java.exe");
+                    return;
+                }
+                string javapath = path.FirstOrDefault(p => p.Contains("javapath"));
+                if (!string.IsNullOrWhiteSpace(javapath)) {
+                    JrePath = Path.Combine(javapath, "java.exe");
+                    return;
+                }
+            }
+            string javaHome = Environment.GetEnvironmentVariable("JAVA_HOME");
+            if (!string.IsNullOrWhiteSpace(javaHome)) {
                 JrePath = Path.Combine(javaHome, "java.exe");
                 return;
-            } else {
-                string java86 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Java");
-                if (JdkHelper.SearchJava(java86) is string javac86) {
-                    JrePath = javac86;
-                    return;
-                }
-                string java = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Java");
-                if (JdkHelper.SearchJava(java) is string javac) {
-                    JrePath = javac;
-                    return;
-                }
+            }
+
+            string java86 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Java");
+            string javac86 = JdkHelper.SearchJava(java86);
+            if (!string.IsNullOrWhiteSpace(javac86)) {
+                JrePath = javac86;
+                return;
+            }
+            string java = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Java");
+            string javac = JdkHelper.SearchJava(java);
+            if (!string.IsNullOrWhiteSpace(javac)) {
+                JrePath = javac;
+                return;
             }
 
             throw new CompileException("Java Runtime Environment (JRE) could not be found on this System!");
@@ -136,7 +152,7 @@ namespace Fiddle.Compilers.Implementation.Java {
 
             if (output != null) {
                 diagnostics = new List<IDiagnostic> {
-                    new JavaDiagnostic(output, -1, -1, -1, -1, Microsoft.Scripting.Severity.Ignore)
+                    new JavaDiagnostic(output, -1, -1, -1, -1, Severity.Info)
                 };
             }
             if (error != null) {
@@ -147,7 +163,7 @@ namespace Fiddle.Compilers.Implementation.Java {
 
             JavaCompileResult result = new JavaCompileResult(sw.ElapsedMilliseconds, SourceCode, diagnostics, null, errors);
             if (result.Success) {
-                ByteCodePath = Path.Combine(Path.GetTempPath(), $"{ClassName}.class");
+                Path.Combine(Path.GetTempPath(), $"{ClassName}.class");
             }
             CompileResult = result;
             return result;

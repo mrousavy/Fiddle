@@ -20,7 +20,7 @@ namespace Fiddle.Compilers.Implementation.Python {
 
             IEnumerable<IDiagnostic> enumerable = diagnostics as IDiagnostic[] ?? diagnostics.ToArray();
             Diagnostics = enumerable;
-            Warnings = enumerable.Where(d => d.Severity == Microsoft.Scripting.Severity.Warning);
+            Warnings = enumerable.Where(d => d.Severity == Severity.Warning);
             Errors = enumerable
                 .Where(d => (int)d.Severity >= 2) //Error=2 or FatalError=3
                 .Select(dd => new Exception($"Ln{dd.LineFrom}-{dd.LineTo} Ch{dd.CharFrom}-{dd.CharTo}: {dd.Message}"));
