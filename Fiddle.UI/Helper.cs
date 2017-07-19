@@ -3,16 +3,22 @@ using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Xml;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
-namespace Fiddle.UI {
-    public static class Helper {
+namespace Fiddle.UI
+{
+    public static class Helper
+    {
 
-        public static ICompiler ChangeLanguage(string language, string sourceCode, TextEditor editor) {
-            switch (language) {
+        public static ICompiler ChangeLanguage(string language, string sourceCode, TextEditor editor)
+        {
+            switch (language)
+            {
                 case "C#":
                     editor.SyntaxHighlighting = LoadXshd("CSharp.xshd");
                     return Host.NewCompiler(Language.CSharp, sourceCode);
@@ -38,33 +44,41 @@ namespace Fiddle.UI {
         }
 
 
-        private static IHighlightingDefinition LoadXshd(string resourceName) {
+        private static IHighlightingDefinition LoadXshd(string resourceName)
+        {
             Type type = typeof(Helper);
             string fullName = $"{type.Namespace}.Syntax.{resourceName}";
-            using (Stream stream = type.Assembly.GetManifestResourceStream(fullName)) {
+            using (Stream stream = type.Assembly.GetManifestResourceStream(fullName))
+            {
                 if (stream == null)
                     return null;
-                using (XmlTextReader reader = new XmlTextReader(stream)) {
+                using (XmlTextReader reader = new XmlTextReader(stream))
+                {
                     return HighlightingLoader.Load(reader, HighlightingManager.Instance);
                 }
             }
         }
 
 
-        public static void SaveFile(string code, Language language) {
-            SaveFileDialog dialog = new SaveFileDialog {
+        public static void SaveFile(string code, Language language)
+        {
+            SaveFileDialog dialog = new SaveFileDialog
+            {
                 Filter = GetFilterForLanguage(language),
                 FilterIndex = 1,
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
             };
             bool? result = dialog.ShowDialog();
-            if (result == true) {
+            if (result == true)
+            {
                 File.WriteAllText(dialog.FileName, code);
             }
         }
 
-        private static string GetFilterForLanguage(Language language) {
-            switch (language) {
+        private static string GetFilterForLanguage(Language language)
+        {
+            switch (language)
+            {
                 case Language.Cpp:
                     return "C++ source files (*.cpp)|*.cpp|All files (*.*)|*.*";
                 case Language.CSharp:
@@ -80,6 +94,29 @@ namespace Fiddle.UI {
                 default:
                     return "All files (*.*)|*.*";
             }
+        }
+
+
+        public static string ConcatErrors(IEnumerable<Exception> errorsList)
+        {
+            string errors = "";
+            const int maxErrors = 7; //do not show more than [maxErrors] errors in Message
+            int countErrors = 0;
+
+            IEnumerable<Exception> exceptions = errorsList as Exception[] ?? errorsList.ToArray(); //kill multiple enums
+            foreach (Exception ex in exceptions)
+            {
+                errors += $"#{++countErrors}: {ex.Message}{Environment.NewLine}";
+
+                if (countErrors <= maxErrors) continue;
+                //not shown errors (limited to [maxErrors])
+                int notShown = exceptions.Count() - countErrors;
+                if (notShown > 0)
+                    errors += $"{Environment.NewLine}(and {notShown} more..)";
+                break;
+            }
+
+            return errors;
         }
     }
 }
