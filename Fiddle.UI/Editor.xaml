@@ -91,6 +91,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
+                <!--TODO: WordWrap or Horizontal Scrollbar?-->
                 <!--Source Code Editor-->
                 <avalonEdit:TextEditor
                     Grid.Column="0"
@@ -99,6 +100,7 @@
                     SyntaxHighlighting="C#"
                     FontFamily="Consolas"
                     FontSize="12pt"
+                    WordWrap="True"
                     Foreground="White" Padding="10"
                     Background="#374349" Margin="5"
                     VerticalScrollBarVisibility="Auto"
@@ -120,7 +122,7 @@
                 <ScrollViewer
                     Grid.Column="2"
                     VerticalScrollBarVisibility="Auto"
-                    HorizontalScrollBarVisibility="Auto">
+                    HorizontalScrollBarVisibility="Disabled">
                 <Grid
                     Background="#374349"
                     Margin="5"

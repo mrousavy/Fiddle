@@ -19,8 +19,6 @@ namespace Fiddle.UI
     /// </summary>
     public partial class Editor
     {
-        //TODO: Compile/Execute Result View
-
         private string SourceCode => TextBoxCode.Text;
 
         private ITextMarkerService _textMarkerService;
@@ -204,6 +202,7 @@ namespace Fiddle.UI
             string value = ((ComboBoxItem)ComboBoxLanguage.SelectedValue).Content as string;
             try
             {
+                //Try to load the new compiler
                 _compiler = Helper.ChangeLanguage(value, SourceCode, TextBoxCode);
                 App.Preferences.SelectedLanguage = ComboBoxLanguage.SelectedIndex;
                 Title = $"Fiddle - {value}";
@@ -211,6 +210,10 @@ namespace Fiddle.UI
             catch (Exception ex)
             {
                 await DialogHelper.ShowErrorDialog($"Could not load {value} compiler! ({ex.Message})", EditorDialogHost);
+                //Revert changes
+                ComboBoxLanguage.SelectedIndex = App.Preferences.SelectedLanguage;
+                value = ((ComboBoxItem)ComboBoxLanguage.SelectedValue).Content as string;
+                _compiler = Helper.ChangeLanguage(value, SourceCode, TextBoxCode);
             }
             UnlockUi();
         }
