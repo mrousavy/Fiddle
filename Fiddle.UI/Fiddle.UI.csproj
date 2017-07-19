@@ -114,6 +114,8 @@
     </None>
     <EmbeddedResource Include="Syntax\Python.xshd" />
     <EmbeddedResource Include="Syntax\CSharp.xshd" />
+    <EmbeddedResource Include="Syntax\Java.xshd" />
+    <EmbeddedResource Include="Syntax\LUA.xshd" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

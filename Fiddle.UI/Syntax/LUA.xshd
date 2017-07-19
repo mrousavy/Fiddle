@@ -1,14 +1,14 @@
-﻿<SyntaxDefinition name="Python" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+﻿<SyntaxDefinition name="LUA" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
 
   <Color name="CommentSingle" foreground="LightGreen" />
-  <Color name="CommentMulti" foreground="Gray" />
+  <Color name="CommentMulti" foreground="Green" />
   <Color name="String" foreground="Orange" />
   <Color name="Digits" foreground="DarkBlue"/>
 
   <RuleSet>
-    <Span color="CommentSingle" begin="#" />
+    <Span color="CommentSingle" begin="--" />
     <Span color="CommentMulti" multiline="true"
-          begin="'''" end="'''" />
+          begin="--\[\[" end="--]]" />
 
     <Span color="String">
       <Begin>"</Begin>
@@ -20,39 +20,51 @@
     </Span>
 
     <Keywords fontWeight="bold" foreground="LightBlue">
-      <Word>False</Word>
-      <Word>True</Word>
-      <Word>None</Word>
       <Word>and</Word>
-      <Word>as</Word>
-      <Word>assert</Word>
       <Word>break</Word>
-      <Word>class</Word>
-      <Word>continue</Word>
-      <Word>def</Word>
-      <Word>del</Word>
-      <Word>elif</Word>
+      <Word>do</Word>
       <Word>else</Word>
-      <Word>except</Word>
-      <Word>finally</Word>
+      <Word>elseif</Word>
+      <Word>end</Word>
+      <Word>false</Word>
       <Word>for</Word>
-      <Word>from</Word>
-      <Word>global</Word>
+      <Word>function</Word>
       <Word>if</Word>
-      <Word>import</Word>
       <Word>in</Word>
-      <Word>is</Word>
-      <Word>lambda</Word>
-      <Word>nonlocal</Word>
+      <Word>local</Word>
+      <Word>nil</Word>
       <Word>not</Word>
       <Word>or</Word>
-      <Word>pass</Word>
-      <Word>raise</Word>
+      <Word>repeat</Word>
       <Word>return</Word>
-      <Word>try</Word>
+      <Word>then</Word>
+      <Word>true</Word>
+      <Word>until</Word>
       <Word>while</Word>
-      <Word>with</Word>
-      <Word>yield</Word>
+      <Word>+</Word>
+      <Word>-</Word>
+      <Word>*</Word>
+      <Word>/</Word>
+      <Word>%</Word>
+      <Word>^</Word>
+      <Word>#</Word>
+      <Word>==</Word>
+      <Word>~=</Word>
+      <Word>$lt;=</Word>
+      <Word>>=</Word>
+      <Word>$lt;</Word>
+      <Word>></Word>
+      <Word>=</Word>
+      <Word>(</Word>
+      <Word>)</Word>
+      <Word>{</Word>
+      <Word>}</Word>
+      <Word>[</Word>
+      <Word>]</Word>
+      <Word>;</Word>
+      <Word>:</Word>
+      <Word>,</Word>
+      <Word>.</Word>
     </Keywords>
 
     <!-- Digits -->
@@ -64,7 +76,7 @@
       )
       ([eE][+-]?[0-9]+)? # optional exponent
     </Rule>
-
+    
     <!-- Types -->
     <Rule foreground="#408E66">
       (^|\s)[A-Z][a-zA-Z]*
