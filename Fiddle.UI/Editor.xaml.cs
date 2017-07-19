@@ -5,6 +5,7 @@ using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,11 +20,16 @@ namespace Fiddle.UI
     /// </summary>
     public partial class Editor
     {
+        public static RoutedCommand CommandSave = new RoutedCommand();
+        public static RoutedCommand CommandCompile = new RoutedCommand();
+        public static RoutedCommand CommandExecute = new RoutedCommand();
+
         private string SourceCode => TextBoxCode.Text;
 
         private ITextMarkerService _textMarkerService;
         private bool _needsUpdate;
         private ICompiler _compiler;
+        private string _filePath;
 
         //constructor
         public Editor()
@@ -34,6 +40,9 @@ namespace Fiddle.UI
             LoadPreferences();
             LoadTextMarkerService();
             TextBoxCode.Focus();
+            CommandSave.InputGestures.Add(new KeyGesture(Key.S, ModifierKeys.Control));
+            CommandCompile.InputGestures.Add(new KeyGesture(Key.F6));
+            CommandExecute.InputGestures.Add(new KeyGesture(Key.F5));
         }
 
         #region Prefs & Inits
@@ -100,8 +109,8 @@ namespace Fiddle.UI
         #endregion
 
         #region Code
-        //Compile Button click
-        private async void ButtonCompile(object sender, RoutedEventArgs e)
+        //Actually compile code
+        private async void Compile()
         {
             SetStatus(StatusType.Wait, "Compiling..");
 
@@ -122,7 +131,7 @@ namespace Fiddle.UI
 
                     string errors = Helper.ConcatErrors(result.Errors);
                     await DialogHelper.ShowErrorDialog($"Compilation failed!\n{errors}",
-                    EditorDialogHost);
+                        EditorDialogHost);
                 }
             }
             catch (Exception ex)
@@ -136,8 +145,8 @@ namespace Fiddle.UI
             _needsUpdate = true;
         }
 
-        //Execute button click
-        private async void ButtonExecute(object sender, RoutedEventArgs e)
+        //Actually execute code
+        private async void Execute()
         {
             SetStatus(StatusType.Wait, "Executing..");
 
@@ -191,9 +200,8 @@ namespace Fiddle.UI
         //Save the file to disk
         private void ButtonSave(object sender, RoutedEventArgs e)
         {
-            LockUi();
-            Helper.SaveFile(SourceCode, _compiler.Language);
-            UnlockUi();
+            _filePath = null; //Set to null again so save button opens file picker
+            Save();
         }
         //Select a different programming language (drop down)
         private async void ComboBoxLanguageSelected(object sender, SelectionChangedEventArgs e)
@@ -206,6 +214,7 @@ namespace Fiddle.UI
                 _compiler = Helper.ChangeLanguage(value, SourceCode, TextBoxCode);
                 App.Preferences.SelectedLanguage = ComboBoxLanguage.SelectedIndex;
                 Title = $"Fiddle - {value}";
+                _filePath = null;
             }
             catch (Exception ex)
             {
@@ -228,7 +237,6 @@ namespace Fiddle.UI
             _needsUpdate = false;
         }
         #endregion
-
         #region Helper
         //Freeze every control
         private void LockUi()
@@ -263,12 +271,30 @@ namespace Fiddle.UI
             IEnumerable<Run> runs = Helper.BuildRuns(result);
             TextBlockResults.Inlines.AddRange(runs);
         }
-
+        //Clear result view
         private void ClearResultView()
         {
             TextBlockResults.Text = "";
         }
+        //Actually save code file
+        private void Save()
+        {
+            LockUi();
+            try
+            {
+                if (string.IsNullOrWhiteSpace(_filePath))
+                    _filePath = Helper.SaveFile(SourceCode, _compiler.Language);
+                else
+                    File.WriteAllText(_filePath, SourceCode);
 
+                SetStatus(StatusType.Success, "File saved!");
+            }
+            catch (Exception ex)
+            {
+                SetStatus(StatusType.Failure, $"Could not save file! ({ex.Message})");
+            }
+            UnlockUi();
+        }
         //Set the status bar's status message/icon
         private void SetStatus(StatusType type, string message = "Ready", long compileTime = -1, long execTime = -1)
         {
@@ -287,16 +313,45 @@ namespace Fiddle.UI
                     IconStatus.Kind = PackIconKind.CodeBraces;
                     break;
             }
-            LabelStatusMessage.Content = message;
+            TextBlockStatusMessage.Text = message;
             if (compileTime > 0)
-                LabelCompileTime.Content = $"C: {compileTime}ms";
+                TextBlockCompileTime.Text = $"C: {compileTime}ms";
             if (execTime > 0)
-                LabelExecuteTime.Content = $"X: {execTime}ms";
+                TextBlockExecuteTime.Text = $"X: {execTime}ms";
         }
         //Reset the status bar's status message/icon
         private void ResetStatus() => SetStatus(StatusType.Idle);
 
         private enum StatusType { Idle, Success, Failure, Wait }
+        #endregion
+        #region Events
+        //Compile Button click
+        private void ButtonCompile(object sender, RoutedEventArgs e)
+        {
+            Compile();
+        }
+
+        //Execute button click
+        private void ButtonExecute(object sender, RoutedEventArgs e)
+        {
+            Execute();
+        }
+
+        //Ctrl + S Command (Save)
+        private void CtrlS(object sender, ExecutedRoutedEventArgs e)
+        {
+            Save();
+        }
+        //F6 Command (Compile)
+        private void F6(object sender, ExecutedRoutedEventArgs e)
+        {
+            Compile();
+        }
+        //F5 Command (Execute)
+        private void F5(object sender, ExecutedRoutedEventArgs e)
+        {
+            Execute();
+        }
         #endregion
     }
 }

@@ -62,7 +62,7 @@ namespace Fiddle.UI
         }
 
 
-        public static void SaveFile(string code, Language language)
+        public static string SaveFile(string code, Language language)
         {
             SaveFileDialog dialog = new SaveFileDialog
             {
@@ -75,6 +75,7 @@ namespace Fiddle.UI
             {
                 File.WriteAllText(dialog.FileName, code);
             }
+            return dialog.FileName;
         }
 
         private static string GetFilterForLanguage(Language language)

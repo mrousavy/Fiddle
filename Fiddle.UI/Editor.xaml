@@ -6,6 +6,7 @@
         mc:Ignorable="d"
         Title="Fiddle"
         xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:local="clr-namespace:Fiddle.UI"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
@@ -17,6 +18,11 @@
         Width="1000" Height="700"
         Loaded="Window_Loaded"
         Closing="Window_Closing">
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static local:Editor.CommandSave}" Executed="CtrlS"/>
+        <CommandBinding Command="{x:Static local:Editor.CommandCompile}" Executed="F6"/>
+        <CommandBinding Command="{x:Static local:Editor.CommandExecute}" Executed="F5"/>
+    </Window.CommandBindings>
 
     <md:DialogHost Name="EditorDialogHost">
         <Grid Name="EditorGrid">
@@ -49,7 +55,7 @@
             <Button Grid.Row="0" Grid.Column="1" Margin="10"
                     Background="#263238" Height="45" Width="45"
                     Click="ButtonCompile" BorderBrush="#263238"
-                    Padding="-10" ToolTip="Compile">
+                    Padding="-10" ToolTip="Compile (F6)">
                 <md:PackIcon Kind="AutoFix" Foreground="Gray"
                              HorizontalAlignment="Center"
                              VerticalAlignment="Center"
@@ -60,7 +66,7 @@
             <Button Grid.Row="0" Grid.Column="2" Margin="10"
                     Background="#263238" Height="45" Width="45"
                     Click="ButtonExecute" BorderBrush="#263238"
-                    Padding="-10" ToolTip="Execute">
+                    Padding="-10" ToolTip="Execute (F5)">
                 <md:PackIcon Kind="Play" Foreground="Green"
                              HorizontalAlignment="Center"
                              VerticalAlignment="Center" 
@@ -71,7 +77,7 @@
             <Button Grid.Row="0" Grid.Column="4" Margin="10"
                     Background="#263238" Height="45" Width="45"
                     Click="ButtonSave" BorderBrush="#263238"
-                    Padding="-10" ToolTip="Save"
+                    Padding="-10" ToolTip="Save (Ctrl + S)"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center" >
                 <md:PackIcon Kind="ContentSave" Foreground="DodgerBlue"
@@ -123,17 +129,17 @@
                     Grid.Column="2"
                     VerticalScrollBarVisibility="Auto"
                     HorizontalScrollBarVisibility="Disabled">
-                <Grid
+                    <Grid
                     Background="#374349"
                     Margin="5"
                     HorizontalAlignment="Stretch">
-                    <TextBlock
+                        <TextBlock
                         Margin="10"
                         Foreground="White"
                         FontSize="14"
                         Name="TextBlockResults"
                         TextWrapping="Wrap"/>
-                </Grid>
+                    </Grid>
                 </ScrollViewer>
             </Grid>
 
@@ -141,7 +147,8 @@
             <Grid Grid.Row="2" Margin="5"
                   Grid.Column="0" Grid.ColumnSpan="5"
                   Background="#374349"
-                  Name="GridResultsView">
+                  Name="GridResultsView"
+                  VerticalAlignment="Center">
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -156,16 +163,25 @@
                              HorizontalAlignment="Center"
                              VerticalAlignment="Stretch"
                              Margin="5"/>
-                
-                <Label Name="LabelStatusMessage"
+
+                <TextBlock Name="TextBlockStatusMessage"
                        Grid.Column="1"
-                       Content="Loading.."/>
-                <Label Name="LabelCompileTime"
+                       Text="Loading.."
+                       VerticalAlignment="Center"
+                        TextWrapping="Wrap"
+                        Margin="5"/>
+                <TextBlock Name="TextBlockCompileTime"
                        Grid.Column="2"
-                       ToolTip="Compile time (ms)"/>
-                <Label Name="LabelExecuteTime"
+                       ToolTip="Compile time (ms)"
+                       VerticalAlignment="Center"
+                        TextWrapping="Wrap"
+                        Margin="5"/>
+                <TextBlock Name="TextBlockExecuteTime"
                        Grid.Column="3"
-                       ToolTip="Execute time (ms)"/>
+                       ToolTip="Execute time (ms)"
+                       VerticalAlignment="Center"
+                        TextWrapping="Wrap"
+                        Margin="5"/>
             </Grid>
         </Grid>
     </md:DialogHost>
