@@ -128,10 +128,10 @@
                 <ScrollViewer
                     Grid.Column="2"
                     VerticalScrollBarVisibility="Auto"
-                    HorizontalScrollBarVisibility="Disabled">
+                    HorizontalScrollBarVisibility="Disabled"
+                    Margin="5">
                     <Grid
                     Background="#374349"
-                    Margin="5"
                     HorizontalAlignment="Stretch">
                         <TextBlock
                         Margin="10"

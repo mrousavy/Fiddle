@@ -1,7 +1,7 @@
 ﻿<SyntaxDefinition name="Java" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
 
-  <Color name="CommentSingle" foreground="LightGreen" />
-  <Color name="CommentMulti" foreground="Green" />
+  <Color name="CommentSingle" foreground="#0cad31" />
+  <Color name="CommentMulti" foreground="#068724" />
   <Color name="String" foreground="Orange" />
   <Color name="Digits" foreground="DarkBlue"/>
 
@@ -112,7 +112,7 @@
     
     <!-- Types -->
     <Rule foreground="#408E66">
-      (^|\s)[A-Z][a-zA-Z]*
+      (^|\s)[A-Z][a-zA-Z]*[0-9]*
     </Rule>
   </RuleSet>
 </SyntaxDefinition>

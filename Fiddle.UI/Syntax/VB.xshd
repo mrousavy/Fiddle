@@ -1,6 +1,6 @@
 ﻿<SyntaxDefinition name="VB" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
 
-  <Color name="CommentSingle" foreground="LightGreen" />
+  <Color name="CommentSingle" foreground="#0cad31" />
   <Color name="String" foreground="Orange" />
   <Color name="Digits" foreground="DarkBlue"/>
 
@@ -29,153 +29,65 @@
       <Word>Boolean</Word>
       <Word>ByRef</Word>
       <Word>Byte</Word>
-
       <Word>ByVal</Word>
-
       <Word>Call</Word>
-
       <Word>Case</Word>
-
-      <Word>
-        Catch
-      </Word>
-
+      <Word>Catch</Word>
       <Word>CBool</Word>
-
       <Word>CByte</Word>
-
       <Word>CChar</Word>
-
-      <Word>
-        CDate
-      </Word>
-
+      <Word>CDate</Word>
       <Word>CDec</Word>
-
       <Word>CDbl</Word>
-
       <Word>Char</Word>
-
-      <Word>
-        CInt
-      </Word>
-
+      <Word>CInt</Word>
       <Word>Class</Word>
-
       <Word>CLng</Word>
-
       <Word>CObj</Word>
-
-      <Word>
-        Const
-      </Word>
-
+      <Word>Const</Word>
       <Word>CShort</Word>
-
       <Word>CSng</Word>
-
       <Word>CStr</Word>
-
-      <Word>
-        CType
-      </Word>
-
+      <Word>CType</Word>
       <Word>Date</Word>
-
       <Word>Decimal</Word>
-
       <Word>Declare</Word>
-
-      <Word>
-        Default
-      </Word>
-
+      <Word>Default</Word>
       <Word>Delegate</Word>
-
       <Word>Dim</Word>
-
       <Word>DirectCast</Word>
-
-      <Word>
-        Do
-      </Word>
-
+      <Word>Do</Word>
       <Word>Double</Word>
-
       <Word>Each</Word>
-
       <Word>Else</Word>
-
-      <Word>
-        ElseIf
-      </Word>
-
+      <Word>ElseIf</Word>
       <Word>End</Word>
-
       <Word>Enum</Word>
-
       <Word>Erase</Word>
-
-      <Word>
-        Error
-      </Word>
-
+      <Word>Error</Word>
       <Word>Event</Word>
-
       <Word>Exit</Word>
-
       <Word>False</Word>
-
-      <Word>
-        Finally
-      </Word>
-
+      <Word>Finally</Word>
       <Word>For</Word>
-
       <Word>Friend</Word>
-
       <Word>Function</Word>
-
-      <Word>
-        Get
-      </Word>
-
+      <Word>Get</Word>
       <Word>GetType</Word>
-
       <Word>GoSub</Word>
-
       <Word>GoTo</Word>
-
-      <Word>
-        Handles
-      </Word>
-
+      <Word>Handles</Word>
       <Word>If</Word>
-
       <Word>Implements</Word>
-
       <Word>Imports</Word>
-
-      <Word>
-        In
-      </Word>
-
+      <Word>In</Word>
       <Word>Inherits</Word>
-
       <Word>Integer</Word>
-
       <Word>Interface</Word>
-
-      <Word>
-        Is
-      </Word>
-
+      <Word>Is</Word>
       <Word>Let</Word>
-
       <Word>Lib</Word>
-
       <Word>Like</Word>
-
       <Word>Long</Word>
       <Word>Loop</Word>
       <Word>Me</Word>
@@ -273,6 +185,11 @@
       |    \.[0-9]+         #or just starting with floating point
       )
       ([eE][+-]?[0-9]+)? # optional exponent
+    </Rule>
+    
+    <!-- Types -->
+    <Rule foreground="#408E66">
+      (^|\s)[A-Z][a-zA-Z]*[0-9]*
     </Rule>
   </RuleSet>
 </SyntaxDefinition>
