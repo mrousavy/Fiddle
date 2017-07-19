@@ -3,10 +3,12 @@ using ICSharpCode.AvalonEdit.AddIn;
 using ICSharpCode.SharpDevelop.Editor;
 using MaterialDesignThemes.Wpf;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -111,6 +113,7 @@ namespace Fiddle.UI
                 _compiler.SourceCode = SourceCode;
                 ICompileResult result = await _compiler.Compile();
 
+                SetResultView(result);
                 if (result.Success)
                 {
                     SetStatus(StatusType.Success, "Compilation successful!", result.Time);
@@ -146,6 +149,7 @@ namespace Fiddle.UI
                 _compiler.SourceCode = SourceCode;
                 IExecuteResult result = await _compiler.Execute();
 
+                SetResultView(result);
                 if (result.Success)
                 {
                     SetStatus(StatusType.Success, "Execution successful!", result.CompileResult.Time, result.Time);
@@ -153,7 +157,6 @@ namespace Fiddle.UI
                 else
                 {
                     SetStatus(StatusType.Failure, "Execution failed!", result.CompileResult.Time, result.Time);
-                    await DialogHelper.ShowErrorDialog($"Execution failed!\n{result.Exception.Message}", EditorDialogHost);
                 }
             }
             catch (Exception ex)
@@ -242,6 +245,25 @@ namespace Fiddle.UI
             }
             Cursor = Cursors.Arrow;
             TextBoxCode.Focus();
+        }
+        //Set Result View content
+        private void SetResultView(ICompileResult result)
+        {
+            ClearResultView();
+            IEnumerable<Run> runs = Helper.BuildRuns(result);
+            TextBlockResults.Inlines.AddRange(runs);
+        }
+        //Set Result View content
+        private void SetResultView(IExecuteResult result)
+        {
+            ClearResultView();
+            IEnumerable<Run> runs = Helper.BuildRuns(result);
+            TextBlockResults.Inlines.AddRange(runs);
+        }
+
+        private void ClearResultView()
+        {
+            TextBlockResults.Text = "";
         }
 
         //Set the status bar's status message/icon

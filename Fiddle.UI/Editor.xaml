@@ -117,11 +117,20 @@
                     Name="GridSplitter"/>
 
                 <!--Compile/Execute Result View-->
+                <ScrollViewer
+                    Grid.Column="2">
                 <Grid
-                    Grid.Column="2"
                     Background="#374349"
                     Margin="5"
-                    HorizontalAlignment="Stretch"></Grid>
+                    HorizontalAlignment="Stretch">
+                    <TextBlock
+                        Margin="10"
+                        Foreground="White"
+                        FontSize="14"
+                        Name="TextBlockResults"
+                        TextWrapping="Wrap"/>
+                </Grid>
+                </ScrollViewer>
             </Grid>
 
             <!--Status Bar-->

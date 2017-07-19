@@ -1,9 +1,11 @@
 ﻿using System;
 
-namespace Fiddle.Compilers {
+namespace Fiddle.Compilers
+{
     public enum Severity { Info, Warning, Error }
 
-    public interface IDiagnostic {
+    public interface IDiagnostic
+    {
         /// <summary>
         /// The Diagnostic's Message
         /// </summary>
@@ -34,5 +36,10 @@ namespace Fiddle.Compilers {
         /// </summary>
         /// <returns>The built <see cref="Exception"/></returns>
         Exception ToException();
+        /// <summary>
+        /// Stringify this Diagnostic
+        /// </summary>
+        /// <returns>String version</returns>
+        string ToString();
     }
 }

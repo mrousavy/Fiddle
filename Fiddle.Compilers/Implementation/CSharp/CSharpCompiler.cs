@@ -143,7 +143,7 @@ namespace Fiddle.Compilers.Implementation.CSharp {
                 await Compile();
             }
             if (!CompileResult.Success) {
-                return new CSharpExecuteResult(-1, null, null, CompileResult, new Exception("The compilation was not successful!"));
+                return new CSharpExecuteResult(-1, null, null, CompileResult, new CompileException("The compilation was not successful!"));
             }
 
             StringBuilder builder = new StringBuilder();

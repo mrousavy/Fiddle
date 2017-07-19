@@ -1,7 +1,9 @@
 ﻿using System;
 
-namespace Fiddle.Compilers.Implementation.CSharp {
-    public class CSharpDiagnostic : IDiagnostic {
+namespace Fiddle.Compilers.Implementation.CSharp
+{
+    public class CSharpDiagnostic : IDiagnostic
+    {
         public string Message { get; }
         public int LineFrom { get; }
         public int LineTo { get; }
@@ -9,7 +11,8 @@ namespace Fiddle.Compilers.Implementation.CSharp {
         public int CharTo { get; }
         public Severity Severity { get; }
 
-        public CSharpDiagnostic(string message, int lnFrom, int lnTo, int chFrom, int chTo, Severity severity) {
+        public CSharpDiagnostic(string message, int lnFrom, int lnTo, int chFrom, int chTo, Severity severity)
+        {
             Message = message;
             LineFrom = lnFrom;
             LineTo = lnTo;
@@ -18,8 +21,14 @@ namespace Fiddle.Compilers.Implementation.CSharp {
             Severity = severity;
         }
 
-        public Exception ToException() {
-            return new Exception($"[{Severity}] Ln{LineFrom}-{LineTo} Ch{CharFrom}-{CharTo}: {Message}");
+        public Exception ToException()
+        {
+            return new Exception(ToString());
+        }
+
+        public override string ToString()
+        {
+            return $"[{Severity}] Ln{LineFrom}-{LineTo} Ch{CharFrom}-{CharTo}: {Message}";
         }
     }
 }
