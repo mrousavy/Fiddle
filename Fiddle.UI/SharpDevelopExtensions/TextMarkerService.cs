@@ -1,13 +1,13 @@
-﻿using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Rendering;
-using ICSharpCode.SharpDevelop.Editor;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn {
     /// <summary>
@@ -155,7 +155,7 @@ namespace ICSharpCode.AvalonEdit.AddIn {
                         if ((marker.MarkerTypes & TextMarkerTypes.SquigglyUnderline) != 0) {
                             double offset = 2.5;
 
-                            int count = Math.Max((int)((endPoint.X - startPoint.X) / offset) + 1, 4);
+                            int count = Math.Max((int) ((endPoint.X - startPoint.X) / offset) + 1, 4);
 
                             StreamGeometry geometry = new StreamGeometry();
 
@@ -178,7 +178,7 @@ namespace ICSharpCode.AvalonEdit.AddIn {
                         }
                         if ((marker.MarkerTypes & TextMarkerTypes.DottedUnderline) == 0) continue;
                         {
-                            Pen usedPen = new Pen(usedBrush, 1) { DashStyle = DashStyles.Dot };
+                            Pen usedPen = new Pen(usedBrush, 1) {DashStyle = DashStyles.Dot};
                             usedPen.Freeze();
                             drawingContext.DrawLine(usedPen, startPoint, endPoint);
                         }

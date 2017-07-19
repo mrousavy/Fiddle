@@ -1,28 +1,38 @@
-﻿using Fiddle.Compilers.Implementation.CPP;
+﻿using System;
+using System.Threading.Tasks;
+using Fiddle.Compilers.Implementation.CPP;
 using Fiddle.Compilers.Implementation.CSharp;
 using Fiddle.Compilers.Implementation.Java;
 using Fiddle.Compilers.Implementation.LUA;
 using Fiddle.Compilers.Implementation.Python;
 using Fiddle.Compilers.Implementation.VB;
-using System;
-using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 
 namespace Fiddle.Compilers {
-    public enum Language { Cpp, CSharp, Java, Lua, Python, Vb }
+    public enum Language {
+        Cpp,
+        CSharp,
+        Java,
+        Lua,
+        Python,
+        Vb
+    }
 
     /// <summary>
-    /// A static host class for compiling and executing
+    ///     A static host class for compiling and executing
     /// </summary>
     public static class Host {
         /// <summary>
-        /// Create a new <see cref="ICompiler"/> with the given Language
+        ///     Create a new <see cref="ICompiler" /> with the given Language
         /// </summary>
         /// <param name="language">The language to use for compilation and execution</param>
         /// <param name="code">The source code</param>
-        /// <param name="imports">All imports/namespaces that should be added to the script environment. 
-        /// If this value is null, all references that can be found will be added (C#), or pre-defined 
-        /// imports will be used (other languages)</param>
-        /// <exception cref="LanguageNotFoundException">When the given <see cref="Language"/> could not be found</exception>
+        /// <param name="imports">
+        ///     All imports/namespaces that should be added to the script environment.
+        ///     If this value is null, all references that can be found will be added (C#), or pre-defined
+        ///     imports will be used (other languages)
+        /// </param>
+        /// <exception cref="LanguageNotFoundException">When the given <see cref="Language" /> could not be found</exception>
         /// <returns>The initialized Compiler</returns>
         public static ICompiler NewCompiler(Language language, string code, string[] imports = null) {
             switch (language) {
@@ -44,29 +54,29 @@ namespace Fiddle.Compilers {
         }
 
         /// <summary>
-        /// Compile source code directly
+        ///     Compile source code directly
         /// </summary>
         /// <param name="language">The language to use for compilation and execution</param>
         /// <param name="code">The whole source code</param>
-        /// <exception cref="LanguageNotFoundException">When the given <see cref="Language"/> could not be found</exception>
+        /// <exception cref="LanguageNotFoundException">When the given <see cref="Language" /> could not be found</exception>
         /// <returns>The execution result</returns>
         public static async Task<ICompileResult> Compile(Language language, string code) {
             return await NewCompiler(language, code).Compile();
         }
 
         /// <summary>
-        /// Compile and Execute source code directly
+        ///     Compile and Execute source code directly
         /// </summary>
         /// <param name="language">The language to use for compilation and execution</param>
         /// <param name="code">The whole source code</param>
-        /// <exception cref="LanguageNotFoundException">When the given <see cref="Language"/> could not be found</exception>
+        /// <exception cref="LanguageNotFoundException">When the given <see cref="Language" /> could not be found</exception>
         /// <returns>The execution result</returns>
         public static async Task<IExecuteResult> Execute(Language language, string code) {
             return await NewCompiler(language, code).Execute();
         }
 
         /// <summary>
-        /// Convert severity enum
+        ///     Convert severity enum
         /// </summary>
         internal static Severity ToSeverity(Microsoft.Scripting.Severity severity) {
             switch (severity) {
@@ -81,17 +91,18 @@ namespace Fiddle.Compilers {
                     throw new Exception("Severity not found!");
             }
         }
+
         /// <summary>
-        /// Convert severity enum
+        ///     Convert severity enum
         /// </summary>
-        internal static Severity ToSeverity(Microsoft.CodeAnalysis.DiagnosticSeverity severity) {
+        internal static Severity ToSeverity(DiagnosticSeverity severity) {
             switch (severity) {
-                case Microsoft.CodeAnalysis.DiagnosticSeverity.Info:
-                case Microsoft.CodeAnalysis.DiagnosticSeverity.Hidden:
+                case DiagnosticSeverity.Info:
+                case DiagnosticSeverity.Hidden:
                     return Severity.Info;
-                case Microsoft.CodeAnalysis.DiagnosticSeverity.Warning:
+                case DiagnosticSeverity.Warning:
                     return Severity.Warning;
-                case Microsoft.CodeAnalysis.DiagnosticSeverity.Error:
+                case DiagnosticSeverity.Error:
                     return Severity.Error;
                 default:
                     throw new Exception("Severity not found!");
@@ -100,7 +111,7 @@ namespace Fiddle.Compilers {
     }
 
     /// <summary>
-    /// An exception that gets thrown when the language specified was not found
+    ///     An exception that gets thrown when the language specified was not found
     /// </summary>
     public class LanguageNotFoundException : Exception {
         public LanguageNotFoundException(Language language) :

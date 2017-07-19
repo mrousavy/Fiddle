@@ -4,6 +4,7 @@ using ICSharpCode.SharpDevelop.Editor;
 using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
@@ -13,27 +14,22 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace Fiddle.UI
-{
+namespace Fiddle.UI {
     /// <summary>
-    /// Interaction logic for Editor.xaml
+    ///     Interaction logic for Editor.xaml
     /// </summary>
-    public partial class Editor
-    {
+    public partial class Editor {
         public static RoutedCommand CommandSave = new RoutedCommand(); //Ctrl + S
         public static RoutedCommand CommandCompile = new RoutedCommand(); //F6
         public static RoutedCommand CommandExecute = new RoutedCommand(); //F5
-
-        private string SourceCode => TextBoxCode.Text;
-
-        private ITextMarkerService _textMarkerService; //underlines
-        private bool _needsUpdate; //need to reset textbox underlines & statusmessage?
         private ICompiler _compiler; //Compiler instance
         private string _filePath; //path to file - Ctrl + S will save without SaveFileDialog if not null
+        private bool _needsUpdate; //need to reset textbox underlines & statusmessage?
+
+        private ITextMarkerService _textMarkerService; //underlines
 
         //constructor
-        public Editor()
-        {
+        public Editor() {
             InitializeComponent();
             LoadComboBox();
             LoadTextBox();
@@ -43,10 +39,12 @@ namespace Fiddle.UI
             TextBoxCode.Focus();
         }
 
+        private string SourceCode => TextBoxCode.Text;
+
         #region Prefs & Inits
+
         //Initialize all user-states from preferences
-        private void LoadPreferences()
-        {
+        private void LoadPreferences() {
             //Load last "state"
             Width = App.Preferences.WindowWidth;
             Height = App.Preferences.WindowHeight;
@@ -58,49 +56,46 @@ namespace Fiddle.UI
             TextBoxCode.TextArea.Caret.BringCaretToView();
             GridCodeResults.ColumnDefinitions[2].Width = new GridLength(App.Preferences.ResultsViewSize);
         }
+
         //load the drop down menu (select saved language)
-        private void LoadComboBox()
-        {
+        private void LoadComboBox() {
             if (App.Preferences.SelectedLanguage != -1)
                 ComboBoxLanguage.SelectedIndex = App.Preferences.SelectedLanguage;
         }
+
         //load the textbox and disable drag'n'drop
-        private void LoadTextBox()
-        {
-            DataObject.AddCopyingHandler(TextBoxCode, (s, e) =>
-            {
+        private void LoadTextBox() {
+            DataObject.AddCopyingHandler(TextBoxCode, (s, e) => {
                 if (e.IsDragDrop) e.CancelCommand();
             });
-            TextBoxCode.PreviewMouseLeftButtonDown += (s, e) =>
-            {
-                TextBoxCode.Select(0, 0);
-            };
+            TextBoxCode.PreviewMouseLeftButtonDown += (s, e) => { TextBoxCode.Select(0, 0); };
         }
+
         //Initialize the custom text marker for underlining
-        private void LoadTextMarkerService()
-        {
+        private void LoadTextMarkerService() {
             TextMarkerService textMarkerService = new TextMarkerService(TextBoxCode.Document);
             TextBoxCode.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
             TextBoxCode.TextArea.TextView.LineTransformers.Add(textMarkerService);
-            IServiceContainer services = (IServiceContainer)TextBoxCode.Document.ServiceProvider.GetService(typeof(IServiceContainer));
+            IServiceContainer services =
+                (IServiceContainer)TextBoxCode.Document.ServiceProvider.GetService(typeof(IServiceContainer));
             services?.AddService(typeof(ITextMarkerService), textMarkerService);
             _textMarkerService = textMarkerService;
         }
+
         //Initialize all hotkeys/commands
-        private static void LoadHotkeys()
-        {
+        private static void LoadHotkeys() {
             CommandSave.InputGestures.Add(new KeyGesture(Key.S, ModifierKeys.Control));
             CommandCompile.InputGestures.Add(new KeyGesture(Key.F6));
             CommandExecute.InputGestures.Add(new KeyGesture(Key.F5));
         }
+
         //Window loaded event
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
+        private void Window_Loaded(object sender, RoutedEventArgs e) {
             ResetStatus();
         }
+
         //Window closes event
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
+        private void Window_Closing(object sender, CancelEventArgs e) {
             SetStatus(StatusType.Wait, "Closing..");
             App.Preferences.WindowWidth = Width;
             App.Preferences.WindowHeight = Height;
@@ -111,35 +106,31 @@ namespace Fiddle.UI
             App.Preferences.CursorOffset = TextBoxCode.TextArea.Caret.Offset;
             App.Preferences.ResultsViewSize = GridCodeResults.ColumnDefinitions[2].Width.Value;
         }
+
         #endregion
+
         #region Code
+
         //Actually compile code
-        private async void Compile()
-        {
+        private async void Compile() {
             SetStatus(StatusType.Wait, "Compiling..");
 
             LockUi();
-            try
-            {
+            try {
                 _compiler.SourceCode = SourceCode;
                 ICompileResult result = await _compiler.Compile();
 
                 SetResultView(result);
-                if (result.Success)
-                {
+                if (result.Success) {
                     SetStatus(StatusType.Success, "Compilation successful!", result.Time);
-                }
-                else
-                {
+                } else {
                     SetStatus(StatusType.Failure, "Compilation failed!", result.Time);
 
                     string errors = Helper.ConcatErrors(result.Errors);
                     await DialogHelper.ShowErrorDialog($"Compilation failed!\n{errors}",
                         EditorDialogHost);
                 }
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 SetStatus(StatusType.Failure, "Compilation failed!");
                 await DialogHelper.ShowErrorDialog($"Could not compile! ({ex.Message})", EditorDialogHost);
             }
@@ -150,28 +141,20 @@ namespace Fiddle.UI
         }
 
         //Actually execute code
-        private async void Execute()
-        {
+        private async void Execute() {
             SetStatus(StatusType.Wait, "Executing..");
 
             LockUi();
-            try
-            {
+            try {
                 _compiler.SourceCode = SourceCode;
                 IExecuteResult result = await _compiler.Execute();
 
                 SetResultView(result);
                 if (result.Success)
-                {
                     SetStatus(StatusType.Success, "Execution successful!", result.CompileResult.Time, result.Time);
-                }
                 else
-                {
                     SetStatus(StatusType.Failure, "Execution failed!", result.CompileResult.Time, result.Time);
-                }
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 SetStatus(StatusType.Failure, "Execution failed!");
                 await DialogHelper.ShowErrorDialog($"Could not execute! ({ex.Message})", EditorDialogHost);
             }
@@ -182,16 +165,13 @@ namespace Fiddle.UI
         }
 
         //Underline Errors red and warnings/infos Yellow in code
-        private void CodeUnderline()
-        {
+        private void CodeUnderline() {
             ResetUnderline();
             if (_compiler.CompileResult?.Diagnostics == null || !_compiler.CompileResult.Diagnostics.Any())
                 return;
 
             foreach (IDiagnostic diagnostic in _compiler.CompileResult.Diagnostics)
-            {
-                try
-                {
+                try {
                     if (diagnostic.LineFrom < 1 || diagnostic.LineTo < 1 || diagnostic.CharFrom < 1 ||
                         diagnostic.CharTo < 1)
                         continue; //invalid diagnostic
@@ -205,48 +185,40 @@ namespace Fiddle.UI
                     ITextMarker marker = _textMarkerService.Create(startOffset, length);
                     marker.MarkerTypes = TextMarkerTypes.SquigglyUnderline;
                     marker.MarkerColor = diagnostic.Severity == Severity.Error ? Colors.Red : Colors.Yellow;
-                }
-                catch
-                {
+                } catch {
                     // could not underline, out of bounds, etc
                 }
-            }
         }
+
         //Remove all Red/Yellow underlinings in code
-        private void ResetUnderline()
-        {
-            try
-            {
-                _textMarkerService.RemoveAll(m => true);
-            }
-            catch
-            {
+        private void ResetUnderline() {
+            try {
+                _textMarkerService?.RemoveAll(m => true);
+            } catch {
                 //could not reset underline
             }
         }
+
         //Save the file to disk
-        private void ButtonSave(object sender, RoutedEventArgs e)
-        {
+        private void ButtonSave(object sender, RoutedEventArgs e) {
             _filePath = null; //Set to null again so save button opens file picker
             Save();
         }
+
         //Select a different programming language (drop down)
-        private async void ComboBoxLanguageSelected(object sender, SelectionChangedEventArgs e)
-        {
+        private async void ComboBoxLanguageSelected(object sender, SelectionChangedEventArgs e) {
             LockUi();
             ResetUnderline();
             string value = ((ComboBoxItem)ComboBoxLanguage.SelectedValue).Content as string;
-            try
-            {
+            try {
                 //Try to load the new compiler
                 _compiler = Helper.ChangeLanguage(value, SourceCode, TextBoxCode);
                 App.Preferences.SelectedLanguage = ComboBoxLanguage.SelectedIndex;
                 Title = $"Fiddle - {value}";
                 _filePath = null;
-            }
-            catch (Exception ex)
-            {
-                await DialogHelper.ShowErrorDialog($"Could not load {value} compiler! ({ex.Message})", EditorDialogHost);
+            } catch (Exception ex) {
+                await DialogHelper.ShowErrorDialog($"Could not load {value} compiler! ({ex.Message})",
+                    EditorDialogHost);
                 //Revert changes
                 ComboBoxLanguage.SelectedIndex = App.Preferences.SelectedLanguage;
                 value = ((ComboBoxItem)ComboBoxLanguage.SelectedValue).Content as string;
@@ -254,9 +226,9 @@ namespace Fiddle.UI
             }
             UnlockUi();
         }
+
         //Text Changed
-        private void TextBoxCode_DocumentChanged(object sender, EventArgs e)
-        {
+        private void TextBoxCode_DocumentChanged(object sender, EventArgs e) {
             if (!_needsUpdate) return;
 
             ResetStatus();
@@ -264,70 +236,62 @@ namespace Fiddle.UI
 
             _needsUpdate = false;
         }
+
         #endregion
+
         #region Helper
+
         //Freeze every control
-        private void LockUi()
-        {
-            foreach (UIElement element in EditorGrid.Children)
-            {
-                element.IsEnabled = false;
-            }
+        private void LockUi() {
+            foreach (UIElement element in EditorGrid.Children) element.IsEnabled = false;
             Cursor = Cursors.Wait;
         }
+
         //Unfreeze every control
-        private void UnlockUi()
-        {
-            foreach (UIElement element in EditorGrid.Children)
-            {
-                element.IsEnabled = true;
-            }
+        private void UnlockUi() {
+            foreach (UIElement element in EditorGrid.Children) element.IsEnabled = true;
             Cursor = Cursors.Arrow;
             TextBoxCode.Focus();
         }
+
         //Set Result View content
-        private void SetResultView(ICompileResult result)
-        {
+        private void SetResultView(ICompileResult result) {
             ClearResultView();
             IEnumerable<Run> runs = Helper.BuildRuns(result);
             TextBlockResults.Inlines.AddRange(runs);
         }
+
         //Set Result View content
-        private void SetResultView(IExecuteResult result)
-        {
+        private void SetResultView(IExecuteResult result) {
             ClearResultView();
             IEnumerable<Run> runs = Helper.BuildRuns(result);
             TextBlockResults.Inlines.AddRange(runs);
         }
+
         //Clear result view
-        private void ClearResultView()
-        {
+        private void ClearResultView() {
             TextBlockResults.Text = "";
         }
+
         //Actually save code file
-        private void Save()
-        {
+        private void Save() {
             LockUi();
-            try
-            {
+            try {
                 if (string.IsNullOrWhiteSpace(_filePath))
                     _filePath = Helper.SaveFile(SourceCode, _compiler.Language);
                 else
                     File.WriteAllText(_filePath, SourceCode);
 
                 SetStatus(StatusType.Success, "File saved!");
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 SetStatus(StatusType.Failure, $"Could not save file! ({ex.Message})");
             }
             UnlockUi();
         }
+
         //Set the status bar's status message/icon
-        private void SetStatus(StatusType type, string message = "Ready", long compileTime = -1, long execTime = -1)
-        {
-            switch (type)
-            {
+        private void SetStatus(StatusType type, string message = "Ready", long compileTime = -1, long execTime = -1) {
+            switch (type) {
                 case StatusType.Failure:
                     IconStatus.Kind = PackIconKind.CloseCircleOutline;
                     break;
@@ -347,22 +311,48 @@ namespace Fiddle.UI
             if (execTime > 0)
                 TextBlockExecuteTime.Text = $"X: {execTime}ms";
         }
-        //Reset the status bar's status message/icon
-        private void ResetStatus() => SetStatus(StatusType.Idle);
 
-        private enum StatusType { Idle, Success, Failure, Wait }
+        //Reset the status bar's status message/icon
+        private void ResetStatus() {
+            SetStatus(StatusType.Idle);
+        }
+
+        private enum StatusType {
+            Idle,
+            Success,
+            Failure,
+            Wait
+        }
+
         #endregion
+
         #region Events
+
         //Compile Button click
-        private void ButtonCompile(object sender, RoutedEventArgs e) => Compile();
+        private void ButtonCompile(object sender, RoutedEventArgs e) {
+            Compile();
+        }
+
         //Execute button click
-        private void ButtonExecute(object sender, RoutedEventArgs e) => Execute();
+        private void ButtonExecute(object sender, RoutedEventArgs e) {
+            Execute();
+        }
+
         //Ctrl + S Command (Save)
-        private void CtrlS(object sender, ExecutedRoutedEventArgs e) => Save();
+        private void CtrlS(object sender, ExecutedRoutedEventArgs e) {
+            Save();
+        }
+
         //F6 Command (Compile)
-        private void F6(object sender, ExecutedRoutedEventArgs e) => Compile();
+        private void F6(object sender, ExecutedRoutedEventArgs e) {
+            Compile();
+        }
+
         //F5 Command (Execute)
-        private void F5(object sender, ExecutedRoutedEventArgs e) => Execute();
+        private void F5(object sender, ExecutedRoutedEventArgs e) {
+            Execute();
+        }
+
         #endregion
     }
 }

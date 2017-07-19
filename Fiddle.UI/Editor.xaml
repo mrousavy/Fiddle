@@ -10,8 +10,8 @@
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
-        TextOptions.TextFormattingMode="Ideal" 
-        TextOptions.TextRenderingMode="Auto"        
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         MinWidth="400" MinHeight="200"
@@ -19,24 +19,24 @@
         Loaded="Window_Loaded"
         Closing="Window_Closing">
     <Window.CommandBindings>
-        <CommandBinding Command="{x:Static local:Editor.CommandSave}" Executed="CtrlS"/>
-        <CommandBinding Command="{x:Static local:Editor.CommandCompile}" Executed="F6"/>
-        <CommandBinding Command="{x:Static local:Editor.CommandExecute}" Executed="F5"/>
+        <CommandBinding Command="{x:Static local:Editor.CommandSave}" Executed="CtrlS" />
+        <CommandBinding Command="{x:Static local:Editor.CommandCompile}" Executed="F6" />
+        <CommandBinding Command="{x:Static local:Editor.CommandExecute}" Executed="F5" />
     </Window.CommandBindings>
 
     <md:DialogHost Name="EditorDialogHost">
         <Grid Name="EditorGrid">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <!--Language Selection-->
@@ -59,7 +59,7 @@
                 <md:PackIcon Kind="AutoFix" Foreground="Gray"
                              HorizontalAlignment="Center"
                              VerticalAlignment="Center"
-                             Height="25" Width="25"/>
+                             Height="25" Width="25" />
             </Button>
 
             <!--Execute Button-->
@@ -69,8 +69,8 @@
                     Padding="-10" ToolTip="Execute (F5)">
                 <md:PackIcon Kind="Play" Foreground="Green"
                              HorizontalAlignment="Center"
-                             VerticalAlignment="Center" 
-                             Height="25" Width="25"/>
+                             VerticalAlignment="Center"
+                             Height="25" Width="25" />
             </Button>
 
             <!--Save Button-->
@@ -79,11 +79,11 @@
                     Click="ButtonSave" BorderBrush="#263238"
                     Padding="-10" ToolTip="Save (Ctrl + S)"
                     HorizontalAlignment="Right"
-                    VerticalAlignment="Center" >
+                    VerticalAlignment="Center">
                 <md:PackIcon Kind="ContentSave" Foreground="DodgerBlue"
                              HorizontalAlignment="Right"
-                             VerticalAlignment="Center" 
-                             Height="25" Width="25"/>
+                             VerticalAlignment="Center"
+                             Height="25" Width="25" />
             </Button>
 
             <!--Container for Code & Results View-->
@@ -92,9 +92,9 @@
                 Grid.Column="0" Grid.ColumnSpan="5"
                 Name="GridCodeResults">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
                 <!--TODO: WordWrap or Horizontal Scrollbar?-->
@@ -112,7 +112,7 @@
                     VerticalScrollBarVisibility="Auto"
                     HorizontalScrollBarVisibility="Auto"
                     ShowLineNumbers="True"
-                    TextChanged="TextBoxCode_DocumentChanged"/>
+                    TextChanged="TextBoxCode_DocumentChanged" />
 
                 <!--Splitter-->
                 <GridSplitter
@@ -122,7 +122,7 @@
                     Width="5"
                     Height="Auto"
                     Margin="0,5,0,5"
-                    Name="GridSplitter"/>
+                    Name="GridSplitter" />
 
                 <!--Compile/Execute Result View-->
                 <ScrollViewer
@@ -131,14 +131,14 @@
                     HorizontalScrollBarVisibility="Disabled"
                     Margin="5">
                     <Grid
-                    Background="#374349"
-                    HorizontalAlignment="Stretch">
+                        Background="#374349"
+                        HorizontalAlignment="Stretch">
                         <TextBlock
-                        Margin="10"
-                        Foreground="White"
-                        FontSize="14"
-                        Name="TextBlockResults"
-                        TextWrapping="Wrap"/>
+                            Margin="10"
+                            Foreground="White"
+                            FontSize="14"
+                            Name="TextBlockResults"
+                            TextWrapping="Wrap" />
                     </Grid>
                 </ScrollViewer>
             </Grid>
@@ -151,10 +151,10 @@
                   VerticalAlignment="Center">
 
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <md:PackIcon Name="IconStatus"
@@ -162,30 +162,27 @@
                              Kind="CodeBraces"
                              HorizontalAlignment="Center"
                              VerticalAlignment="Stretch"
-                             Margin="5"/>
+                             Margin="5" />
 
                 <TextBlock Name="TextBlockStatusMessage"
-                       Grid.Column="1"
-                       Text="Loading.."
-                       VerticalAlignment="Center"
-                        TextWrapping="Wrap"
-                        Margin="5"/>
+                           Grid.Column="1"
+                           Text="Loading.."
+                           VerticalAlignment="Center"
+                           TextWrapping="Wrap"
+                           Margin="5" />
                 <TextBlock Name="TextBlockCompileTime"
-                       Grid.Column="2"
-                       ToolTip="Compile time (ms)"
-                       VerticalAlignment="Center"
-                        TextWrapping="Wrap"
-                        Margin="5"/>
+                           Grid.Column="2"
+                           ToolTip="Compile time (ms)"
+                           VerticalAlignment="Center"
+                           TextWrapping="Wrap"
+                           Margin="5" />
                 <TextBlock Name="TextBlockExecuteTime"
-                       Grid.Column="3"
-                       ToolTip="Execute time (ms)"
-                       VerticalAlignment="Center"
-                        TextWrapping="Wrap"
-                        Margin="5"/>
+                           Grid.Column="3"
+                           ToolTip="Execute time (ms)"
+                           VerticalAlignment="Center"
+                           TextWrapping="Wrap"
+                           Margin="5" />
             </Grid>
         </Grid>
     </md:DialogHost>
 </Window>
-
-
-

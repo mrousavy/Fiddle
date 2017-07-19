@@ -8,6 +8,19 @@ using System.Threading.Tasks;
 
 namespace Fiddle.Compilers.Implementation.Java {
     public class JavaCompiler : ICompiler {
+        public JavaCompiler(string code) : this(code, new ExecutionProperties(), new CompilerProperties()) { }
+
+        public JavaCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps) {
+            SourceCode = code;
+            ExecuteProperties = execProps;
+            CompilerProperties = compProps;
+            FindJdk();
+            FindJre();
+        }
+
+        private string JdkPath { get; set; }
+        private string JrePath { get; set; }
+        private string ClassName { get; set; }
         public IExecutionProperties ExecuteProperties { get; set; }
 
         public ICompilerProperties CompilerProperties { get; set; }
@@ -18,21 +31,68 @@ namespace Fiddle.Compilers.Implementation.Java {
 
         public IExecuteResult ExecuteResult { get; set; }
 
-        public Language Language { get; set; }
+        public Language Language { get; set; } = Language.Java;
 
-        private string JdkPath { get; set; }
-        private string JrePath { get; set; }
-        private string ClassName { get; set; }
+        public async Task<ICompileResult> Compile() {
+            Stopwatch sw = Stopwatch.StartNew();
+            ToValidCode();
 
+            string tmp = Path.Combine(Path.GetTempPath(), $"{ClassName}.java");
+            File.WriteAllText(tmp, SourceCode);
 
-        public JavaCompiler(string code) : this(code, new ExecutionProperties(), new CompilerProperties()) { }
+            string output = null;
+            Exception error = null;
+            try {
+                output = await JdkHelper.CompileJava(JdkPath, tmp, CompilerProperties);
+            } catch (Exception ex) {
+                error = ex;
+            }
 
-        public JavaCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps) {
-            SourceCode = code;
-            ExecuteProperties = execProps;
-            CompilerProperties = compProps;
-            FindJdk();
-            FindJre();
+            sw.Stop();
+
+            IEnumerable<IDiagnostic> diagnostics = null;
+            IEnumerable<Exception> errors = null;
+
+            if (output != null)
+                diagnostics = new List<IDiagnostic> {
+                    new JavaDiagnostic(output, -1, -1, -1, -1, Severity.Info)
+                };
+            if (error != null)
+                errors = new List<Exception> {
+                    error
+                };
+
+            JavaCompileResult result =
+                new JavaCompileResult(sw.ElapsedMilliseconds, SourceCode, diagnostics, null, errors);
+            CompileResult = result;
+            return result;
+        }
+
+        public async Task<IExecuteResult> Execute() {
+            if (CompileResult == null || CompileResult.SourceCode != SourceCode) await Compile();
+            if (!CompileResult.Success) {
+                JavaExecuteResult result = new JavaExecuteResult(0, "", null, CompileResult,
+                    new CompileException("Could not compile, javac responded with some errors!"));
+                ExecuteResult = result;
+                return result;
+            } else {
+                Stopwatch sw = Stopwatch.StartNew();
+
+                string output = null;
+                Exception error = null;
+                try {
+                    output = await JreHelper.ExecuteJava(JrePath, ClassName, ExecuteProperties);
+                } catch (Exception ex) {
+                    error = ex;
+                }
+
+                sw.Stop();
+
+                JavaExecuteResult result =
+                    new JavaExecuteResult(sw.ElapsedMilliseconds, output, null, CompileResult, error);
+                ExecuteResult = result;
+                return result;
+            }
         }
 
         private void FindJdk() {
@@ -117,81 +177,16 @@ namespace Fiddle.Compilers.Implementation.Java {
             } else {
                 ClassName = "FiddleClass";
                 SourceCode = $"public class {ClassName} {{\n" +
-                                $"{SourceCode}\n" +
-                            "}";
+                             $"{SourceCode}\n" +
+                             "}";
             }
         }
 
         private void ToValidMain() {
-            if (!SourceCode.Contains("static void main")) {
+            if (!SourceCode.Contains("static void main"))
                 SourceCode = "public static void main(String[] args) {\n" +
-                                $"{SourceCode}\n" +
-                            "}";
-            }
-        }
-
-        public async Task<ICompileResult> Compile() {
-            Stopwatch sw = Stopwatch.StartNew();
-            ToValidCode();
-
-            string tmp = Path.Combine(Path.GetTempPath(), $"{ClassName}.java");
-            File.WriteAllText(tmp, SourceCode);
-
-            string output = null;
-            Exception error = null;
-            try {
-                output = await JdkHelper.CompileJava(JdkPath, tmp, CompilerProperties);
-            } catch (Exception ex) {
-                error = ex;
-            }
-
-            sw.Stop();
-
-            IEnumerable<IDiagnostic> diagnostics = null;
-            IEnumerable<Exception> errors = null;
-
-            if (output != null) {
-                diagnostics = new List<IDiagnostic> {
-                    new JavaDiagnostic(output, -1, -1, -1, -1, Severity.Info)
-                };
-            }
-            if (error != null) {
-                errors = new List<Exception> {
-                    error
-                };
-            }
-
-            JavaCompileResult result = new JavaCompileResult(sw.ElapsedMilliseconds, SourceCode, diagnostics, null, errors);
-            if (result.Success) {
-                Path.Combine(Path.GetTempPath(), $"{ClassName}.class");
-            }
-            CompileResult = result;
-            return result;
-        }
-
-        public async Task<IExecuteResult> Execute() {
-            if (CompileResult == null || CompileResult.SourceCode != SourceCode) {
-                await Compile();
-            }
-            if (!CompileResult.Success) {
-                throw new CompileException("Could not compile, javac responded with some errors!");
-            } else {
-                Stopwatch sw = Stopwatch.StartNew();
-
-                string output = null;
-                Exception error = null;
-                try {
-                    output = await JreHelper.ExecuteJava(JrePath, ClassName, ExecuteProperties);
-                } catch (Exception ex) {
-                    error = ex;
-                }
-
-                sw.Stop();
-
-                JavaExecuteResult result = new JavaExecuteResult(sw.ElapsedMilliseconds, output, null, CompileResult, error);
-                ExecuteResult = result;
-                return result;
-            }
+                             $"{SourceCode}\n" +
+                             "}";
         }
     }
 }

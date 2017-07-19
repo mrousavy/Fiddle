@@ -1,7 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Scripting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -9,25 +6,16 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
 
-namespace Fiddle.Compilers.Implementation.CSharp
-{
-    public class CSharpCompiler : ICompiler
-    {
-        public IExecutionProperties ExecuteProperties { get; }
-        public ICompilerProperties CompilerProperties { get; }
-        public string SourceCode { get; set; }
-        public ICompileResult CompileResult { get; private set; }
-        public IExecuteResult ExecuteResult { get; private set; }
-        public string[] Imports { get; set; }
-        public Language Language { get; } = Language.CSharp;
-
-        private Script<object> Script { get; set; }
-
+namespace Fiddle.Compilers.Implementation.CSharp {
+    public class CSharpCompiler : ICompiler {
         public CSharpCompiler(string code) : this(code, new ExecutionProperties(), new CompilerProperties()) { }
 
-        public CSharpCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps, string[] imports = null)
-        {
+        public CSharpCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps,
+            string[] imports = null) {
             SourceCode = code;
             ExecuteProperties = execProps;
             CompilerProperties = compProps;
@@ -39,68 +27,37 @@ namespace Fiddle.Compilers.Implementation.CSharp
             Create();
         }
 
-        /// <summary>
-        /// Load all references/namespaces that can be used in the script environment
-        /// </summary>
-        public void LoadReferences()
-        {
-            //Get all namespaces from this assembly (own project, own library, ..)
-            IEnumerable<string> ownNamespaces = Assembly.GetExecutingAssembly().GetTypes()
-                .Select(t => t.Namespace)
-                .Distinct();
+        public string[] Imports { get; set; }
 
-            List<string> allNamespaces = new List<string>();
+        private Script<object> Script { get; set; }
+        public IExecutionProperties ExecuteProperties { get; }
+        public ICompilerProperties CompilerProperties { get; }
+        public string SourceCode { get; set; }
+        public ICompileResult CompileResult { get; private set; }
+        public IExecuteResult ExecuteResult { get; private set; }
+        public Language Language { get; } = Language.CSharp;
 
-            //Get all .NET defined types
-            IEnumerable<Type[]> types = AppDomain.CurrentDomain
-                .GetAssemblies()
-                .Where(a => Assembly.GetCallingAssembly().GetReferencedAssemblies().Select(ra => ra.FullName).Contains(a.FullName))
-                .Select(a => a.GetExportedTypes());
-
-            //Add all types where namespace is not own namespace (no own references)
-            foreach (Type[] type in types)
-            {
-                allNamespaces.AddRange(type
-                    .Select(t => t.Namespace)
-                    .Where(n => n != null && !ownNamespaces.Contains(n))
-                    .Distinct());
-            }
-
-            Imports = allNamespaces.ToArray();
-        }
-
-        private void Create()
-        {
-            ScriptOptions options = ScriptOptions.Default
-                .WithReferences(Imports)
-                .WithImports(Imports);
-            Script = CSharpScript.Create(SourceCode, options, typeof(Globals));
-        }
-
-        public async Task<ICompileResult> Compile()
-        {
+        public async Task<ICompileResult> Compile() {
             if (Script.Code != SourceCode)
-            {
                 Create();
-            }
 
             TaskCompletionSource<ICompileResult> tcs = new TaskCompletionSource<ICompileResult>();
 
             //bad hack for creating an "async" method:
-            new Thread(() =>
-            {
+            new Thread(() => {
                 //Init
                 IEnumerable<Diagnostic> resultDiagnostics = null;
 
                 //Actual compilation
                 Stopwatch sw = Stopwatch.StartNew();
-                Thread compileThread = new Thread(() =>
-                {
+                Thread compileThread = new Thread(() => {
                     Compilation compilation = Script.GetCompilation();
                     resultDiagnostics = compilation.GetDiagnostics();
                 });
                 compileThread.Start();
-                bool graceful = compileThread.Join((int)CompilerProperties.Timeout); //Wait until compile Thread finishes with given timeout
+                bool graceful =
+                    compileThread.Join((int) CompilerProperties
+                        .Timeout); //Wait until compile Thread finishes with given timeout
                 sw.Stop();
 
                 if (!graceful)
@@ -110,7 +67,8 @@ namespace Fiddle.Compilers.Implementation.CSharp
                     throw new CompileException("The compiler Thread was not returning any diagnostics!");
 
                 //Pre-Enumerate so it's not enumerating multiple times
-                IEnumerable<Diagnostic> diagnosticsEnum = resultDiagnostics as Diagnostic[] ?? resultDiagnostics.ToArray();
+                IEnumerable<Diagnostic> diagnosticsEnum =
+                    resultDiagnostics as Diagnostic[] ?? resultDiagnostics.ToArray();
                 IEnumerable<CSharpDiagnostic> diagnostics = diagnosticsEnum
                     .Select(d => new CSharpDiagnostic(
                         d.GetMessage(),
@@ -135,12 +93,12 @@ namespace Fiddle.Compilers.Implementation.CSharp
 
                 //Build compile result object
                 tcs.SetResult(new CSharpCompileResult(
-                        sw.ElapsedMilliseconds,
-                        SourceCode,
-                        Script,
-                        diagnostics,
-                        warnings,
-                        errors));
+                    sw.ElapsedMilliseconds,
+                    SourceCode,
+                    Script,
+                    diagnostics,
+                    warnings,
+                    errors));
             }).Start();
 
             ICompileResult compileResult = await tcs.Task;
@@ -148,16 +106,12 @@ namespace Fiddle.Compilers.Implementation.CSharp
             return compileResult;
         }
 
-        public async Task<IExecuteResult> Execute()
-        {
+        public async Task<IExecuteResult> Execute() {
             if (CompileResult == default(ICompileResult) || SourceCode != Script.Code)
-            {
                 await Compile();
-            }
             if (!CompileResult.Success)
-            {
-                return new CSharpExecuteResult(-1, null, null, CompileResult, new CompileException("The compilation was not successful!"));
-            }
+                return new CSharpExecuteResult(-1, null, null, CompileResult,
+                    new CompileException("The compilation was not successful!"));
 
             StringBuilder builder = new StringBuilder();
             Globals globals = new Globals(builder);
@@ -179,9 +133,43 @@ namespace Fiddle.Compilers.Implementation.CSharp
             return result;
         }
 
+        /// <summary>
+        ///     Load all references/namespaces that can be used in the script environment
+        /// </summary>
+        public void LoadReferences() {
+            //Get all namespaces from this assembly (own project, own library, ..)
+            IEnumerable<string> ownNamespaces = Assembly.GetExecutingAssembly().GetTypes()
+                .Select(t => t.Namespace)
+                .Distinct();
 
-        public bool CatchException(Exception ex)
-        {
+            List<string> allNamespaces = new List<string>();
+
+            //Get all .NET defined types
+            IEnumerable<Type[]> types = AppDomain.CurrentDomain
+                .GetAssemblies()
+                .Where(a => Assembly.GetCallingAssembly().GetReferencedAssemblies().Select(ra => ra.FullName)
+                    .Contains(a.FullName))
+                .Select(a => a.GetExportedTypes());
+
+            //Add all types where namespace is not own namespace (no own references)
+            foreach (Type[] type in types)
+                allNamespaces.AddRange(type
+                    .Select(t => t.Namespace)
+                    .Where(n => n != null && !ownNamespaces.Contains(n))
+                    .Distinct());
+
+            Imports = allNamespaces.ToArray();
+        }
+
+        private void Create() {
+            ScriptOptions options = ScriptOptions.Default
+                .WithReferences(Imports)
+                .WithImports(Imports);
+            Script = CSharpScript.Create(SourceCode, options, typeof(Globals));
+        }
+
+
+        public bool CatchException(Exception ex) {
             return true;
         }
     }
