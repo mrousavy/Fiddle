@@ -20,16 +20,16 @@ namespace Fiddle.UI
     /// </summary>
     public partial class Editor
     {
-        public static RoutedCommand CommandSave = new RoutedCommand();
-        public static RoutedCommand CommandCompile = new RoutedCommand();
-        public static RoutedCommand CommandExecute = new RoutedCommand();
+        public static RoutedCommand CommandSave = new RoutedCommand(); //Ctrl + S
+        public static RoutedCommand CommandCompile = new RoutedCommand(); //F6
+        public static RoutedCommand CommandExecute = new RoutedCommand(); //F5
 
         private string SourceCode => TextBoxCode.Text;
 
-        private ITextMarkerService _textMarkerService;
-        private bool _needsUpdate;
-        private ICompiler _compiler;
-        private string _filePath;
+        private ITextMarkerService _textMarkerService; //underlines
+        private bool _needsUpdate; //need to reset textbox underlines & statusmessage?
+        private ICompiler _compiler; //Compiler instance
+        private string _filePath; //path to file - Ctrl + S will save without SaveFileDialog if not null
 
         //constructor
         public Editor()
@@ -39,10 +39,8 @@ namespace Fiddle.UI
             LoadTextBox();
             LoadPreferences();
             LoadTextMarkerService();
+            LoadHotkeys();
             TextBoxCode.Focus();
-            CommandSave.InputGestures.Add(new KeyGesture(Key.S, ModifierKeys.Control));
-            CommandCompile.InputGestures.Add(new KeyGesture(Key.F6));
-            CommandExecute.InputGestures.Add(new KeyGesture(Key.F5));
         }
 
         #region Prefs & Inits
@@ -88,6 +86,13 @@ namespace Fiddle.UI
             services?.AddService(typeof(ITextMarkerService), textMarkerService);
             _textMarkerService = textMarkerService;
         }
+        //Initialize all hotkeys/commands
+        private static void LoadHotkeys()
+        {
+            CommandSave.InputGestures.Add(new KeyGesture(Key.S, ModifierKeys.Control));
+            CommandCompile.InputGestures.Add(new KeyGesture(Key.F6));
+            CommandExecute.InputGestures.Add(new KeyGesture(Key.F5));
+        }
         //Window loaded event
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -107,7 +112,6 @@ namespace Fiddle.UI
             App.Preferences.ResultsViewSize = GridCodeResults.ColumnDefinitions[2].Width.Value;
         }
         #endregion
-
         #region Code
         //Actually compile code
         private async void Compile()
@@ -171,6 +175,8 @@ namespace Fiddle.UI
                 SetStatus(StatusType.Failure, "Execution failed!");
                 await DialogHelper.ShowErrorDialog($"Could not execute! ({ex.Message})", EditorDialogHost);
             }
+            CodeUnderline();
+
             UnlockUi();
             _needsUpdate = true;
         }
@@ -178,13 +184,18 @@ namespace Fiddle.UI
         //Underline Errors red and warnings/infos Yellow in code
         private void CodeUnderline()
         {
+            ResetUnderline();
             if (_compiler.CompileResult?.Diagnostics == null || !_compiler.CompileResult.Diagnostics.Any())
                 return;
 
             foreach (IDiagnostic diagnostic in _compiler.CompileResult.Diagnostics)
             {
-                int startOffset = TextBoxCode.Document.Lines[diagnostic.LineFrom].Offset + diagnostic.CharFrom;
-                int endOffset = TextBoxCode.Document.Lines[diagnostic.LineTo].Offset + diagnostic.CharTo;
+                if (diagnostic.LineFrom < 1 || diagnostic.LineTo < 1 || diagnostic.CharFrom < 0 || diagnostic.CharTo < 0)
+                    continue; //invalid diagnostic
+
+                //LineFrom/LineTo/CharFrom/CharTo -1 because it's 1-based and Lines[] expects an Index
+                int startOffset = TextBoxCode.Document.Lines[diagnostic.LineFrom - 1].Offset + diagnostic.CharFrom - 1;
+                int endOffset = TextBoxCode.Document.Lines[diagnostic.LineTo - 1].Offset + diagnostic.CharTo - 1;
                 int length = endOffset - startOffset;
 
                 ITextMarker marker = _textMarkerService.Create(startOffset, length);
@@ -195,7 +206,14 @@ namespace Fiddle.UI
         //Remove all Red/Yellow underlinings in code
         private void ResetUnderline()
         {
-            _textMarkerService.RemoveAll(m => true);
+            try
+            {
+                _textMarkerService.RemoveAll(m => true);
+            }
+            catch
+            {
+                //could not reset underline
+            }
         }
         //Save the file to disk
         private void ButtonSave(object sender, RoutedEventArgs e)
@@ -207,6 +225,7 @@ namespace Fiddle.UI
         private async void ComboBoxLanguageSelected(object sender, SelectionChangedEventArgs e)
         {
             LockUi();
+            ResetUnderline();
             string value = ((ComboBoxItem)ComboBoxLanguage.SelectedValue).Content as string;
             try
             {
@@ -326,32 +345,15 @@ namespace Fiddle.UI
         #endregion
         #region Events
         //Compile Button click
-        private void ButtonCompile(object sender, RoutedEventArgs e)
-        {
-            Compile();
-        }
-
+        private void ButtonCompile(object sender, RoutedEventArgs e) => Compile();
         //Execute button click
-        private void ButtonExecute(object sender, RoutedEventArgs e)
-        {
-            Execute();
-        }
-
+        private void ButtonExecute(object sender, RoutedEventArgs e) => Execute();
         //Ctrl + S Command (Save)
-        private void CtrlS(object sender, ExecutedRoutedEventArgs e)
-        {
-            Save();
-        }
+        private void CtrlS(object sender, ExecutedRoutedEventArgs e) => Save();
         //F6 Command (Compile)
-        private void F6(object sender, ExecutedRoutedEventArgs e)
-        {
-            Compile();
-        }
+        private void F6(object sender, ExecutedRoutedEventArgs e) => Compile();
         //F5 Command (Execute)
-        private void F5(object sender, ExecutedRoutedEventArgs e)
-        {
-            Execute();
-        }
+        private void F5(object sender, ExecutedRoutedEventArgs e) => Execute();
         #endregion
     }
 }

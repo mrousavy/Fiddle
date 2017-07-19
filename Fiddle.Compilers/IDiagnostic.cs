@@ -11,19 +11,19 @@ namespace Fiddle.Compilers
         /// </summary>
         string Message { get; }
         /// <summary>
-        /// The starting line the diagnostic is referring to
+        /// The starting line the diagnostic is referring to (1-based)
         /// </summary>
         int LineFrom { get; }
         /// <summary>
-        /// The ending line the diagnostic is referring to
+        /// The ending line the diagnostic is referring to (1-based)
         /// </summary>
         int LineTo { get; }
         /// <summary>
-        /// The beginning char position the diagnostic is referring to
+        /// The beginning char position the diagnostic is referring to (1-based)
         /// </summary>
         int CharFrom { get; }
         /// <summary>
-        /// The ending char position the diagnostic is referring to
+        /// The ending char position the diagnostic is referring to (1-based)
         /// </summary>
         int CharTo { get; }
         /// <summary>

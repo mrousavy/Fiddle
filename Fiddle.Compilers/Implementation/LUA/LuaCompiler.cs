@@ -3,8 +3,10 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Fiddle.Compilers.Implementation.LUA {
-    public class LuaCompiler : ICompiler {
+namespace Fiddle.Compilers.Implementation.LUA
+{
+    public class LuaCompiler : ICompiler
+    {
 
         public IExecutionProperties ExecuteProperties { get; }
         public ICompilerProperties CompilerProperties { get; }
@@ -17,13 +19,19 @@ namespace Fiddle.Compilers.Implementation.LUA {
 
         public LuaCompiler(string code) : this(code, new ExecutionProperties(), new CompilerProperties()) { }
 
-        public LuaCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps) {
+        public LuaCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps)
+        {
             SourceCode = code;
             ExecuteProperties = execProps;
             CompilerProperties = compProps;
         }
 
-        public Task<ICompileResult> Compile() {
+        /// <summary>
+        /// Initialize Lua Script State (this function does not compile, LUA is a scripting language)
+        /// </summary>
+        /// <returns></returns>
+        public Task<ICompileResult> Compile()
+        {
             if (Lua == default(Lua))
                 Lua = new Lua();
 
@@ -32,7 +40,8 @@ namespace Fiddle.Compilers.Implementation.LUA {
             return Task.FromResult(compileResult);
         }
 
-        public Task<IExecuteResult> Execute() {
+        public Task<IExecuteResult> Execute()
+        {
             if (Lua == default(Lua))
                 Compile();
 
@@ -40,9 +49,12 @@ namespace Fiddle.Compilers.Implementation.LUA {
             object[] result = new object[0];
 
             Stopwatch sw = Stopwatch.StartNew();
-            try {
+            try
+            {
                 result = Lua.DoString(SourceCode);
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 exception = ex;
             }
             sw.Stop();
