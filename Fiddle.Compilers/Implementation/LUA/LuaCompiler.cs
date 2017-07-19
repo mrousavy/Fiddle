@@ -1,7 +1,7 @@
-﻿using System;
+﻿using NLua;
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using NLua;
 
 namespace Fiddle.Compilers.Implementation.LUA {
     public class LuaCompiler : ICompiler {
@@ -51,8 +51,9 @@ namespace Fiddle.Compilers.Implementation.LUA {
             }
             sw.Stop();
 
+            //TODO: Console output
             IExecuteResult executeResult =
-                new LuaExecuteResult(sw.ElapsedMilliseconds, result.ToString(), result, CompileResult, exception);
+                new LuaExecuteResult(sw.ElapsedMilliseconds, null, result, CompileResult, exception);
             ExecuteResult = executeResult;
             return Task.FromResult(executeResult);
         }

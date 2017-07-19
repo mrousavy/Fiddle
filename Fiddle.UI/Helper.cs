@@ -128,9 +128,16 @@ namespace Fiddle.UI {
                 if (result.ReturnValue == null) {
                     items.Add(new Run($"Return value: /{nl}") { Foreground = Brushes.Gray });
                 } else {
+                    Type type = result.ReturnValue.GetType();
                     items.Add(new Run("Return value: "));
-                    items.Add(new Run($"({result.ReturnValue.GetType().Name}) ") { Foreground = Brushes.Orange });
-                    items.Add(new Run($"{result.ReturnValue}{nl}") { Foreground = Brushes.CadetBlue });
+                    items.Add(new Run($"({type.Name}) ") { Foreground = Brushes.Orange });
+                    if (type.IsArray) {
+                        Array array = (Array)result.ReturnValue;
+                        string run = string.Join(", ", array.Cast<object>());
+                        items.Add(new Run($"{run}{nl}") { Foreground = Brushes.CadetBlue });
+                    } else {
+                        items.Add(new Run($"{result.ReturnValue}{nl}") { Foreground = Brushes.CadetBlue });
+                    }
                 }
                 if (string.IsNullOrWhiteSpace(result.ConsoleOutput)) {
                     items.Add(new Run($"Console output: /{nl}") { Foreground = Brushes.Gray });

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,7 +7,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.VisualBasic;
 
 #pragma warning disable 618
 
@@ -55,7 +55,7 @@ namespace Fiddle.Compilers.Implementation.VB {
                 });
                 compileThread.Start();
                 bool graceful =
-                    compileThread.Join((int) CompilerProperties
+                    compileThread.Join((int)CompilerProperties
                         .Timeout); //Wait until compile Thread finishes with given timeout
                 sw.Stop();
 
@@ -102,10 +102,11 @@ namespace Fiddle.Compilers.Implementation.VB {
                 }
             });
             thread.Start();
-            bool graceful = thread.Join((int) ExecuteProperties.Timeout);
+            bool graceful = thread.Join((int)ExecuteProperties.Timeout);
 
             sw.Stop();
 
+            //TODO: Console output
             if (graceful) {
                 IExecuteResult result = new VbExecuteResult(
                     sw.ElapsedMilliseconds,
