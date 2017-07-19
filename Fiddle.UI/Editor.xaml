@@ -118,7 +118,9 @@
 
                 <!--Compile/Execute Result View-->
                 <ScrollViewer
-                    Grid.Column="2">
+                    Grid.Column="2"
+                    VerticalScrollBarVisibility="Auto"
+                    HorizontalScrollBarVisibility="Auto">
                 <Grid
                     Background="#374349"
                     Margin="5"

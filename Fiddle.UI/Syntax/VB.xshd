@@ -1,0 +1,278 @@
+﻿<SyntaxDefinition name="VB" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+
+  <Color name="CommentSingle" foreground="LightGreen" />
+  <Color name="String" foreground="Orange" />
+  <Color name="Digits" foreground="DarkBlue"/>
+
+  <RuleSet>
+    <Span color="CommentSingle" begin="'" />
+
+    <Span color="String">
+      <Begin>"</Begin>
+      <End>"</End>
+      <RuleSet>
+        <!-- nested span for escape sequences -->
+        <Span begin="\\" end="." />
+      </RuleSet>
+    </Span>
+
+    <Keywords fontWeight="bold" foreground="LightBlue">
+      <Word>AddHandler</Word>
+      <Word>AddressOf</Word>
+      <Word>Alias</Word>
+      <Word>And</Word>
+      <Word>AndAlso</Word>
+      <Word>Ansi</Word>
+      <Word>As</Word>
+      <Word>Assembly</Word>
+      <Word>Auto</Word>
+      <Word>Boolean</Word>
+      <Word>ByRef</Word>
+      <Word>Byte</Word>
+
+      <Word>ByVal</Word>
+
+      <Word>Call</Word>
+
+      <Word>Case</Word>
+
+      <Word>
+        Catch
+      </Word>
+
+      <Word>CBool</Word>
+
+      <Word>CByte</Word>
+
+      <Word>CChar</Word>
+
+      <Word>
+        CDate
+      </Word>
+
+      <Word>CDec</Word>
+
+      <Word>CDbl</Word>
+
+      <Word>Char</Word>
+
+      <Word>
+        CInt
+      </Word>
+
+      <Word>Class</Word>
+
+      <Word>CLng</Word>
+
+      <Word>CObj</Word>
+
+      <Word>
+        Const
+      </Word>
+
+      <Word>CShort</Word>
+
+      <Word>CSng</Word>
+
+      <Word>CStr</Word>
+
+      <Word>
+        CType
+      </Word>
+
+      <Word>Date</Word>
+
+      <Word>Decimal</Word>
+
+      <Word>Declare</Word>
+
+      <Word>
+        Default
+      </Word>
+
+      <Word>Delegate</Word>
+
+      <Word>Dim</Word>
+
+      <Word>DirectCast</Word>
+
+      <Word>
+        Do
+      </Word>
+
+      <Word>Double</Word>
+
+      <Word>Each</Word>
+
+      <Word>Else</Word>
+
+      <Word>
+        ElseIf
+      </Word>
+
+      <Word>End</Word>
+
+      <Word>Enum</Word>
+
+      <Word>Erase</Word>
+
+      <Word>
+        Error
+      </Word>
+
+      <Word>Event</Word>
+
+      <Word>Exit</Word>
+
+      <Word>False</Word>
+
+      <Word>
+        Finally
+      </Word>
+
+      <Word>For</Word>
+
+      <Word>Friend</Word>
+
+      <Word>Function</Word>
+
+      <Word>
+        Get
+      </Word>
+
+      <Word>GetType</Word>
+
+      <Word>GoSub</Word>
+
+      <Word>GoTo</Word>
+
+      <Word>
+        Handles
+      </Word>
+
+      <Word>If</Word>
+
+      <Word>Implements</Word>
+
+      <Word>Imports</Word>
+
+      <Word>
+        In
+      </Word>
+
+      <Word>Inherits</Word>
+
+      <Word>Integer</Word>
+
+      <Word>Interface</Word>
+
+      <Word>
+        Is
+      </Word>
+
+      <Word>Let</Word>
+
+      <Word>Lib</Word>
+
+      <Word>Like</Word>
+
+      <Word>Long</Word>
+      <Word>Loop</Word>
+      <Word>Me</Word>
+      <Word>Mod</Word>
+      <Word>Module</Word>
+      <Word>MustInherit</Word>
+      <Word>MustOverride</Word>
+      <Word>MyBase</Word>
+      <Word>MyClass</Word>
+      <Word>Namespace</Word>
+      <Word>New</Word>
+      <Word>Next</Word>
+      <Word>Not</Word>
+      <Word>Nothing</Word>
+      <Word>NotInheritable</Word>
+      <Word>NotOverridable</Word>
+      <Word>Object</Word>
+      <Word>On</Word>
+      <Word>Option</Word>
+      <Word>Optional</Word>
+      <Word>Or</Word>
+      <Word>OrElse</Word>
+      <Word>Overloads</Word>
+      <Word>Overridable</Word>
+      <Word>Overrides</Word>
+      <Word>ParamArray</Word>
+      <Word>Preserve</Word>
+      <Word>Private</Word>
+      <Word>Property</Word>
+      <Word>Protected</Word>
+      <Word>Public</Word>
+      <Word>RaiseEvent</Word>
+      <Word>ReadOnly</Word>
+      <Word>ReDim</Word>
+      <Word>REM</Word>
+      <Word>RemoveHandler</Word>
+      <Word>Resume</Word>
+      <Word>Return</Word>
+      <Word>Select</Word>
+      <Word>Set</Word>
+      <Word>Shadows</Word>
+      <Word>Shared</Word>
+      <Word>Short</Word>
+      <Word>Single</Word>
+      <Word>Static</Word>
+      <Word>Step</Word>
+      <Word>Stop</Word>
+      <Word>String</Word>
+      <Word>Structure</Word>
+      <Word>Sub</Word>
+      <Word>SyncLock</Word>
+      <Word>Then</Word>
+      <Word>Throw</Word>
+      <Word>To</Word>
+      <Word>True</Word>
+      <Word>Try</Word>
+      <Word>TypeOf</Word>
+      <Word>Unicode</Word>
+      <Word>Until</Word>
+      <Word>Variant</Word>
+      <Word>When</Word>
+      <Word>While</Word>
+      <Word>With</Word>
+      <Word>WithEvents</Word>
+      <Word>WriteOnly</Word>
+      <Word>Xor</Word>
+      <Word>#Const</Word>
+      <Word>#ExternalSource</Word>
+      <Word>#If</Word>
+      <Word>#Then</Word>
+      <Word>#Else</Word>
+      <Word>#Region</Word>
+      <Word>-</Word>
+      <Word>&amp;</Word>
+      <Word>&amp;=</Word>
+      <Word>*</Word>
+      <Word>*=</Word>
+      <Word>/</Word>
+      <Word>/=</Word>
+      <Word>\</Word>
+      <Word>\=</Word>
+      <Word>^</Word>
+      <Word>^=</Word>
+      <Word>+</Word>
+      <Word>+=</Word>
+      <Word>=</Word>
+      <Word>-=</Word>
+    </Keywords>
+
+    <!-- Digits -->
+    <Rule foreground="#ecffc4">
+      \b0[xX][0-9a-fA-F]+  # hex number
+      |    \b
+      (    \d+(\.[0-9]+)?   #number with optional floating point
+      |    \.[0-9]+         #or just starting with floating point
+      )
+      ([eE][+-]?[0-9]+)? # optional exponent
+    </Rule>
+  </RuleSet>
+</SyntaxDefinition>
