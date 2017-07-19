@@ -67,13 +67,13 @@ namespace Fiddle.Compilers.Implementation.Python
 
         public async Task<IExecuteResult> Execute()
         {
-            if (Compilation == null || SourceCode != Source.GetCode())
+            if (Compilation == null || SourceCode != Source.GetCode()) //recompile if source code changed or not yet compiled
                 await Compile();
-            if (!CompileResult.Success)
+            if (Compilation == null || !CompileResult.Success) //if still not successful after compiling
                 return new PyExecuteResult(-1, null, null, CompileResult,
                     new Exception("Compilation was not successful!"));
 
-            TaskCompletionSource<dynamic> tcs = new TaskCompletionSource<dynamic>();
+            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
 
             Stopwatch sw = Stopwatch.StartNew();
             //Cheap hack: Spawn new thread for executing to allow async/await
@@ -94,13 +94,13 @@ namespace Fiddle.Compilers.Implementation.Python
 
             if (result != null && result.GetType() == typeof(Exception))
             {
-                IExecuteResult execResultInner = new PyExecuteResult(-1, null, null, CompileResult,
+                IExecuteResult execResultInner = new PyExecuteResult(sw.ElapsedMilliseconds, null, null, CompileResult,
                     result as Exception);
                 ExecuteResult = execResultInner;
                 return execResultInner;
             }
 
-            IExecuteResult execResult = new PyExecuteResult(sw.ElapsedMilliseconds, result?.ToString(), result, CompileResult, null);
+            IExecuteResult execResult = new PyExecuteResult(sw.ElapsedMilliseconds, null, result, CompileResult, null);
             ExecuteResult = execResult;
             return execResult;
         }

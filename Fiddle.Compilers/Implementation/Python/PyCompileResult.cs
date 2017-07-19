@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Fiddle.Compilers.Implementation.Python {
-    public class PyCompileResult : ICompileResult {
+namespace Fiddle.Compilers.Implementation.Python
+{
+    public class PyCompileResult : ICompileResult
+    {
         public long Time { get; }
         public bool Success { get; } = true;
         public string SourceCode { get; }
@@ -13,7 +15,8 @@ namespace Fiddle.Compilers.Implementation.Python {
 
 
         public PyCompileResult(long time, string code,
-            IEnumerable<IDiagnostic> diagnostics) {
+            IEnumerable<IDiagnostic> diagnostics)
+        {
             Time = time;
             SourceCode = code;
 
@@ -22,7 +25,7 @@ namespace Fiddle.Compilers.Implementation.Python {
             Diagnostics = enumerable;
             Warnings = enumerable.Where(d => d.Severity == Severity.Warning);
             Errors = enumerable
-                .Where(d => (int)d.Severity >= 2) //Error=2 or FatalError=3
+                .Where(d => d.Severity == Severity.Error)
                 .Select(dd => new Exception($"Ln{dd.LineFrom}-{dd.LineTo} Ch{dd.CharFrom}-{dd.CharTo}: {dd.Message}"));
 
             if (!Errors.Any())
