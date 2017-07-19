@@ -3,6 +3,7 @@
   <Color name="CommentSingle" foreground="#0cad31" />
   <Color name="CommentMulti" foreground="#068724" />
   <Color name="String" foreground="Orange" />
+  <Color name="Char" foreground="DarkOrange" />
   <Color name="Digits" foreground="DarkBlue"/>
 
   <RuleSet>
@@ -13,6 +14,14 @@
     <Span color="String">
       <Begin>"</Begin>
       <End>"</End>
+      <RuleSet>
+        <!-- nested span for escape sequences -->
+        <Span begin="\\" end="." />
+      </RuleSet>
+    </Span>
+    <Span color="Char">
+      <Begin>'</Begin>
+      <End>'</End>
       <RuleSet>
         <!-- nested span for escape sequences -->
         <Span begin="\\" end="." />
