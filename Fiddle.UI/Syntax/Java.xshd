@@ -1,0 +1,118 @@
+﻿<SyntaxDefinition name="Java" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+
+  <Color name="CommentSingle" foreground="LightGreen" />
+  <Color name="CommentMulti" foreground="Green" />
+  <Color name="String" foreground="Orange" />
+  <Color name="Digits" foreground="DarkBlue"/>
+
+  <RuleSet>
+    <Span color="CommentSingle" begin="//" />
+    <Span color="CommentMulti" multiline="true"
+          begin="/\*" end="\*/" />
+
+    <Span color="String">
+      <Begin>"</Begin>
+      <End>"</End>
+      <RuleSet>
+        <!-- nested span for escape sequences -->
+        <Span begin="\\" end="." />
+      </RuleSet>
+    </Span>
+
+    <Keywords fontWeight="bold" foreground="LightBlue">
+      <Word>abstract</Word>
+      <Word>assert</Word>
+      <Word>boolean</Word>
+      <Word>break</Word>
+      <Word>byte</Word>
+      <Word>case</Word>
+      <Word>catch</Word>
+      <Word>char</Word>
+      <Word>class</Word>
+      <Word>const</Word>
+      <Word>continue</Word>
+      <Word>default</Word>
+      <Word>do</Word>
+      <Word>double</Word>
+      <Word>else</Word>
+      <Word>enum</Word>
+      <Word>extends</Word>
+      <Word>false</Word>
+      <Word>final</Word>
+      <Word>finally</Word>
+      <Word>fixed</Word>
+      <Word>float</Word>
+      <Word>for</Word>
+      <Word>goto</Word>
+      <Word>if</Word>
+      <Word>implements</Word>
+      <Word>import</Word>
+      <Word>instanceof</Word>
+      <Word>int</Word>
+      <Word>interface</Word>
+      <Word>long</Word>
+      <Word>native</Word>
+      <Word>new</Word>
+      <Word>null</Word>
+      <Word>package</Word>
+      <Word>private</Word>
+      <Word>protected</Word>
+      <Word>public</Word>
+      <Word>return</Word>
+      <Word>short</Word>
+      <Word>static</Word>
+      <Word>strictfp</Word>
+      <Word>super</Word>
+      <Word>string</Word>
+      <Word>switch</Word>
+      <Word>synchronized</Word>
+      <Word>this</Word>
+      <Word>throw</Word>
+      <Word>throws</Word>
+      <Word>true</Word>
+      <Word>transient</Word>
+      <Word>try</Word>
+      <Word>void</Word>
+      <Word>volatile</Word>
+      <Word>while</Word>
+      <Word>?</Word>
+      <Word>,</Word>
+      <Word>.</Word>
+      <Word>;</Word>
+      <Word>)</Word>
+      <Word>(</Word>
+      <Word>[</Word>
+      <Word>]</Word>
+      <Word>{</Word>
+      <Word>}</Word>
+      <Word>+</Word>
+      <Word>-</Word>
+      <Word>/</Word>
+      <Word>%</Word>
+      <Word>*</Word>
+      <Word>&lt;</Word>
+      <Word>&gt;</Word>
+      <Word>^</Word>
+      <Word>=</Word>
+      <Word>~</Word>
+      <Word>!</Word>
+      <Word>|</Word>
+      <Word>&amp;</Word>
+    </Keywords>
+
+    <!-- Digits -->
+    <Rule foreground="#ecffc4">
+      \b0[xX][0-9a-fA-F]+  # hex number
+      |    \b
+      (    \d+(\.[0-9]+)?   #number with optional floating point
+      |    \.[0-9]+         #or just starting with floating point
+      )
+      ([eE][+-]?[0-9]+)? # optional exponent
+    </Rule>
+    
+    <!-- Types -->
+    <Rule foreground="#408E66">
+      (^|\s)[A-Z][a-zA-Z]*
+    </Rule>
+  </RuleSet>
+</SyntaxDefinition>
