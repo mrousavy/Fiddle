@@ -1,17 +1,18 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Scripting;
+﻿using Microsoft.VisualBasic;
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+#pragma warning disable 618
 
-namespace Fiddle.Compilers.Implementation.VB {
-    public class VbCompiler : ICompiler {
+namespace Fiddle.Compilers.Implementation.VB
+{
+    public class VbCompiler : ICompiler
+    {
         public IExecutionProperties ExecuteProperties { get; }
         public ICompilerProperties CompilerProperties { get; }
         public string SourceCode { get; set; }
@@ -20,11 +21,15 @@ namespace Fiddle.Compilers.Implementation.VB {
         public string[] Imports { get; set; }
         public Language Language { get; } = Language.Vb;
 
-        private Script<object> Script { get; set; }
+        private VBCodeProvider Provider { get; set; }
+        private ICodeCompiler CodeCompiler { get; set; }
+        private CompilerParameters Parameters { get; set; }
+        private Assembly ScriptAssembly { get; set; }
 
         public VbCompiler(string code) : this(code, new ExecutionProperties(), new CompilerProperties()) { }
 
-        public VbCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps, string[] imports = null) {
+        public VbCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps, string[] imports = null)
+        {
             SourceCode = code;
             ExecuteProperties = execProps;
             CompilerProperties = compProps;
@@ -39,7 +44,8 @@ namespace Fiddle.Compilers.Implementation.VB {
         /// <summary>
         /// Load all references/namespaces that can be used in the script environment
         /// </summary>
-        public void LoadReferences() {
+        public void LoadReferences()
+        {
             //Get all namespaces from this assembly (own project, own library, ..)
             IEnumerable<string> ownNamespaces = Assembly.GetExecutingAssembly().GetTypes()
                 .Select(t => t.Namespace)
@@ -54,7 +60,8 @@ namespace Fiddle.Compilers.Implementation.VB {
                 .Select(a => a.GetExportedTypes());
 
             //Add all types where namespace is not own namespace (no own references)
-            foreach (Type[] type in types) {
+            foreach (Type[] type in types)
+            {
                 allNamespaces.AddRange(type
                     .Select(t => t.Namespace)
                     .Where(n => n != null && !ownNamespaces.Contains(n))
@@ -64,31 +71,42 @@ namespace Fiddle.Compilers.Implementation.VB {
             Imports = allNamespaces.ToArray();
         }
 
-        private void Create() {
-            ScriptOptions options = ScriptOptions.Default
-                .WithReferences(Imports)
-                .WithImports(Imports);
-            //TODO: VisualBasicScript
-            Script = CSharpScript.Create(SourceCode, options, typeof(Globals));
+        private void Create()
+        {
+            Provider = new VBCodeProvider();
+            CodeCompiler = Provider.CreateCompiler();
+            Parameters = new CompilerParameters
+            {
+                GenerateInMemory = true,
+                GenerateExecutable = false,
+                MainClass = "VbFiddle",
+                OutputAssembly = "VbFiddleAssembly"
+            };
+            Parameters.ReferencedAssemblies.Add("System.dll");
+            Parameters.ReferencedAssemblies.Add("System.Windows.Forms.dll");
+            Parameters.ReferencedAssemblies.Add("Microsoft.VisualBasic.dll");
+            Parameters.ReferencedAssemblies.Add("System.Drawing.dll");
+            Parameters.ReferencedAssemblies.Add("System.Data.dll");
+            Parameters.ReferencedAssemblies.Add("System.Deployment.dll");
+            Parameters.ReferencedAssemblies.Add("System.Xml.dll");
+            //Parameters.ReferencedAssemblies.AddRange(Imports);
         }
 
-        public async Task<ICompileResult> Compile() {
-            if (Script.Code != SourceCode) {
-                Create();
-            }
-
+        public async Task<ICompileResult> Compile()
+        {
             TaskCompletionSource<ICompileResult> tcs = new TaskCompletionSource<ICompileResult>();
 
             //bad hack for creating an "async" method:
-            new Thread(() => {
+            new Thread(() =>
+            {
                 //Init
-                IEnumerable<Diagnostic> resultDiagnostics = null;
+                CompilerResults results = null;
 
                 //Actual compilation
                 Stopwatch sw = Stopwatch.StartNew();
-                Thread compileThread = new Thread(() => {
-                    Compilation compilation = Script.GetCompilation();
-                    resultDiagnostics = compilation.GetDiagnostics();
+                Thread compileThread = new Thread(() =>
+                {
+                    results = CodeCompiler.CompileAssemblyFromSource(Parameters, SourceCode);
                 });
                 compileThread.Start();
                 bool graceful = compileThread.Join((int)CompilerProperties.Timeout); //Wait until compile Thread finishes with given timeout
@@ -97,41 +115,18 @@ namespace Fiddle.Compilers.Implementation.VB {
                 if (!graceful)
                     throw new CompileException("The compilation timed out!");
 
-                if (resultDiagnostics == null)
+                if (results.Errors.Count < 1)
+                    ScriptAssembly = results.CompiledAssembly;
+
+                CompilerErrorCollection errors = results.Errors;
+                if (errors == null)
                     throw new CompileException("The compiler Thread was not returning any diagnostics!");
-
-                //Pre-Enumerate so it's not enumerating multiple times
-                IEnumerable<Diagnostic> diagnosticsEnum = resultDiagnostics as Diagnostic[] ?? resultDiagnostics.ToArray();
-                IEnumerable<VbDiagnostic> diagnostics = diagnosticsEnum
-                    .Select(d => new VbDiagnostic(
-                        d.GetMessage(),
-                        d.Location.GetLineSpan().StartLinePosition.Line,
-                        d.Location.GetLineSpan().EndLinePosition.Line,
-                        d.Location.GetLineSpan().StartLinePosition.Character,
-                        d.Location.GetLineSpan().EndLinePosition.Character,
-                        Host.ToSeverity(d.Severity)));
-
-                IEnumerable<VbDiagnostic> warnings = diagnosticsEnum
-                    .Where(d => d.Severity == DiagnosticSeverity.Warning)
-                    .Select(d => new VbDiagnostic(
-                        d.GetMessage(),
-                        d.Location.GetLineSpan().StartLinePosition.Line,
-                        d.Location.GetLineSpan().EndLinePosition.Line,
-                        d.Location.GetLineSpan().StartLinePosition.Character,
-                        d.Location.GetLineSpan().EndLinePosition.Character,
-                        Host.ToSeverity(d.Severity)));
-                IEnumerable<Exception> errors = diagnosticsEnum
-                    .Where(d => d.Severity == DiagnosticSeverity.Error)
-                    .Select(d => new Exception(d.GetMessage()));
 
                 //Build compile result object
                 tcs.SetResult(new VbCompileResult(
-                        sw.ElapsedMilliseconds,
-                        SourceCode,
-                        Script,
-                        diagnostics,
-                        warnings,
-                        errors));
+                    sw.ElapsedMilliseconds,
+                    SourceCode,
+                    errors));
             }).Start();
 
             ICompileResult compileResult = await tcs.Task;
@@ -139,36 +134,64 @@ namespace Fiddle.Compilers.Implementation.VB {
             return compileResult;
         }
 
-        public async Task<IExecuteResult> Execute() {
-            if (CompileResult == default(ICompileResult) || SourceCode != Script.Code) {
-                await Compile();
-            }
-            if (!CompileResult.Success) {
-                return new VbExecuteResult(-1, null, null, CompileResult, new Exception("The compilation was not successful!"));
+        public async Task<IExecuteResult> Execute()
+        {
+            await Compile();
+            if (!CompileResult.Success)
+            {
+                return new VbExecuteResult(-1, null, null, CompileResult, new CompileException("The compilation was not successful!"));
             }
 
-            StringBuilder builder = new StringBuilder();
-            Globals globals = new Globals(builder);
+            object returnValue = null;
+            Exception exception = null;
 
             Stopwatch sw = Stopwatch.StartNew();
-            ScriptState<object> state = await Script.RunAsync(globals, CatchException);
+
+            Thread thread = new Thread(() =>
+            {
+                try
+                {
+                    returnValue = ScriptAssembly.EntryPoint == null
+                        ? ScriptAssembly.DefinedTypes.Last().DeclaredMethods.First().Invoke(null, null)
+                        : ScriptAssembly.EntryPoint.Invoke(null, null);
+                }
+                catch (Exception ex)
+                {
+                    exception = ex;
+                }
+            });
+            thread.Start();
+            bool graceful = thread.Join((int)ExecuteProperties.Timeout);
+
             sw.Stop();
 
-            object returnValue = state.ReturnValue;
-            string stdout = builder.ToString();
-
-            IExecuteResult result = new VbExecuteResult(
-                sw.ElapsedMilliseconds,
-                stdout,
-                returnValue,
-                CompileResult,
-                state.Exception);
-            ExecuteResult = result;
-            return result;
+            if (graceful)
+            {
+                IExecuteResult result = new VbExecuteResult(
+                    sw.ElapsedMilliseconds,
+                    null,
+                    returnValue,
+                    CompileResult,
+                    exception);
+                ExecuteResult = result;
+                return result;
+            }
+            else
+            {
+                IExecuteResult result = new VbExecuteResult(
+                    sw.ElapsedMilliseconds,
+                    null,
+                    null,
+                    CompileResult,
+                    new Exception("The execution timed out!"));
+                ExecuteResult = result;
+                return result;
+            }
         }
 
 
-        public bool CatchException(Exception ex) {
+        public bool CatchException(Exception ex)
+        {
             return true;
         }
     }

@@ -21,7 +21,6 @@ namespace Fiddle.Compilers.Implementation.VB
             Severity = severity;
         }
 
-
         public Exception ToException()
         {
             return new Exception(ToString());

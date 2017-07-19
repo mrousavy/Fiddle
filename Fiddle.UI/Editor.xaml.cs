@@ -190,17 +190,26 @@ namespace Fiddle.UI
 
             foreach (IDiagnostic diagnostic in _compiler.CompileResult.Diagnostics)
             {
-                if (diagnostic.LineFrom < 1 || diagnostic.LineTo < 1 || diagnostic.CharFrom < 0 || diagnostic.CharTo < 0)
-                    continue; //invalid diagnostic
+                try
+                {
+                    if (diagnostic.LineFrom < 1 || diagnostic.LineTo < 1 || diagnostic.CharFrom < 1 ||
+                        diagnostic.CharTo < 1)
+                        continue; //invalid diagnostic
 
-                //LineFrom/LineTo/CharFrom/CharTo -1 because it's 1-based and Lines[] expects an Index
-                int startOffset = TextBoxCode.Document.Lines[diagnostic.LineFrom - 1].Offset + diagnostic.CharFrom - 1;
-                int endOffset = TextBoxCode.Document.Lines[diagnostic.LineTo - 1].Offset + diagnostic.CharTo - 1;
-                int length = endOffset - startOffset;
+                    //LineFrom/LineTo/CharFrom/CharTo -1 because it's 1-based and Lines[] expects an Index
+                    int startOffset = TextBoxCode.Document.Lines[diagnostic.LineFrom - 1].Offset + diagnostic.CharFrom -
+                                      1;
+                    int endOffset = TextBoxCode.Document.Lines[diagnostic.LineTo - 1].Offset + diagnostic.CharTo - 1;
+                    int length = endOffset - startOffset;
 
-                ITextMarker marker = _textMarkerService.Create(startOffset, length);
-                marker.MarkerTypes = TextMarkerTypes.SquigglyUnderline;
-                marker.MarkerColor = diagnostic.Severity == Severity.Error ? Colors.Red : Colors.Yellow;
+                    ITextMarker marker = _textMarkerService.Create(startOffset, length);
+                    marker.MarkerTypes = TextMarkerTypes.SquigglyUnderline;
+                    marker.MarkerColor = diagnostic.Severity == Severity.Error ? Colors.Red : Colors.Yellow;
+                }
+                catch
+                {
+                    // could not underline, out of bounds, etc
+                }
             }
         }
         //Remove all Red/Yellow underlinings in code

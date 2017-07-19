@@ -28,7 +28,7 @@ namespace Fiddle.UI
                     editor.SyntaxHighlighting = LoadXshd("Cpp.xshd");
                     return Host.NewCompiler(Language.Cpp, sourceCode);
                 case "VB":
-                    editor.SyntaxHighlighting = LoadXshd("Vb.xshd");
+                    editor.SyntaxHighlighting = LoadXshd("VB.xshd");
                     return Host.NewCompiler(Language.Vb, sourceCode);
                 case "Python":
                     editor.SyntaxHighlighting = LoadXshd("Python.xshd");
@@ -137,10 +137,7 @@ namespace Fiddle.UI
             {
                 IList<Run> items = new List<Run>
                 {
-                    new Run($"Execution successful! (Took {result.Time}ms){nl}") { Foreground = Brushes.Green, FontWeight = FontWeights.Bold, FontSize = 15 },
-                    !string.IsNullOrWhiteSpace(result.ConsoleOutput)
-                        ? new Run($"Console output: {result.ConsoleOutput}{nl}")
-                        : new Run($"Console output: /{nl}") { Foreground = Brushes.Gray }
+                    new Run($"Execution successful! (Took {result.Time}ms){nl}") { Foreground = Brushes.Green, FontWeight = FontWeights.Bold, FontSize = 15 }
                 };
 
                 if (result.ReturnValue == null)

@@ -163,7 +163,7 @@
     <Compile Include="Implementation\CompilerProperties.cs" />
     <Compile Include="Implementation\CSharp\CSharpCompileResult.cs" />
     <Compile Include="Implementation\CSharp\CSharpCompiler.cs" />
-    <Compile Include="Implementation\CSharp\LuaExecuteResult.cs" />
+    <Compile Include="Implementation\CSharp\CSharpExecuteResult.cs" />
     <Compile Include="Implementation\ExecutionProperties.cs" />
     <Compile Include="Implementation\Java\JavaCompiler.cs" />
     <Compile Include="Implementation\Java\JavaCompileResult.cs" />
@@ -183,7 +183,6 @@
     <Compile Include="Implementation\VB\VbCompileResult.cs" />
     <Compile Include="Implementation\VB\VbDiagnostic.cs" />
     <Compile Include="Implementation\VB\VbExecuteResult.cs" />
-    <Compile Include="Implementation\VB\Globals.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
