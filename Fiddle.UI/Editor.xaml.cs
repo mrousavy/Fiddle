@@ -49,6 +49,7 @@ namespace Fiddle.UI
             TextBoxCode.Text = App.Preferences.SourceCode;
             TextBoxCode.TextArea.Caret.Offset = App.Preferences.CursorOffset;
             TextBoxCode.TextArea.Caret.BringCaretToView();
+            GridCodeResults.ColumnDefinitions[2].Width = new GridLength(App.Preferences.ResultsViewSize);
         }
         //load the drop down menu (select saved language)
         private void LoadComboBox()
@@ -94,6 +95,7 @@ namespace Fiddle.UI
             App.Preferences.WindowState = WindowState;
             App.Preferences.SourceCode = SourceCode;
             App.Preferences.CursorOffset = TextBoxCode.TextArea.Caret.Offset;
+            App.Preferences.ResultsViewSize = GridCodeResults.ColumnDefinitions[2].Width.Value;
         }
         #endregion
 
