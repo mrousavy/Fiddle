@@ -1,4 +1,4 @@
-﻿<SyntaxDefinition name="CSharp" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+﻿<SyntaxDefinition name="Cpp" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
 
   <Color name="CommentSingle" foreground="LightGreen" />
   <Color name="CommentMulti" foreground="Green" />
@@ -20,83 +20,65 @@
     </Span>
 
     <Keywords fontWeight="bold" foreground="LightBlue">
-      <Word>abstract</Word>
-      <Word>as</Word>
-      <Word>base</Word>
+      <Word>Asm</Word>
+      <Word>auto</Word>
       <Word>bool</Word>
       <Word>break</Word>
-      <Word>byte</Word>
       <Word>case</Word>
       <Word>catch</Word>
       <Word>char</Word>
-      <Word>checked</Word>
       <Word>class</Word>
-      <Word>const</Word>
+      <Word>const_cast</Word>
       <Word>continue</Word>
-      <Word>decimal</Word>
       <Word>default</Word>
-      <Word>delegate</Word>
+      <Word>delete</Word>
       <Word>do</Word>
       <Word>double</Word>
       <Word>else</Word>
       <Word>enum</Word>
-      <Word>event</Word>
-      <Word>explicit</Word>
+      <Word>dynamic_cast</Word>
       <Word>extern</Word>
       <Word>false</Word>
-      <Word>finally</Word>
-      <Word>fixed</Word>
       <Word>float</Word>
       <Word>for</Word>
-      <Word>foreach</Word>
+      <Word>union</Word>
+      <Word>unsigned</Word>
+      <Word>using</Word>
+      <Word>friend</Word>
       <Word>goto</Word>
       <Word>if</Word>
-      <Word>implicit</Word>
-      <Word>in</Word>
+      <Word>inline</Word>
       <Word>int</Word>
-      <Word>interface</Word>
-      <Word>internal</Word>
-      <Word>is</Word>
-      <Word>lock</Word>
       <Word>long</Word>
+      <Word>mutable</Word>
+      <Word>virtual</Word>
       <Word>namespace</Word>
       <Word>new</Word>
-      <Word>null</Word>
-      <Word>object</Word>
       <Word>operator</Word>
-      <Word>out</Word>
-      <Word>override</Word>
-      <Word>params</Word>
       <Word>private</Word>
       <Word>protected</Word>
       <Word>public</Word>
-      <Word>readonly</Word>
-      <Word>ref</Word>
+      <Word>register</Word>
+      <Word>void</Word>
+      <Word>reinterpret_cast</Word>
       <Word>return</Word>
-      <Word>sbyte</Word>
-      <Word>sealed</Word>
       <Word>short</Word>
+      <Word>signed</Word>
       <Word>sizeof</Word>
-      <Word>stackalloc</Word>
       <Word>static</Word>
-      <Word>string</Word>
+      <Word>static_cast</Word>
+      <Word>volatile</Word>
       <Word>struct</Word>
       <Word>switch</Word>
+      <Word>template</Word>
       <Word>this</Word>
       <Word>throw</Word>
       <Word>true</Word>
       <Word>try</Word>
-      <Word>typeof</Word>
-      <Word>uint</Word>
-      <Word>ulong</Word>
-      <Word>unchecked</Word>
-      <Word>unsafe</Word>
-      <Word>ushort</Word>
-      <Word>using</Word>
-      <Word>var</Word>
-      <Word>virtual</Word>
-      <Word>void</Word>
-      <Word>volatile</Word>
+      <Word>typedef</Word>
+      <Word>typeid</Word>
+      <Word>unsigned</Word>
+      <Word>wchar_t</Word>
       <Word>while</Word>
       <Word>?</Word>
       <Word>,</Word>
@@ -122,6 +104,17 @@
       <Word>!</Word>
       <Word>|</Word>
       <Word>&amp;</Word>
+      
+      <Word>cin</Word>
+      <Word>endl</Word>
+      <Word>main</Word>
+      <Word>std</Word>
+      <Word>cout</Word>
+      <Word>include</Word>
+      <Word>iostread</Word>
+      <Word>NULL</Word>
+      <Word>null</Word>
+      <Word>string</Word>
     </Keywords>
 
     <!-- Digits -->

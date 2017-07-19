@@ -116,7 +116,10 @@
     <EmbeddedResource Include="Syntax\CSharp.xshd" />
     <EmbeddedResource Include="Syntax\Java.xshd" />
     <EmbeddedResource Include="Syntax\LUA.xshd" />
-    <EmbeddedResource Include="Syntax\VB.xshd" />
+    <EmbeddedResource Include="Syntax\VB.xshd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Syntax\Cpp.xshd" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
