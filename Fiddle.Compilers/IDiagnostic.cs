@@ -1,22 +1,29 @@
-﻿using Microsoft.Scripting;
-using System;
+﻿using System;
 
-namespace Fiddle.Compilers
-{
-    public interface IDiagnostic
-    {
+namespace Fiddle.Compilers {
+    public enum Severity { Info, Warning, Error }
+
+    public interface IDiagnostic {
         /// <summary>
         /// The Diagnostic's Message
         /// </summary>
         string Message { get; }
         /// <summary>
-        /// The line the diagnostic is referring to
+        /// The starting line the diagnostic is referring to
         /// </summary>
-        int Line { get; }
+        int LineFrom { get; }
         /// <summary>
-        /// The char position the diagnostic is referring to
+        /// The ending line the diagnostic is referring to
         /// </summary>
-        int Char { get; }
+        int LineTo { get; }
+        /// <summary>
+        /// The beginning char position the diagnostic is referring to
+        /// </summary>
+        int CharFrom { get; }
+        /// <summary>
+        /// The ending char position the diagnostic is referring to
+        /// </summary>
+        int CharTo { get; }
         /// <summary>
         /// The Diagnostic's severity (Warning, Error, ..)
         /// </summary>

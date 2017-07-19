@@ -6,10 +6,8 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Fiddle.Compilers.Implementation.Python
-{
-    public class PyCompiler : ICompiler
-    {
+namespace Fiddle.Compilers.Implementation.Python {
+    public class PyCompiler : ICompiler {
         public IExecutionProperties ExecuteProperties { get; }
         public ICompilerProperties CompilerProperties { get; }
         public string SourceCode { get; set; }
@@ -23,39 +21,35 @@ namespace Fiddle.Compilers.Implementation.Python
 
         public PyCompiler(string code) : this(code, new CompilerProperties(), new ExecutionProperties()) { }
 
-        public PyCompiler(string code, ICompilerProperties cProps, IExecutionProperties eProps)
-        {
+        public PyCompiler(string code, ICompilerProperties cProps, IExecutionProperties eProps) {
             SourceCode = code;
             CompilerProperties = cProps;
             ExecuteProperties = eProps;
         }
 
 
-        public async Task<ICompileResult> Compile()
-        {
+        public async Task<ICompileResult> Compile() {
             TaskCompletionSource<ICompileResult> tcs = new TaskCompletionSource<ICompileResult>();
 
-            new Thread(() =>
-            {
+            new Thread(() => {
                 PyErrorListener listener = new PyErrorListener();
 
                 //Start the stopwatch
                 Stopwatch sw = Stopwatch.StartNew();
                 //Spawn a new thread with the compile process
-                Thread compileThread = new Thread(() =>
-                    {
-                        ScriptEngine engine = IronPython.Hosting.Python.CreateEngine();
-                        Scope = engine.CreateScope();
-                        Source = engine.CreateScriptSourceFromString(SourceCode);
-                        Compilation = Source.Compile(listener);
-                    });
+                Thread compileThread = new Thread(() => {
+                    ScriptEngine engine = IronPython.Hosting.Python.CreateEngine();
+                    Scope = engine.CreateScope();
+                    Source = engine.CreateScriptSourceFromString(SourceCode);
+                    Compilation = Source.Compile(listener);
+                });
                 compileThread.Start();
                 //Join the thread into main thread with specified timeout
                 bool graceful = compileThread.Join((int)CompilerProperties.Timeout);
                 sw.Stop();
 
                 if (!graceful)
-                    listener.Diagnostics.Add(new PyDiagnostic("Compilation timed out!", 0, 0, Severity.Error));
+                    listener.Diagnostics.Add(new PyDiagnostic("Compilation timed out!", -1, -1, -1, -1, Severity.Error));
 
                 tcs.SetResult(new PyCompileResult(sw.ElapsedMilliseconds, SourceCode, listener.Diagnostics));
             }).Start();
@@ -65,8 +59,7 @@ namespace Fiddle.Compilers.Implementation.Python
             return result;
         }
 
-        public async Task<IExecuteResult> Execute()
-        {
+        public async Task<IExecuteResult> Execute() {
             if (Compilation == null || SourceCode != Source.GetCode())
                 await Compile();
             if (!CompileResult.Success)
@@ -77,23 +70,18 @@ namespace Fiddle.Compilers.Implementation.Python
 
             Stopwatch sw = Stopwatch.StartNew();
             //Cheap hack: Spawn new thread for executing to allow async/await
-            new Thread(() =>
-            {
-                try
-                {
+            new Thread(() => {
+                try {
                     dynamic retValue = Compilation.Execute(Scope);
                     tcs.SetResult(retValue);
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     tcs.SetException(ex);
                 }
             }).Start();
             object result = await tcs.Task;
             sw.Stop();
 
-            if (result != null && result.GetType() == typeof(Exception))
-            {
+            if (result != null && result.GetType() == typeof(Exception)) {
                 IExecuteResult execResultInner = new PyExecuteResult(-1, null, null, CompileResult,
                     result as Exception);
                 ExecuteResult = execResultInner;
@@ -106,18 +94,15 @@ namespace Fiddle.Compilers.Implementation.Python
         }
 
 
-        public class PyErrorListener : ErrorListener
-        {
+        public class PyErrorListener : ErrorListener {
             public IList<IDiagnostic> Diagnostics { get; set; }
 
-            public PyErrorListener()
-            {
+            public PyErrorListener() {
                 Diagnostics = new List<IDiagnostic>();
             }
 
-            public override void ErrorReported(ScriptSource source, string message, SourceSpan span, int errorCode, Severity severity)
-            {
-                Diagnostics.Add(new PyDiagnostic(message, span.Start.Line, span.Start.Column, severity));
+            public override void ErrorReported(ScriptSource source, string message, SourceSpan span, int errorCode, Microsoft.Scripting.Severity severity) {
+                Diagnostics.Add(new PyDiagnostic(message, span.Start.Line, span.End.Line, span.Start.Column, span.Start.Column, Host.ToSeverity(severity)));
             }
         }
     }

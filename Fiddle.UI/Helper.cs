@@ -8,15 +8,11 @@ using System.Windows;
 using System.Xml;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
-namespace Fiddle.UI
-{
-    public static class Helper
-    {
+namespace Fiddle.UI {
+    public static class Helper {
 
-        public static ICompiler ChangeLanguage(string language, string sourceCode, TextEditor editor)
-        {
-            switch (language)
-            {
+        public static ICompiler ChangeLanguage(string language, string sourceCode, TextEditor editor) {
+            switch (language) {
                 case "C#":
                     editor.SyntaxHighlighting = LoadXshd("CSharp.xshd");
                     return Host.NewCompiler(Language.CSharp, sourceCode);
@@ -29,6 +25,12 @@ namespace Fiddle.UI
                 case "Python":
                     editor.SyntaxHighlighting = LoadXshd("Python.xshd");
                     return Host.NewCompiler(Language.Python, sourceCode);
+                case "Java":
+                    editor.SyntaxHighlighting = LoadXshd("Java.xshd");
+                    return Host.NewCompiler(Language.Java, sourceCode);
+                case "LUA":
+                    editor.SyntaxHighlighting = LoadXshd("LUA.xshd");
+                    return Host.NewCompiler(Language.Lua, sourceCode);
                 default:
                     MessageBox.Show("Language not found!");
                     return null;
@@ -36,41 +38,33 @@ namespace Fiddle.UI
         }
 
 
-        private static IHighlightingDefinition LoadXshd(string resourceName)
-        {
+        private static IHighlightingDefinition LoadXshd(string resourceName) {
             Type type = typeof(Helper);
             string fullName = $"{type.Namespace}.Syntax.{resourceName}";
-            using (Stream stream = type.Assembly.GetManifestResourceStream(fullName))
-            {
+            using (Stream stream = type.Assembly.GetManifestResourceStream(fullName)) {
                 if (stream == null)
                     return null;
-                using (XmlTextReader reader = new XmlTextReader(stream))
-                {
+                using (XmlTextReader reader = new XmlTextReader(stream)) {
                     return HighlightingLoader.Load(reader, HighlightingManager.Instance);
                 }
             }
         }
 
 
-        public static void SaveFile(string code, Language language)
-        {
-            SaveFileDialog dialog = new SaveFileDialog
-            {
+        public static void SaveFile(string code, Language language) {
+            SaveFileDialog dialog = new SaveFileDialog {
                 Filter = GetFilterForLanguage(language),
                 FilterIndex = 1,
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
             };
             bool? result = dialog.ShowDialog();
-            if (result == true)
-            {
+            if (result == true) {
                 File.WriteAllText(dialog.FileName, code);
             }
         }
 
-        private static string GetFilterForLanguage(Language language)
-        {
-            switch (language)
-            {
+        private static string GetFilterForLanguage(Language language) {
+            switch (language) {
                 case Language.Cpp:
                     return "C++ source files (*.cpp)|*.cpp|All files (*.*)|*.*";
                 case Language.CSharp:
@@ -79,6 +73,10 @@ namespace Fiddle.UI
                     return "Python source files (*.py)|*.py|All files (*.*)|*.*";
                 case Language.Vb:
                     return "Visual Basic source files (*.vb)|*.vb|All files (*.*)|*.*";
+                case Language.Java:
+                    return "Java source files (*.java)|*.java|All files (*.*)|*.*";
+                case Language.Lua:
+                    return "LUA source files (*.lua)|*.lua|All files (*.*)|*.*";
                 default:
                     return "All files (*.*)|*.*";
             }
