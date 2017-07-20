@@ -46,6 +46,7 @@ namespace Fiddle.Compilers.Implementation.LUA {
 
             using (StringWriter writer = new StringWriter()) {
                 Console.SetOut(writer);
+                Console.SetError(writer);
 
                 Stopwatch sw = Stopwatch.StartNew();
                 try {
