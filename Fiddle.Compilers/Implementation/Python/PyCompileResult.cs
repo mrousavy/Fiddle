@@ -16,13 +16,11 @@ namespace Fiddle.Compilers.Implementation.Python {
             Errors = enumerable
                 .Where(d => d.Severity == Severity.Error)
                 .Select(dd => new Exception($"Ln{dd.LineFrom}-{dd.LineTo} Ch{dd.CharFrom}-{dd.CharTo}: {dd.Message}"));
-
-            if (!Errors.Any())
-                Success = true;
+            Success = !Errors.Any();
         }
 
         public long Time { get; }
-        public bool Success { get; } = true;
+        public bool Success { get; }
         public string SourceCode { get; }
         public IEnumerable<IDiagnostic> Diagnostics { get; }
         public IEnumerable<IDiagnostic> Warnings { get; }

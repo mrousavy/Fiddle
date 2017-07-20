@@ -1,11 +1,12 @@
 ﻿using System;
 using System.CodeDom.Compiler;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Fiddle.Compilers.Implementation.VB {
     public class VbCompileResult : ICompileResult {
-        public VbCompileResult(long time, string code, CompilerErrorCollection errors) {
+        public VbCompileResult(long time, string code, IEnumerable errors) {
             Time = time;
             SourceCode = code;
 
@@ -24,7 +25,7 @@ namespace Fiddle.Compilers.Implementation.VB {
         }
 
         public long Time { get; }
-        public bool Success { get; } = true;
+        public bool Success { get; }
         public string SourceCode { get; }
         public IEnumerable<IDiagnostic> Diagnostics { get; }
         public IEnumerable<IDiagnostic> Warnings => Diagnostics;
