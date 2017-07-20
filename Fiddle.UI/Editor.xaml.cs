@@ -212,6 +212,7 @@ namespace Fiddle.UI {
             string value = ((ComboBoxItem)ComboBoxLanguage.SelectedValue).Content as string;
             try {
                 //Try to load the new compiler
+                _compiler?.Dispose();
                 _compiler = Helper.ChangeLanguage(value, SourceCode, TextBoxCode);
                 App.Preferences.SelectedLanguage = ComboBoxLanguage.SelectedIndex;
                 Title = $"Fiddle - {value}";
@@ -222,6 +223,7 @@ namespace Fiddle.UI {
                 //Revert changes
                 ComboBoxLanguage.SelectedIndex = App.Preferences.SelectedLanguage;
                 value = ((ComboBoxItem)ComboBoxLanguage.SelectedValue).Content as string;
+                _compiler?.Dispose();
                 _compiler = Helper.ChangeLanguage(value, SourceCode, TextBoxCode);
             }
             UnlockUi();

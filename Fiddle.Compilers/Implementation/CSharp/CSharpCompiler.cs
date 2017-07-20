@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -6,9 +9,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Scripting;
 
 namespace Fiddle.Compilers.Implementation.CSharp {
     public class CSharpCompiler : ICompiler {
@@ -56,7 +56,7 @@ namespace Fiddle.Compilers.Implementation.CSharp {
                 });
                 compileThread.Start();
                 bool graceful =
-                    compileThread.Join((int) CompilerProperties
+                    compileThread.Join((int)CompilerProperties
                         .Timeout); //Wait until compile Thread finishes with given timeout
                 sw.Stop();
 
@@ -172,5 +172,7 @@ namespace Fiddle.Compilers.Implementation.CSharp {
         public bool CatchException(Exception ex) {
             return true;
         }
+
+        public void Dispose() { }
     }
 }

@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Microsoft.Scripting;
+using Microsoft.Scripting.Hosting;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Scripting;
-using Microsoft.Scripting.Hosting;
 
 namespace Fiddle.Compilers.Implementation.Python {
     public class PyCompiler : ICompiler {
@@ -16,6 +17,8 @@ namespace Fiddle.Compilers.Implementation.Python {
             ExecuteProperties = eProps;
         }
 
+        private MemoryStream Stream { get; set; }
+        private StringWriter Writer { get; set; }
         private ScriptScope Scope { get; set; }
         private CompiledCode Compilation { get; set; }
         private ScriptSource Source { get; set; }
@@ -32,19 +35,24 @@ namespace Fiddle.Compilers.Implementation.Python {
 
             new Thread(() => {
                 PyErrorListener listener = new PyErrorListener();
+                Stream?.Dispose();
+                Stream = new MemoryStream();
+                Writer?.Dispose();
+                Writer = new StringWriter();
 
                 //Start the stopwatch
                 Stopwatch sw = Stopwatch.StartNew();
                 //Spawn a new thread with the compile process
                 Thread compileThread = new Thread(() => {
                     ScriptEngine engine = IronPython.Hosting.Python.CreateEngine();
+                    engine.Runtime.IO.SetOutput(Stream, Writer);
                     Scope = engine.CreateScope();
                     Source = engine.CreateScriptSourceFromString(SourceCode);
                     Compilation = Source.Compile(listener);
                 });
                 compileThread.Start();
                 //Join the thread into main thread with specified timeout
-                bool graceful = compileThread.Join((int) CompilerProperties.Timeout);
+                bool graceful = compileThread.Join((int)CompilerProperties.Timeout);
                 sw.Stop();
 
                 if (!graceful)
@@ -59,8 +67,7 @@ namespace Fiddle.Compilers.Implementation.Python {
         }
 
         public async Task<IExecuteResult> Execute() {
-            if (Compilation == null || SourceCode != Source.GetCode()
-            ) //recompile if source code changed or not yet compiled
+            if (Compilation == null || SourceCode != Source.GetCode()) //recompile if source code changed or not yet compiled
                 await Compile();
             if (Compilation == null || !CompileResult.Success) //if still not successful after compiling
                 return new PyExecuteResult(-1, null, null, CompileResult,
@@ -88,7 +95,7 @@ namespace Fiddle.Compilers.Implementation.Python {
                 return execResultInner;
             }
 
-            IExecuteResult execResult = new PyExecuteResult(sw.ElapsedMilliseconds, null, result, CompileResult, null);
+            IExecuteResult execResult = new PyExecuteResult(sw.ElapsedMilliseconds, Writer.ToString(), result, CompileResult, null);
             ExecuteResult = execResult;
             return execResult;
         }
@@ -112,6 +119,11 @@ namespace Fiddle.Compilers.Implementation.Python {
                     span.Start.Column,
                     Host.ToSeverity(severity)));
             }
+        }
+
+        public void Dispose() {
+            Stream?.Dispose();
+            Writer?.Dispose();
         }
     }
 }

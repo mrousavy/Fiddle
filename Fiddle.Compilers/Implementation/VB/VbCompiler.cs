@@ -3,6 +3,7 @@ using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -90,41 +91,45 @@ namespace Fiddle.Compilers.Implementation.VB {
             object returnValue = null;
             Exception exception = null;
 
-            Stopwatch sw = Stopwatch.StartNew();
+            using (StringWriter writer = new StringWriter()) {
+                Console.SetOut(writer);
 
-            Thread thread = new Thread(() => {
-                try {
-                    returnValue = ScriptAssembly.EntryPoint == null
-                        ? ScriptAssembly.DefinedTypes.Last().DeclaredMethods.First().Invoke(null, null)
-                        : ScriptAssembly.EntryPoint.Invoke(null, null);
-                } catch (Exception ex) {
-                    exception = ex;
+                Stopwatch sw = Stopwatch.StartNew();
+
+                Thread thread = new Thread(() => {
+                    try {
+                        returnValue = ScriptAssembly.EntryPoint == null
+                            ? ScriptAssembly.DefinedTypes.Last().DeclaredMethods.First().Invoke(null, null)
+                            : ScriptAssembly.EntryPoint.Invoke(null, null);
+                    } catch (Exception ex) {
+                        exception = ex;
+                    }
+                });
+                thread.Start();
+                bool graceful = thread.Join((int)ExecuteProperties.Timeout);
+
+                sw.Stop();
+
+                //TODO: Console output
+                if (graceful) {
+                    IExecuteResult result = new VbExecuteResult(
+                        sw.ElapsedMilliseconds,
+                        writer.ToString(),
+                        returnValue,
+                        CompileResult,
+                        exception);
+                    ExecuteResult = result;
+                    return result;
+                } else {
+                    IExecuteResult result = new VbExecuteResult(
+                        sw.ElapsedMilliseconds,
+                        null,
+                        null,
+                        CompileResult,
+                        new Exception("The execution timed out!"));
+                    ExecuteResult = result;
+                    return result;
                 }
-            });
-            thread.Start();
-            bool graceful = thread.Join((int)ExecuteProperties.Timeout);
-
-            sw.Stop();
-
-            //TODO: Console output
-            if (graceful) {
-                IExecuteResult result = new VbExecuteResult(
-                    sw.ElapsedMilliseconds,
-                    null,
-                    returnValue,
-                    CompileResult,
-                    exception);
-                ExecuteResult = result;
-                return result;
-            } else {
-                IExecuteResult result = new VbExecuteResult(
-                    sw.ElapsedMilliseconds,
-                    null,
-                    null,
-                    CompileResult,
-                    new Exception("The execution timed out!"));
-                ExecuteResult = result;
-                return result;
             }
         }
 
@@ -178,6 +183,10 @@ namespace Fiddle.Compilers.Implementation.VB {
 
         public bool CatchException(Exception ex) {
             return true;
+        }
+
+        public void Dispose() {
+            Provider?.Dispose();
         }
     }
 }

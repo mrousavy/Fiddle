@@ -188,5 +188,7 @@ namespace Fiddle.Compilers.Implementation.Java {
                              $"{SourceCode}\n" +
                              "}";
         }
+
+        public void Dispose() { }
     }
 }

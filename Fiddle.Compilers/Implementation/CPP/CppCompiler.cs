@@ -30,5 +30,9 @@ namespace Fiddle.Compilers.Implementation.CPP {
         public Task<IExecuteResult> Execute() {
             throw new NotImplementedException();
         }
+
+        public void Dispose() {
+            Provider?.Dispose();
+        }
     }
 }

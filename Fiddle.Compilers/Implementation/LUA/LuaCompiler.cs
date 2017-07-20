@@ -1,6 +1,7 @@
 ﻿using NLua;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Fiddle.Compilers.Implementation.LUA {
@@ -43,19 +44,27 @@ namespace Fiddle.Compilers.Implementation.LUA {
             Exception exception = null;
             object[] result = new object[0];
 
-            Stopwatch sw = Stopwatch.StartNew();
-            try {
-                result = Lua.DoString(SourceCode);
-            } catch (Exception ex) {
-                exception = ex;
-            }
-            sw.Stop();
+            using (StringWriter writer = new StringWriter()) {
+                Console.SetOut(writer);
 
-            //TODO: Console output
-            IExecuteResult executeResult =
-                new LuaExecuteResult(sw.ElapsedMilliseconds, null, result, CompileResult, exception);
-            ExecuteResult = executeResult;
-            return Task.FromResult(executeResult);
+                Stopwatch sw = Stopwatch.StartNew();
+                try {
+                    result = Lua.DoString(SourceCode);
+                } catch (Exception ex) {
+                    exception = ex;
+                }
+                sw.Stop();
+
+                //TODO: Console output
+                IExecuteResult executeResult =
+                    new LuaExecuteResult(sw.ElapsedMilliseconds, writer.ToString(), result, CompileResult, exception);
+                ExecuteResult = executeResult;
+                return Task.FromResult(executeResult);
+            }
+        }
+
+        public void Dispose() {
+            Lua?.Dispose();
         }
     }
 }

@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace Fiddle.Compilers {
     /// <summary>
     ///     A Code Compiler
     /// </summary>
-    public interface ICompiler {
+    public interface ICompiler : IDisposable {
         /// <summary>
         ///     The execution properties to respect when executing
         /// </summary>
