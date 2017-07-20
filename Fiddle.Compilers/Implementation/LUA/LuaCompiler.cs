@@ -16,7 +16,7 @@ namespace Fiddle.Compilers.Implementation.LUA {
 
         public string[] Imports { get; set; }
         private Lua Lua { get; set; }
-
+        public StringWriter Writer { get; set; }
         public IExecutionProperties ExecuteProperties { get; }
         public ICompilerProperties CompilerProperties { get; }
         public string SourceCode { get; set; }
@@ -29,8 +29,10 @@ namespace Fiddle.Compilers.Implementation.LUA {
         /// </summary>
         /// <returns></returns>
         public Task<ICompileResult> Compile() {
-            if (Lua == default(Lua))
+            if (Lua == default(Lua)) {
                 Lua = new Lua();
+                Lua.RegisterFunction("print", this, typeof(LuaCompiler).GetMethod("Print")); //console out
+            }
 
             ICompileResult compileResult = new LuaCompileResult(0, SourceCode, null, null, null);
             CompileResult = compileResult;
@@ -40,28 +42,28 @@ namespace Fiddle.Compilers.Implementation.LUA {
         public Task<IExecuteResult> Execute() {
             if (Lua == default(Lua))
                 Compile();
+            Writer?.Dispose();
+            Writer = new StringWriter();
 
             Exception exception = null;
             object[] result = new object[0];
 
-            using (StringWriter writer = new StringWriter()) {
-                Console.SetOut(writer);
-                Console.SetError(writer);
-
-                Stopwatch sw = Stopwatch.StartNew();
-                try {
-                    result = Lua.DoString(SourceCode);
-                } catch (Exception ex) {
-                    exception = ex;
-                }
-                sw.Stop();
-
-                //TODO: Console output
-                IExecuteResult executeResult =
-                    new LuaExecuteResult(sw.ElapsedMilliseconds, writer.ToString(), result, CompileResult, exception);
-                ExecuteResult = executeResult;
-                return Task.FromResult(executeResult);
+            Stopwatch sw = Stopwatch.StartNew();
+            try {
+                result = Lua.DoString(SourceCode);
+            } catch (Exception ex) {
+                exception = ex;
             }
+            sw.Stop();
+
+            IExecuteResult executeResult =
+                new LuaExecuteResult(sw.ElapsedMilliseconds, Writer.ToString(), result, CompileResult, exception);
+            ExecuteResult = executeResult;
+            return Task.FromResult(executeResult);
+        }
+
+        public void Print(string message) {
+            Writer.WriteLine(message);
         }
 
         public void Dispose() {
