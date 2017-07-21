@@ -7,6 +7,7 @@ Fiddle is a lightweight tool to **edit**, **compile** and **run** simple **scrip
 _(For now you can edit the settings in `%appdata%\Fiddle\Preferences.json`. [Documentation (Preferences class)](https://github.com/mrousavy/Fiddle/blob/master/Fiddle.UI/Preferences.cs))_
 
 ## Screenshots
+![Fiddle Demo Slideshow](https://github.com/mrousavy/Fiddle/raw/master/Images/Fiddle_slideshow.png)
 
 ## Languages
 - [ ] **C++** 	_(TODO: everything)_
