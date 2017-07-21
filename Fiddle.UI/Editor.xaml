@@ -103,7 +103,6 @@
                     Grid.Column="0"
                     xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
                     Name="TextBoxCode"
-                    SyntaxHighlighting="C#"
                     FontFamily="Consolas"
                     FontSize="12pt"
                     WordWrap="True"
