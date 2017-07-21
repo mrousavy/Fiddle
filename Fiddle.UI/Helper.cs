@@ -220,8 +220,11 @@ namespace Fiddle.UI
                     items.Add(new Run($"{result.Exception.GetType().Name}: ") { Foreground = Brushes.OrangeRed });
                     items.Add(new Run($"\"{result.Exception.Message}\"{nl}"));
                 }
-                items.Add(new Run("Diagnostics:\n"));
-                items.AddRange(BuildDiagnostics(result.CompileResult.Diagnostics, " "));
+                if (result.CompileResult.Diagnostics?.Any() == true)
+                {
+                    items.Add(new Run("Diagnostics:\n"));
+                    items.AddRange(BuildDiagnostics(result.CompileResult.Diagnostics, " "));
+                }
 
                 return items;
             }
@@ -241,10 +244,13 @@ namespace Fiddle.UI
                         Foreground = Brushes.Green,
                         FontWeight = FontWeights.Bold,
                         FontSize = 15
-                    },
-                    new Run("Diagnostics:\n")
+                    }
                 };
-                items.AddRange(BuildDiagnostics(result.Diagnostics, " "));
+                if (result.Diagnostics?.Any() == true)
+                {
+                    items.Add(new Run("Diagnostics:\n"));
+                    items.AddRange(BuildDiagnostics(result.Diagnostics, " "));
+                }
                 return items;
             }
             else
@@ -255,10 +261,13 @@ namespace Fiddle.UI
                         Foreground = Brushes.Red,
                         FontWeight = FontWeights.Bold,
                         FontSize = 15
-                    },
-                    new Run("Diagnostics:\n")
+                    }
                 };
-                items.AddRange(BuildDiagnostics(result.Diagnostics, " "));
+                if (result.Diagnostics?.Any() == true)
+                {
+                    items.Add(new Run("Diagnostics:\n"));
+                    items.AddRange(BuildDiagnostics(result.Diagnostics, " "));
+                }
                 return items;
             }
         }
