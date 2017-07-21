@@ -6,7 +6,7 @@ A lightweight code editor and compiler for fiddling with simple code snippets/sc
 # Contributing
 1. [Fork](/Fork) Fiddle and clone the fork.
 2. Make changes
-	* Make **bugfixes*+ or **other changes**
+	* Make **bugfixes** or **other changes**
 	
 	   **.. or ..**
 	* Add a **new Compiler**
