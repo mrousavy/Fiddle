@@ -20,10 +20,11 @@ _(For now you can edit the settings in `%appdata%\Fiddle\Preferences.json`. [Doc
 ## Languages
 - [ ] **C++** 	_(TODO: everything)_
 - [x] **C#**
-- [ ] **Java** 	_(TODO: Return values)_
+- [x] **Java** 	_(TODO: Return values)_
 - [x] **LUA**
 - [x] **Python**
 - [x] **VB** 	_(TODO: Better Entry point)_
+[Other ToDo's](https://github.com/mrousavy/Fiddle/projects)
 
 ## Contributing
 1. Fork **Fiddle** and **clone the fork**.
