@@ -24,6 +24,37 @@
         <CommandBinding Command="{x:Static local:Editor.CommandExecute}" Executed="F5" />
     </Window.CommandBindings>
 
+    <Window.Resources>
+        <Style x:Key="ReadOnlyTextBox" TargetType="TextBox">
+            <Setter Property="IsReadOnly" Value="True" />
+            <Setter Property="Padding" Value="5" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="IsTabStop" Value="False" />
+            <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
+            <Setter Property="VerticalScrollBarVisibility" Value="Disabled" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Grid x:Name="RootElement">
+                            <ScrollViewer x:Name="ContentElement"
+                                          Margin="{TemplateBinding Margin}"
+                                          Background="{TemplateBinding Background}"
+                                          BorderBrush="{TemplateBinding BorderBrush}"
+                                          BorderThickness="{TemplateBinding BorderThickness}"
+                                          IsTabStop="{TemplateBinding IsTabStop}"
+                                          Padding="{TemplateBinding Padding}"
+                                          HorizontalScrollBarVisibility="{TemplateBinding HorizontalScrollBarVisibility}"
+                                          VerticalScrollBarVisibility="{TemplateBinding VerticalScrollBarVisibility}" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
     <md:DialogHost Name="EditorDialogHost">
         <Grid Name="EditorGrid">
             <Grid.ColumnDefinitions>
@@ -104,7 +135,7 @@
                     xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
                     Name="TextBoxCode"
                     FontFamily="Consolas"
-                    FontSize="12pt"
+                    FontSize="12pt" TabIndex="0"
                     WordWrap="True"
                     Foreground="White" Padding="10"
                     Background="#374349" Margin="5"
@@ -138,6 +169,17 @@
                             FontSize="14"
                             Name="TextBlockResults"
                             TextWrapping="Wrap" />
+                        <Button Background="#263238" Height="45" Width="45"
+                                Click="ButtonShowRaw" BorderBrush="#263238"
+                                Padding="-10" ToolTip="Show Raw"
+                                Margin="5"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top">
+                            <md:PackIcon Kind="CodeBrackets" Foreground="Green"
+                                         HorizontalAlignment="Right"
+                                         VerticalAlignment="Center"
+                                         Height="25" Width="25" />
+                        </Button>
                     </Grid>
                 </ScrollViewer>
             </Grid>

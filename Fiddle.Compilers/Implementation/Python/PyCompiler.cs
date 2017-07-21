@@ -1,11 +1,11 @@
-﻿using Microsoft.Scripting;
-using Microsoft.Scripting.Hosting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Scripting;
+using Microsoft.Scripting.Hosting;
 
 namespace Fiddle.Compilers.Implementation.Python {
     public class PyCompiler : ICompiler {
@@ -49,7 +49,7 @@ namespace Fiddle.Compilers.Implementation.Python {
                 });
                 compileThread.Start();
                 //Join the thread into main thread with specified timeout
-                bool graceful = compileThread.Join((int)CompilerProperties.Timeout);
+                bool graceful = compileThread.Join((int) CompilerProperties.Timeout);
                 sw.Stop();
 
                 if (!graceful)
@@ -65,15 +65,15 @@ namespace Fiddle.Compilers.Implementation.Python {
 
         public async Task<IExecuteResult> Execute() {
             //recompile if source code changed, not yet compiled or Console has already text printed
-            if (Compilation == null || SourceCode != Source.GetCode() || Writer.ToString().Length > 0) 
+            if (Compilation == null || SourceCode != Source.GetCode() || Writer.ToString().Length > 0)
                 await Compile();
             if (Compilation == null || !CompileResult.Success) //if still not successful after compiling
                 return new PyExecuteResult(-1, null, null, CompileResult,
                     new Exception("Compilation was not successful!"));
-            
-            var result = await ExecuteThreaded<object>.Execute(() => 
-                Compilation.Execute(Scope), 
-                (int)ExecuteProperties.Timeout);
+
+            ExecuteThreaded<object>.ThreadRunResult result = await ExecuteThreaded<object>.Execute(() =>
+                    Compilation.Execute(Scope),
+                (int) ExecuteProperties.Timeout);
 
             if (result.ReturnValue?.GetType() == typeof(Exception)) {
                 IExecuteResult execResultInner = new PyExecuteResult(
@@ -95,6 +95,18 @@ namespace Fiddle.Compilers.Implementation.Python {
             return execResult;
         }
 
+        public void Dispose() {
+            Stream?.Dispose();
+            Writer?.Dispose();
+        }
+
+        private void Init() {
+            Stream?.Dispose();
+            Stream = new MemoryStream();
+            Writer?.Dispose();
+            Writer = new StringWriter();
+        }
+
 
         public class PyErrorListener : ErrorListener {
             public PyErrorListener() {
@@ -114,19 +126,6 @@ namespace Fiddle.Compilers.Implementation.Python {
                     span.Start.Column,
                     Host.ToSeverity(severity)));
             }
-        }
-
-        private void Init()
-        {
-            Stream?.Dispose();
-            Stream = new MemoryStream();
-            Writer?.Dispose();
-            Writer = new StringWriter();
-        }
-
-        public void Dispose() {
-            Stream?.Dispose();
-            Writer?.Dispose();
         }
     }
 }

@@ -1,8 +1,6 @@
-﻿using NLua;
-using System;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
+using NLua;
 
 namespace Fiddle.Compilers.Implementation.LUA {
     public class LuaCompiler : ICompiler {
@@ -29,8 +27,7 @@ namespace Fiddle.Compilers.Implementation.LUA {
         /// </summary>
         /// <returns></returns>
         public Task<ICompileResult> Compile() {
-            if (Lua == default(Lua))
-            {
+            if (Lua == default(Lua)) {
                 Lua = new Lua();
                 Lua.RegisterFunction("print", this, typeof(LuaCompiler).GetMethod("Print")); //console out
             }
@@ -40,15 +37,14 @@ namespace Fiddle.Compilers.Implementation.LUA {
             return Task.FromResult(compileResult);
         }
 
-        public async Task<IExecuteResult> Execute()
-        {
+        public async Task<IExecuteResult> Execute() {
             if (Lua == default(Lua))
                 await Compile();
             Writer?.Dispose();
             Writer = new StringWriter();
 
-            var result = await ExecuteThreaded<object[]>.Execute(() =>
-                Lua.DoString(SourceCode), (int)ExecuteProperties.Timeout);
+            ExecuteThreaded<object[]>.ThreadRunResult result = await ExecuteThreaded<object[]>.Execute(() =>
+                Lua.DoString(SourceCode), (int) ExecuteProperties.Timeout);
 
             IExecuteResult executeResult =
                 new LuaExecuteResult(
@@ -61,14 +57,12 @@ namespace Fiddle.Compilers.Implementation.LUA {
             return executeResult;
         }
 
-        public void Print(string message)
-        {
-            Writer.WriteLine(message);
+        public void Dispose() {
+            Lua?.Dispose();
         }
 
-        public void Dispose()
-        {
-            Lua?.Dispose();
+        public void Print(string message) {
+            Writer.WriteLine(message);
         }
     }
 }

@@ -1,8 +1,4 @@
-﻿using Fiddle.Compilers;
-using ICSharpCode.AvalonEdit.AddIn;
-using ICSharpCode.SharpDevelop.Editor;
-using MaterialDesignThemes.Wpf;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -13,6 +9,10 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using Fiddle.Compilers;
+using ICSharpCode.AvalonEdit.AddIn;
+using ICSharpCode.SharpDevelop.Editor;
+using MaterialDesignThemes.Wpf;
 
 namespace Fiddle.UI {
     /// <summary>
@@ -46,10 +46,8 @@ namespace Fiddle.UI {
         //Initialize all user-states from preferences
         private void LoadPreferences() {
             //Load last "state"
-            if (App.Preferences.SaveUserSettings)
-            {
-                switch (App.Preferences.StartAction)
-                {
+            if (App.Preferences.SaveUserSettings) {
+                switch (App.Preferences.StartAction) {
                     case StartAction.Continue:
                         TextBoxCode.Text = App.Preferences.SourceCode;
                         TextBoxCode.TextArea.Caret.Offset = App.Preferences.CursorOffset;
@@ -92,7 +90,7 @@ namespace Fiddle.UI {
             TextBoxCode.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
             TextBoxCode.TextArea.TextView.LineTransformers.Add(textMarkerService);
             IServiceContainer services =
-                (IServiceContainer)TextBoxCode.Document.ServiceProvider.GetService(typeof(IServiceContainer));
+                (IServiceContainer) TextBoxCode.Document.ServiceProvider.GetService(typeof(IServiceContainer));
             services?.AddService(typeof(ITextMarkerService), textMarkerService);
             _textMarkerService = textMarkerService;
         }
@@ -112,8 +110,7 @@ namespace Fiddle.UI {
         //Window closes event
         private void Window_Closing(object sender, CancelEventArgs e) {
             SetStatus(StatusType.Wait, "Closing..");
-            if (App.Preferences.SaveUserSettings)
-            {
+            if (App.Preferences.SaveUserSettings) {
                 App.Preferences.WindowWidth = Width;
                 App.Preferences.WindowHeight = Height;
                 App.Preferences.WindowLeft = Left;
@@ -217,17 +214,11 @@ namespace Fiddle.UI {
             }
         }
 
-        //Save the file to disk
-        private void ButtonSave(object sender, RoutedEventArgs e) {
-            _filePath = null; //Set to null again so save button opens file picker
-            Save();
-        }
-
         //Select a different programming language (drop down)
         private async void ComboBoxLanguageSelected(object sender, SelectionChangedEventArgs e) {
             LockUi();
             ResetUnderline();
-            string value = ((ComboBoxItem)ComboBoxLanguage.SelectedValue).Content as string;
+            string value = ((ComboBoxItem) ComboBoxLanguage.SelectedValue).Content as string;
             try {
                 //Try to load the new compiler
                 _compiler?.Dispose();
@@ -240,7 +231,7 @@ namespace Fiddle.UI {
                     EditorDialogHost);
                 //Revert changes
                 ComboBoxLanguage.SelectedIndex = App.Preferences.SelectedLanguage;
-                value = ((ComboBoxItem)ComboBoxLanguage.SelectedValue).Content as string;
+                value = ((ComboBoxItem) ComboBoxLanguage.SelectedValue).Content as string;
                 _compiler?.Dispose();
                 _compiler = Helper.ChangeLanguage(value, SourceCode, TextBoxCode);
             }
@@ -348,6 +339,12 @@ namespace Fiddle.UI {
 
         #region Events
 
+        //Save the file to disk
+        private void ButtonSave(object sender, RoutedEventArgs e) {
+            _filePath = null; //Set to null again so save button opens file picker
+            Save();
+        }
+
         //Compile Button click
         private void ButtonCompile(object sender, RoutedEventArgs e) {
             Compile();
@@ -356,6 +353,12 @@ namespace Fiddle.UI {
         //Execute button click
         private void ButtonExecute(object sender, RoutedEventArgs e) {
             Execute();
+        }
+
+        //Show results view raw button click
+        private void ButtonShowRaw(object sender, RoutedEventArgs e) {
+            RawText window = new RawText(TextBlockResults.Text) {Owner = this};
+            window.ShowDialog();
         }
 
         //Ctrl + S Command (Save)

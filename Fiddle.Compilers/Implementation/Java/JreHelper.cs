@@ -27,7 +27,7 @@ namespace Fiddle.Compilers.Implementation.Java {
                 bool graceful = javaProcess != null && javaProcess.WaitForExit((int) properties.Timeout);
 
                 if (graceful) {
-                    string error =  javaProcess.StandardError.ReadToEnd();
+                    string error = javaProcess.StandardError.ReadToEnd();
                     if (!string.IsNullOrWhiteSpace(error)) throw new Exception(error);
                     string output = javaProcess.StandardOutput.ReadToEnd();
                     return output;

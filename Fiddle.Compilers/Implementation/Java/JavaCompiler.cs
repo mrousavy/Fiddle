@@ -95,6 +95,8 @@ namespace Fiddle.Compilers.Implementation.Java {
             }
         }
 
+        public void Dispose() { }
+
         private void FindJdk() {
             string environmentVariable = Environment.GetEnvironmentVariable("path");
             if (!string.IsNullOrWhiteSpace(environmentVariable)) {
@@ -188,7 +190,5 @@ namespace Fiddle.Compilers.Implementation.Java {
                              $"{SourceCode}\n" +
                              "}";
         }
-
-        public void Dispose() { }
     }
 }

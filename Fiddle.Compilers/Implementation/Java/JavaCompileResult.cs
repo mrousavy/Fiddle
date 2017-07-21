@@ -13,8 +13,10 @@ namespace Fiddle.Compilers.Implementation.Java {
 
             Errors = errors ?? new List<Exception>();
             IEnumerable<Exception> exceptionsEnumerated = Errors as Exception[] ?? Errors.ToArray();
-            Diagnostics = diagnostics ?? exceptionsEnumerated.Select(e => new JavaDiagnostic(e.Message, 0, 0, 0, 0, Severity.Error));
-            Warnings = warnings ?? exceptionsEnumerated.Select(e => new JavaDiagnostic(e.Message, 0, 0, 0, 0, Severity.Error));
+            Diagnostics = diagnostics ??
+                          exceptionsEnumerated.Select(e => new JavaDiagnostic(e.Message, 0, 0, 0, 0, Severity.Error));
+            Warnings = warnings ??
+                       exceptionsEnumerated.Select(e => new JavaDiagnostic(e.Message, 0, 0, 0, 0, Severity.Error));
             Success = !exceptionsEnumerated.Any();
         }
 

@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using System;
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.VisualBasic;
 
 #pragma warning disable 618
 
@@ -56,7 +56,7 @@ namespace Fiddle.Compilers.Implementation.VB {
                 });
                 compileThread.Start();
                 bool graceful =
-                    compileThread.Join((int)CompilerProperties
+                    compileThread.Join((int) CompilerProperties
                         .Timeout); //Wait until compile Thread finishes with given timeout
                 sw.Stop();
 
@@ -92,12 +92,12 @@ namespace Fiddle.Compilers.Implementation.VB {
                 Console.SetOut(writer);
                 Console.SetError(writer);
 
-                var result = await ExecuteThreaded<object>.Execute(() => 
-                    ScriptAssembly.EntryPoint == null
-                        ? ScriptAssembly.DefinedTypes.Last().DeclaredMethods.First().Invoke(null, null)
-                        : ScriptAssembly.EntryPoint.Invoke(null, null), 
-                        (int)ExecuteProperties.Timeout);
-                
+                ExecuteThreaded<object>.ThreadRunResult result = await ExecuteThreaded<object>.Execute(() =>
+                        ScriptAssembly.EntryPoint == null
+                            ? ScriptAssembly.DefinedTypes.Last().DeclaredMethods.First().Invoke(null, null)
+                            : ScriptAssembly.EntryPoint.Invoke(null, null),
+                    (int) ExecuteProperties.Timeout);
+
                 if (result.Successful) {
                     IExecuteResult executeResult = new VbExecuteResult(
                         result.ElapsedMilliseconds,
@@ -118,6 +118,10 @@ namespace Fiddle.Compilers.Implementation.VB {
                     return executeResult;
                 }
             }
+        }
+
+        public void Dispose() {
+            Provider?.Dispose();
         }
 
         /// <summary>
@@ -170,10 +174,6 @@ namespace Fiddle.Compilers.Implementation.VB {
 
         public bool CatchException(Exception ex) {
             return true;
-        }
-
-        public void Dispose() {
-            Provider?.Dispose();
         }
     }
 }
