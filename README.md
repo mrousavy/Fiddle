@@ -7,16 +7,6 @@
 	</p>
 </p>
 
-## Settings
-- [ ] Settings Window
-
-_(For now you can edit the settings in `%appdata%\Fiddle\Preferences.json`. [Documentation (Preferences class)](https://github.com/mrousavy/Fiddle/blob/master/Fiddle.UI/Preferences.cs))_
-
-## Screenshots
-<p align="center">
-	<img src="https://github.com/mrousavy/Fiddle/raw/master/Images/Fiddle_slideshow.gif" alt="Fiddle Demo Slideshow"/>
-</p>
-
 ## Languages
 - [ ] **C++** 	_(TODO: everything)_
 - [x] **C#**
@@ -26,6 +16,16 @@ _(For now you can edit the settings in `%appdata%\Fiddle\Preferences.json`. [Doc
 - [x] **VB** 	_(TODO: Better Entry point)_
 
 [Other ToDo's](https://github.com/mrousavy/Fiddle/projects)
+
+## Screenshots
+<p align="center">
+	<img src="https://github.com/mrousavy/Fiddle/raw/master/Images/Fiddle_slideshow.gif" alt="Fiddle Demo Slideshow"/>
+</p>
+
+## Settings
+- [ ] Settings Window
+
+_(For now you can edit the settings in `%appdata%\Fiddle\Preferences.json`. [Documentation (Preferences class)](https://github.com/mrousavy/Fiddle/blob/master/Fiddle.UI/Preferences.cs))_
 
 ## Contributing
 1. Fork **Fiddle** and **clone the fork**.
