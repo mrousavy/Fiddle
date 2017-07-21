@@ -4,9 +4,11 @@ A lightweight code editor and compiler for fiddling with simple code snippets/sc
 
 
 # Contributing
-1. [Fork](/Fork) Fiddle.
+1. [Fork](/Fork) Fiddle and clone the fork.
 2. Make changes
 	* Make bugfixes or other changes
+	
+	   .. or ..
 	* Create a new Compiler
 		1. Create new classes in `Fiddle.Compilers/Implementation/[LanguageName]/`:
 			* `../[LanguageName]Compiler.cs` : `ICompiler`
@@ -18,4 +20,6 @@ A lightweight code editor and compiler for fiddling with simple code snippets/sc
 		4. Add Language Name to `Fiddle.UI/Editor.xaml` in `ComboBox` as `ComboBoxItem`
 		5. Add Compiler initialization to `Fiddle.UI/Helper/ChangeLanguage(..)` with name from `ComboBoxItem`
 		6. (Optionally) Add file-extension to `Fiddle.UI/Helper/GetFilterForLanguage(..)`
-		7. (Optionally) Add Syntax highlighting definition to `Fiddle.UI/Syntax/`
+		7. (Optionally) Add Syntax highlighting definition to `Fiddle.UI/Syntax/`		
+3. Commit & Push
+4. Create a pull request (on your fork)
