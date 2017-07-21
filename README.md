@@ -1,5 +1,11 @@
-# Fiddle
-Fiddle is a lightweight tool to **edit**, **compile** and **run** simple **scripts** in any of the [supported languages](#languages).
+<p align="center">
+	<h1 align="center">
+		Fiddle
+	</h1>
+	<p align="center">
+		Fiddle is a lightweight tool to <strong>edit</strong>, <strong>compile</strong> and <strong>run</strong> simple <strong>scripts</strong> in any of the <a href="#languages">supported languages</a>.
+	</p>
+</p>
 
 ## Settings
 - [ ] Settings Window
@@ -7,7 +13,9 @@ Fiddle is a lightweight tool to **edit**, **compile** and **run** simple **scrip
 _(For now you can edit the settings in `%appdata%\Fiddle\Preferences.json`. [Documentation (Preferences class)](https://github.com/mrousavy/Fiddle/blob/master/Fiddle.UI/Preferences.cs))_
 
 ## Screenshots
-![Fiddle Demo Slideshow](https://github.com/mrousavy/Fiddle/raw/master/Images/Fiddle_slideshow.gif)
+<p align="center">
+	<img src="https://github.com/mrousavy/Fiddle/raw/master/Images/Fiddle_slideshow.gif" alt="Fiddle Demo Slideshow"/>
+</p>
 
 ## Languages
 - [ ] **C++** 	_(TODO: everything)_
