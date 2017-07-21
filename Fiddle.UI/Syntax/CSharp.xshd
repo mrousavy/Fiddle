@@ -31,6 +31,8 @@
     <Keywords fontWeight="bold" foreground="LightBlue">
       <Word>abstract</Word>
       <Word>as</Word>
+      <Word>async</Word>
+      <Word>await</Word>
       <Word>base</Word>
       <Word>bool</Word>
       <Word>break</Word>
