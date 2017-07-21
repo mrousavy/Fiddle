@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Fiddle.Compilers;
+using ICSharpCode.AvalonEdit.AddIn;
+using ICSharpCode.SharpDevelop.Editor;
+using MaterialDesignThemes.Wpf;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -9,10 +13,6 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using Fiddle.Compilers;
-using ICSharpCode.AvalonEdit.AddIn;
-using ICSharpCode.SharpDevelop.Editor;
-using MaterialDesignThemes.Wpf;
 
 namespace Fiddle.UI {
     /// <summary>
@@ -90,7 +90,7 @@ namespace Fiddle.UI {
             TextBoxCode.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
             TextBoxCode.TextArea.TextView.LineTransformers.Add(textMarkerService);
             IServiceContainer services =
-                (IServiceContainer) TextBoxCode.Document.ServiceProvider.GetService(typeof(IServiceContainer));
+                (IServiceContainer)TextBoxCode.Document.ServiceProvider.GetService(typeof(IServiceContainer));
             services?.AddService(typeof(ITextMarkerService), textMarkerService);
             _textMarkerService = textMarkerService;
         }
@@ -128,6 +128,7 @@ namespace Fiddle.UI {
 
         //Actually compile code
         private async void Compile() {
+            ClearResultView();
             SetStatus(StatusType.Wait, "Compiling..");
 
             LockUi();
@@ -157,6 +158,7 @@ namespace Fiddle.UI {
 
         //Actually execute code
         private async void Execute() {
+            ClearResultView();
             SetStatus(StatusType.Wait, "Executing..");
 
             LockUi();
@@ -218,7 +220,7 @@ namespace Fiddle.UI {
         private async void ComboBoxLanguageSelected(object sender, SelectionChangedEventArgs e) {
             LockUi();
             ResetUnderline();
-            string value = ((ComboBoxItem) ComboBoxLanguage.SelectedValue).Content as string;
+            string value = ((ComboBoxItem)ComboBoxLanguage.SelectedValue).Content as string;
             try {
                 //Try to load the new compiler
                 _compiler?.Dispose();
@@ -231,7 +233,7 @@ namespace Fiddle.UI {
                     EditorDialogHost);
                 //Revert changes
                 ComboBoxLanguage.SelectedIndex = App.Preferences.SelectedLanguage;
-                value = ((ComboBoxItem) ComboBoxLanguage.SelectedValue).Content as string;
+                value = ((ComboBoxItem)ComboBoxLanguage.SelectedValue).Content as string;
                 _compiler?.Dispose();
                 _compiler = Helper.ChangeLanguage(value, SourceCode, TextBoxCode);
             }
@@ -270,6 +272,7 @@ namespace Fiddle.UI {
             ClearResultView();
             IEnumerable<Run> runs = Helper.BuildRuns(result);
             TextBlockResults.Inlines.AddRange(runs);
+            RawBtn.Visibility = Visibility.Visible;
         }
 
         //Set Result View content
@@ -277,11 +280,13 @@ namespace Fiddle.UI {
             ClearResultView();
             IEnumerable<Run> runs = Helper.BuildRuns(result);
             TextBlockResults.Inlines.AddRange(runs);
+            RawBtn.Visibility = Visibility.Visible;
         }
 
         //Clear result view
         private void ClearResultView() {
             TextBlockResults.Text = "";
+            RawBtn.Visibility = Visibility.Collapsed;
         }
 
         //Actually save code file
@@ -357,7 +362,7 @@ namespace Fiddle.UI {
 
         //Show results view raw button click
         private void ButtonShowRaw(object sender, RoutedEventArgs e) {
-            RawText window = new RawText(TextBlockResults.Text) {Owner = this};
+            RawText window = new RawText(TextBlockResults.Text) { Owner = this };
             window.ShowDialog();
         }
 

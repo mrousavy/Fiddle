@@ -172,7 +172,7 @@
                         <Button Background="#263238" Height="45" Width="45"
                                 Click="ButtonShowRaw" BorderBrush="#263238"
                                 Padding="-10" ToolTip="Show Raw"
-                                Margin="5"
+                                Margin="5" Name="RawBtn" Visibility="Collapsed"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Top">
                             <md:PackIcon Kind="CodeBrackets" Foreground="Green"
