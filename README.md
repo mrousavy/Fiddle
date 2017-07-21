@@ -4,7 +4,7 @@ Fiddle is a lightweight tool to **edit**, **compile** and **run** simple **scrip
 ## Settings
 - [ ] Settings Window
 
-_(For now you can edit the settings in `%appdata%\Fiddle\Preferences.json`_
+_(For now you can edit the settings in `%appdata%\Fiddle\Preferences.json`)_
 
 ## Screenshots
 
@@ -33,6 +33,6 @@ _(For now you can edit the settings in `%appdata%\Fiddle\Preferences.json`_
 		4. Add **Language Name** to `Fiddle.UI\Editor.xaml` in `ComboBox` as `ComboBoxItem`
 		5. Add **Compiler initialization** to `Fiddle.UI\Helper.ChangeLanguage(..)` with name from `ComboBoxItem`
 		6. (Optionally) Add **file-extension** to `Fiddle.UI\Helper.GetFilterForLanguage(..)`
-		7. (Optionally) Add **Syntax highlighting definition** to `Fiddle.UI\Syntax\`		
+		7. (Optionally) Add **Syntax highlighting definition** to `Fiddle.UI\Syntax\[LanguageName].xshd`		
 3. **Commit & Push**
 4. Create a new **pull request** _(on your fork)_

@@ -46,15 +46,27 @@ namespace Fiddle.UI {
         //Initialize all user-states from preferences
         private void LoadPreferences() {
             //Load last "state"
-            Width = App.Preferences.WindowWidth;
-            Height = App.Preferences.WindowHeight;
-            Left = App.Preferences.WindowLeft;
-            Top = App.Preferences.WindowTop;
-            WindowState = App.Preferences.WindowState;
-            TextBoxCode.Text = App.Preferences.SourceCode;
-            TextBoxCode.TextArea.Caret.Offset = App.Preferences.CursorOffset;
-            TextBoxCode.TextArea.Caret.BringCaretToView();
-            GridCodeResults.ColumnDefinitions[2].Width = new GridLength(App.Preferences.ResultsViewSize);
+            if (App.Preferences.SaveUserSettings)
+            {
+                switch (App.Preferences.StartAction)
+                {
+                    case StartAction.Continue:
+                        TextBoxCode.Text = App.Preferences.SourceCode;
+                        TextBoxCode.TextArea.Caret.Offset = App.Preferences.CursorOffset;
+                        TextBoxCode.TextArea.Caret.BringCaretToView();
+                        break;
+                    case StartAction.Specific:
+                        TextBoxCode.Text = App.Preferences.DefaultCode;
+                        break;
+                }
+
+                Width = App.Preferences.WindowWidth;
+                Height = App.Preferences.WindowHeight;
+                Left = App.Preferences.WindowLeft;
+                Top = App.Preferences.WindowTop;
+                WindowState = App.Preferences.WindowState;
+                GridCodeResults.ColumnDefinitions[2].Width = new GridLength(App.Preferences.ResultsViewSize);
+            }
         }
 
         //load the drop down menu (select saved language)
@@ -100,14 +112,17 @@ namespace Fiddle.UI {
         //Window closes event
         private void Window_Closing(object sender, CancelEventArgs e) {
             SetStatus(StatusType.Wait, "Closing..");
-            App.Preferences.WindowWidth = Width;
-            App.Preferences.WindowHeight = Height;
-            App.Preferences.WindowLeft = Left;
-            App.Preferences.WindowTop = Top;
-            App.Preferences.WindowState = WindowState;
-            App.Preferences.SourceCode = SourceCode;
-            App.Preferences.CursorOffset = TextBoxCode.TextArea.Caret.Offset;
-            App.Preferences.ResultsViewSize = GridCodeResults.ColumnDefinitions[2].Width.Value;
+            if (App.Preferences.SaveUserSettings)
+            {
+                App.Preferences.WindowWidth = Width;
+                App.Preferences.WindowHeight = Height;
+                App.Preferences.WindowLeft = Left;
+                App.Preferences.WindowTop = Top;
+                App.Preferences.WindowState = WindowState;
+                App.Preferences.SourceCode = SourceCode;
+                App.Preferences.CursorOffset = TextBoxCode.TextArea.Caret.Offset;
+                App.Preferences.ResultsViewSize = GridCodeResults.ColumnDefinitions[2].Width.Value;
+            }
         }
 
         #endregion
