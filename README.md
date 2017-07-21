@@ -26,7 +26,7 @@ _(For now you can edit the settings in `%appdata%\Fiddle\Preferences.json`. [Doc
 - [x] **VB** 	_(TODO: Better Entry point)_
 
 ## Contributing
-1. [Fork **Fiddle**](http://github.com/mrousavy/Fiddle/Fork) and **clone the fork**.
+1. Fork **Fiddle** and **clone the fork**.
 2. Make changes
 	* Make **bugfixes** or **other changes**
 	
