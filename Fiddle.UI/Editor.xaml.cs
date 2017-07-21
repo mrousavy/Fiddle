@@ -63,12 +63,15 @@ namespace Fiddle.UI {
                 ComboBoxLanguage.SelectedIndex = App.Preferences.SelectedLanguage;
         }
 
-        //load the textbox and disable drag'n'drop
+        //load the textbox and disable drag'n'drop for selected text
         private void LoadTextBox() {
             DataObject.AddCopyingHandler(TextBoxCode, (s, e) => {
                 if (e.IsDragDrop) e.CancelCommand();
             });
-            TextBoxCode.PreviewMouseLeftButtonDown += (s, e) => { TextBoxCode.Select(0, 0); };
+            TextBoxCode.PreviewMouseLeftButtonDown += (s, e) => {
+                if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
+                    TextBoxCode.Select(0, 0);
+            };
         }
 
         //Initialize the custom text marker for underlining
