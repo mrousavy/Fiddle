@@ -5,7 +5,9 @@
             LanguageVersion = langVersion;
         }
 
-        public CompilerProperties() : this(-1, null) { }
+        private const int DefaultTimeout = 10000;
+
+        public CompilerProperties() : this(DefaultTimeout, null) { }
         public long Timeout { get; }
         public string LanguageVersion { get; }
     }

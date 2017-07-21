@@ -29,7 +29,8 @@ namespace Fiddle.Compilers.Implementation.LUA {
         /// </summary>
         /// <returns></returns>
         public Task<ICompileResult> Compile() {
-            if (Lua == default(Lua)) {
+            if (Lua == default(Lua))
+            {
                 Lua = new Lua();
                 Lua.RegisterFunction("print", this, typeof(LuaCompiler).GetMethod("Print")); //console out
             }
@@ -39,34 +40,34 @@ namespace Fiddle.Compilers.Implementation.LUA {
             return Task.FromResult(compileResult);
         }
 
-        public Task<IExecuteResult> Execute() {
+        public async Task<IExecuteResult> Execute()
+        {
             if (Lua == default(Lua))
-                Compile();
+                await Compile();
             Writer?.Dispose();
             Writer = new StringWriter();
 
-            Exception exception = null;
-            object[] result = new object[0];
-
-            Stopwatch sw = Stopwatch.StartNew();
-            try {
-                result = Lua.DoString(SourceCode);
-            } catch (Exception ex) {
-                exception = ex;
-            }
-            sw.Stop();
+            var result = await ExecuteThreaded<object[]>.Execute(() =>
+                Lua.DoString(SourceCode), (int)ExecuteProperties.Timeout);
 
             IExecuteResult executeResult =
-                new LuaExecuteResult(sw.ElapsedMilliseconds, Writer.ToString(), result, CompileResult, exception);
+                new LuaExecuteResult(
+                    result.ElapsedMilliseconds,
+                    Writer.ToString(),
+                    result.ReturnValue,
+                    CompileResult,
+                    result.Exception);
             ExecuteResult = executeResult;
-            return Task.FromResult(executeResult);
+            return executeResult;
         }
 
-        public void Print(string message) {
+        public void Print(string message)
+        {
             Writer.WriteLine(message);
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             Lua?.Dispose();
         }
     }

@@ -17,8 +17,8 @@ namespace Fiddle.Compilers.Implementation.Python {
             ExecuteProperties = eProps;
         }
 
-        private MemoryStream Stream { get; set; }
-        private StringWriter Writer { get; set; }
+        public MemoryStream Stream { get; set; }
+        public StringWriter Writer { get; set; }
         private ScriptScope Scope { get; set; }
         private CompiledCode Compilation { get; set; }
         private ScriptSource Source { get; set; }
@@ -35,10 +35,7 @@ namespace Fiddle.Compilers.Implementation.Python {
 
             new Thread(() => {
                 PyErrorListener listener = new PyErrorListener();
-                Stream?.Dispose();
-                Stream = new MemoryStream();
-                Writer?.Dispose();
-                Writer = new StringWriter();
+                Init();
 
                 //Start the stopwatch
                 Stopwatch sw = Stopwatch.StartNew();
@@ -67,35 +64,33 @@ namespace Fiddle.Compilers.Implementation.Python {
         }
 
         public async Task<IExecuteResult> Execute() {
-            if (Compilation == null || SourceCode != Source.GetCode()) //recompile if source code changed or not yet compiled
+            //recompile if source code changed, not yet compiled or Console has already text printed
+            if (Compilation == null || SourceCode != Source.GetCode() || Writer.ToString().Length > 0) 
                 await Compile();
             if (Compilation == null || !CompileResult.Success) //if still not successful after compiling
                 return new PyExecuteResult(-1, null, null, CompileResult,
                     new Exception("Compilation was not successful!"));
+            
+            var result = await ExecuteThreaded<object>.Execute(() => 
+                Compilation.Execute(Scope), 
+                (int)ExecuteProperties.Timeout);
 
-            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
-
-            Stopwatch sw = Stopwatch.StartNew();
-            //Cheap hack: Spawn new thread for executing to allow async/await
-            new Thread(() => {
-                try {
-                    dynamic retValue = Compilation.Execute(Scope);
-                    tcs.SetResult(retValue);
-                } catch (Exception ex) {
-                    tcs.SetException(ex);
-                }
-            }).Start();
-            object result = await tcs.Task;
-            sw.Stop();
-
-            if (result != null && result.GetType() == typeof(Exception)) {
-                IExecuteResult execResultInner = new PyExecuteResult(sw.ElapsedMilliseconds, null, null, CompileResult,
-                    result as Exception);
+            if (result.ReturnValue?.GetType() == typeof(Exception)) {
+                IExecuteResult execResultInner = new PyExecuteResult(
+                    result.ElapsedMilliseconds,
+                    null, null,
+                    CompileResult,
+                    result.ReturnValue as Exception);
                 ExecuteResult = execResultInner;
                 return execResultInner;
             }
 
-            IExecuteResult execResult = new PyExecuteResult(sw.ElapsedMilliseconds, Writer.ToString(), result, CompileResult, null);
+            IExecuteResult execResult = new PyExecuteResult(
+                result.ElapsedMilliseconds,
+                Writer.ToString(),
+                result.ReturnValue,
+                CompileResult,
+                result.Exception);
             ExecuteResult = execResult;
             return execResult;
         }
@@ -119,6 +114,14 @@ namespace Fiddle.Compilers.Implementation.Python {
                     span.Start.Column,
                     Host.ToSeverity(severity)));
             }
+        }
+
+        private void Init()
+        {
+            Stream?.Dispose();
+            Stream = new MemoryStream();
+            Writer?.Dispose();
+            Writer = new StringWriter();
         }
 
         public void Dispose() {

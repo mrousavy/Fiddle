@@ -164,6 +164,7 @@
     <Compile Include="Implementation\CSharp\CSharpCompileResult.cs" />
     <Compile Include="Implementation\CSharp\CSharpCompiler.cs" />
     <Compile Include="Implementation\CSharp\CSharpExecuteResult.cs" />
+    <Compile Include="Implementation\ExecuteThreaded.cs" />
     <Compile Include="Implementation\ExecutionProperties.cs" />
     <Compile Include="Implementation\Java\JavaCompiler.cs" />
     <Compile Include="Implementation\Java\JavaCompileResult.cs" />

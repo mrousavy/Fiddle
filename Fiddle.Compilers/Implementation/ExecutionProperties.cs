@@ -4,7 +4,9 @@
             Timeout = timeout;
         }
 
-        public ExecutionProperties() : this(-1) { }
+        private const int DefaultTimeout = 10000;
+
+        public ExecutionProperties() : this(DefaultTimeout) { }
         public long Timeout { get; }
     }
 }

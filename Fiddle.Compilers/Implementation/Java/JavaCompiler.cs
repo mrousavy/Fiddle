@@ -81,7 +81,7 @@ namespace Fiddle.Compilers.Implementation.Java {
                 string output = null;
                 Exception error = null;
                 try {
-                    output = await JreHelper.ExecuteJava(JrePath, ClassName, ExecuteProperties);
+                    output = JreHelper.ExecuteJava(JrePath, ClassName, ExecuteProperties);
                 } catch (Exception ex) {
                     error = ex;
                 }

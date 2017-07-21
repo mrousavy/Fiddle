@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace Fiddle.Compilers.Implementation.Java {
     public class JreHelper {
@@ -12,7 +11,7 @@ namespace Fiddle.Compilers.Implementation.Java {
         /// <param name="className">The class name</param>
         /// <param name="properties">Compilation properties</param>
         /// <param name="commandLineOptions">Any compiler options</param>
-        public static async Task<string> ExecuteJava(string javacPathName, string className,
+        public static string ExecuteJava(string javacPathName, string className,
             IExecutionProperties properties, string commandLineOptions = "") {
             ProcessStartInfo startInfo = new ProcessStartInfo {
                 CreateNoWindow = true,
@@ -25,12 +24,12 @@ namespace Fiddle.Compilers.Implementation.Java {
                 WorkingDirectory = Path.GetTempPath()
             };
             using (Process javaProcess = Process.Start(startInfo)) {
-                bool graceful = javaProcess.WaitForExit((int) properties.Timeout);
+                bool graceful = javaProcess != null && javaProcess.WaitForExit((int) properties.Timeout);
 
                 if (graceful) {
-                    string error = await javaProcess.StandardError.ReadToEndAsync();
+                    string error =  javaProcess.StandardError.ReadToEnd();
                     if (!string.IsNullOrWhiteSpace(error)) throw new Exception(error);
-                    string output = await javaProcess.StandardOutput.ReadToEndAsync();
+                    string output = javaProcess.StandardOutput.ReadToEnd();
                     return output;
                 }
                 throw new Exception("The execution took longer than expected!");

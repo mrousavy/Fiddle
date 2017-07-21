@@ -189,7 +189,7 @@ namespace Fiddle.UI {
                         FontWeight = FontWeights.Bold,
                         FontSize = 15
                     },
-                    new Run(errors) {Foreground = Brushes.LightGray}
+                    new Run(errors) {Foreground = Brushes.LightGray} //Add new Run(diagnostics) aswell?
                 };
                 return items;
             }

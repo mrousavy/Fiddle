@@ -10,12 +10,15 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Fiddle.Compilers.Implementation.CSharp {
-    public class CSharpCompiler : ICompiler {
+namespace Fiddle.Compilers.Implementation.CSharp
+{
+    public class CSharpCompiler : ICompiler
+    {
         public CSharpCompiler(string code) : this(code, new ExecutionProperties(), new CompilerProperties()) { }
 
         public CSharpCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps,
-            string[] imports = null) {
+            string[] imports = null)
+        {
             SourceCode = code;
             ExecuteProperties = execProps;
             CompilerProperties = compProps;
@@ -37,20 +40,23 @@ namespace Fiddle.Compilers.Implementation.CSharp {
         public IExecuteResult ExecuteResult { get; private set; }
         public Language Language { get; } = Language.CSharp;
 
-        public async Task<ICompileResult> Compile() {
+        public async Task<ICompileResult> Compile()
+        {
             if (Script.Code != SourceCode)
                 Create();
 
             TaskCompletionSource<ICompileResult> tcs = new TaskCompletionSource<ICompileResult>();
 
             //bad hack for creating an "async" method:
-            new Thread(() => {
+            new Thread(() =>
+            {
                 //Init
                 IEnumerable<Diagnostic> resultDiagnostics = null;
 
                 //Actual compilation
                 Stopwatch sw = Stopwatch.StartNew();
-                Thread compileThread = new Thread(() => {
+                Thread compileThread = new Thread(() =>
+                {
                     Compilation compilation = Script.GetCompilation();
                     resultDiagnostics = compilation.GetDiagnostics();
                 });
@@ -106,7 +112,8 @@ namespace Fiddle.Compilers.Implementation.CSharp {
             return compileResult;
         }
 
-        public async Task<IExecuteResult> Execute() {
+        public async Task<IExecuteResult> Execute()
+        {
             if (CompileResult == default(ICompileResult) || SourceCode != Script.Code)
                 await Compile();
             if (!CompileResult.Success)
@@ -115,20 +122,36 @@ namespace Fiddle.Compilers.Implementation.CSharp {
 
             StringBuilder builder = new StringBuilder();
             Globals globals = new Globals(builder);
+            int timeout = (int)ExecuteProperties.Timeout;
 
-            Stopwatch sw = Stopwatch.StartNew();
-            ScriptState<object> state = await Script.RunAsync(globals, CatchException);
-            sw.Stop();
+            var threadRunResult = await ExecuteThreaded<ScriptState<object>>.Execute(() =>
+                Script.RunAsync(globals, CatchException), timeout);
 
-            object returnValue = state.ReturnValue;
-            string stdout = builder.ToString();
+            ScriptState<object> state = threadRunResult.ReturnValue;
+            int elapsed = threadRunResult.ElapsedMilliseconds;
 
-            IExecuteResult result = new CSharpExecuteResult(
-                sw.ElapsedMilliseconds,
-                stdout,
-                returnValue,
-                CompileResult,
-                state.Exception);
+            IExecuteResult result;
+            if (threadRunResult.Successful)
+            {
+                object returnValue = state.ReturnValue;
+                string stdout = builder.ToString();
+                result = new CSharpExecuteResult(
+                    elapsed,
+                    stdout,
+                    returnValue,
+                    CompileResult,
+                    state.Exception);
+            }
+            else
+            {
+                result = new CSharpExecuteResult(
+                    elapsed,
+                    null,
+                    null,
+                    CompileResult,
+                    new TimeoutException("The execution timed out! " +
+                                         $"(Timeout: {timeout}ms)"));
+            }
             ExecuteResult = result;
             return result;
         }
@@ -136,7 +159,8 @@ namespace Fiddle.Compilers.Implementation.CSharp {
         /// <summary>
         ///     Load all references/namespaces that can be used in the script environment
         /// </summary>
-        public void LoadReferences() {
+        public void LoadReferences()
+        {
             //Get all namespaces from this assembly (own project, own library, ..)
             IEnumerable<string> ownNamespaces = Assembly.GetExecutingAssembly().GetTypes()
                 .Select(t => t.Namespace)
@@ -161,7 +185,8 @@ namespace Fiddle.Compilers.Implementation.CSharp {
             Imports = allNamespaces.ToArray();
         }
 
-        private void Create() {
+        private void Create()
+        {
             ScriptOptions options = ScriptOptions.Default
                 .WithReferences(Imports)
                 .WithImports(Imports);
@@ -169,7 +194,8 @@ namespace Fiddle.Compilers.Implementation.CSharp {
         }
 
 
-        public bool CatchException(Exception ex) {
+        public bool CatchException(Exception ex)
+        {
             return true;
         }
 

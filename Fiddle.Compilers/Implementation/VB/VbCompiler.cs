@@ -88,48 +88,34 @@ namespace Fiddle.Compilers.Implementation.VB {
                 return new VbExecuteResult(-1, null, null, CompileResult,
                     new CompileException("The compilation was not successful!"));
 
-            object returnValue = null;
-            Exception exception = null;
-
             using (StringWriter writer = new StringWriter()) {
                 Console.SetOut(writer);
                 Console.SetError(writer);
 
-                Stopwatch sw = Stopwatch.StartNew();
-
-                Thread thread = new Thread(() => {
-                    try {
-                        returnValue = ScriptAssembly.EntryPoint == null
-                            ? ScriptAssembly.DefinedTypes.Last().DeclaredMethods.First().Invoke(null, null)
-                            : ScriptAssembly.EntryPoint.Invoke(null, null);
-                    } catch (Exception ex) {
-                        exception = ex;
-                    }
-                });
-                thread.Start();
-                bool graceful = thread.Join((int)ExecuteProperties.Timeout);
-
-                sw.Stop();
-
-                //TODO: Console output
-                if (graceful) {
-                    IExecuteResult result = new VbExecuteResult(
-                        sw.ElapsedMilliseconds,
+                var result = await ExecuteThreaded<object>.Execute(() => 
+                    ScriptAssembly.EntryPoint == null
+                        ? ScriptAssembly.DefinedTypes.Last().DeclaredMethods.First().Invoke(null, null)
+                        : ScriptAssembly.EntryPoint.Invoke(null, null), 
+                        (int)ExecuteProperties.Timeout);
+                
+                if (result.Successful) {
+                    IExecuteResult executeResult = new VbExecuteResult(
+                        result.ElapsedMilliseconds,
                         writer.ToString(),
-                        returnValue,
+                        result.ReturnValue,
                         CompileResult,
-                        exception);
-                    ExecuteResult = result;
-                    return result;
+                        result.Exception);
+                    ExecuteResult = executeResult;
+                    return executeResult;
                 } else {
-                    IExecuteResult result = new VbExecuteResult(
-                        sw.ElapsedMilliseconds,
+                    IExecuteResult executeResult = new VbExecuteResult(
+                        result.ElapsedMilliseconds,
                         null,
                         null,
                         CompileResult,
                         new Exception("The execution timed out!"));
-                    ExecuteResult = result;
-                    return result;
+                    ExecuteResult = executeResult;
+                    return executeResult;
                 }
             }
         }
