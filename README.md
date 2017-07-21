@@ -1,9 +1,17 @@
 # Fiddle
-A lightweight code editor and compiler for fiddling with simple code snippets/scripts
+Fiddle is a lightweight tool to **edit**, **compile** and **run** simple **scripts** in any of the [supported languages](#Languages)
 
+## Screenshots
 
+## Languages
+- [ ] **C++** 	_(TODO: everything)_
+- [x] **C#**
+- [ ] **Java** 	_(TODO: Return values)_
+- [x] **LUA**
+- [x] **Python**
+- [x] **VB** 	_(TODO: Better Entry point)_
 
-# Contributing
+## Contributing
 1. [Fork **Fiddle**](/Fork) and **clone the fork**.
 2. Make changes
 	* Make **bugfixes** or **other changes**
