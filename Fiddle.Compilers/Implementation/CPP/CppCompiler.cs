@@ -38,10 +38,10 @@ namespace Fiddle.Compilers.Implementation.CPP {
         }
 
 
-        [DllImport("ClangCompiler.dll", EntryPoint = "Compile")]
+        [DllImport("ClangCompiler.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Compile")]
         private static extern string Compile(string sourcecode);
 
-        [DllImport("ClangCompiler.dll", EntryPoint = "Execute")]
+        [DllImport("ClangCompiler.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Execute")]
         private static extern string Execute(string filepath);
     }
 }

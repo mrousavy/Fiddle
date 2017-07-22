@@ -46,9 +46,11 @@ char* ExecuteC(char* asmloc) {
 //Interface wrapper
 extern "C" {
 	__declspec(dllexport) char* Compile(char* sourcecode) {
+		return "test";
 		return CompileC(sourcecode);
 	}
 	__declspec(dllexport) char* Execute(char* assemblylocation) {
+		return "test";
 		return ExecuteC(assemblylocation);
 	}
 }
