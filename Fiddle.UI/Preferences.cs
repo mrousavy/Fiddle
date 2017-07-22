@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
+using Newtonsoft.Json;
 
 namespace Fiddle.UI {
     [Flags]

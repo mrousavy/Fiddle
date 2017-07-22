@@ -1,8 +1,4 @@
-﻿using Fiddle.Compilers;
-using ICSharpCode.AvalonEdit.AddIn;
-using ICSharpCode.SharpDevelop.Editor;
-using MaterialDesignThemes.Wpf;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -13,6 +9,10 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using Fiddle.Compilers;
+using ICSharpCode.AvalonEdit.AddIn;
+using ICSharpCode.SharpDevelop.Editor;
+using MaterialDesignThemes.Wpf;
 
 namespace Fiddle.UI {
     /// <summary>
@@ -58,15 +58,10 @@ namespace Fiddle.UI {
                     Left = App.Preferences.WindowLeft;
                     Top = App.Preferences.WindowTop;
                 }
-                if (type.HasFlag(CacheType.WindowState)) {
-                    WindowState = App.Preferences.WindowState;
-                }
-                if (type.HasFlag(CacheType.ResultsViewSize)) {
+                if (type.HasFlag(CacheType.WindowState)) WindowState = App.Preferences.WindowState;
+                if (type.HasFlag(CacheType.ResultsViewSize))
                     GridCodeResults.ColumnDefinitions[2].Width = new GridLength(App.Preferences.ResultsViewSize);
-                }
-                if (type.HasFlag(CacheType.SourceCode)) {
-                    TextBoxCode.Text = App.Preferences.SourceCode;
-                }
+                if (type.HasFlag(CacheType.SourceCode)) TextBoxCode.Text = App.Preferences.SourceCode;
                 if (type.HasFlag(CacheType.CursorPos)) {
                     TextBoxCode.TextArea.Caret.Offset = App.Preferences.CursorOffset;
                     TextBoxCode.TextArea.Caret.BringCaretToView();
@@ -89,18 +84,11 @@ namespace Fiddle.UI {
                     App.Preferences.WindowLeft = Left;
                     App.Preferences.WindowTop = Top;
                 }
-                if (type.HasFlag(CacheType.WindowState)) {
-                    App.Preferences.WindowState = WindowState;
-                }
-                if (type.HasFlag(CacheType.ResultsViewSize)) {
+                if (type.HasFlag(CacheType.WindowState)) App.Preferences.WindowState = WindowState;
+                if (type.HasFlag(CacheType.ResultsViewSize))
                     App.Preferences.ResultsViewSize = GridCodeResults.ColumnDefinitions[2].Width.Value;
-                }
-                if (type.HasFlag(CacheType.SourceCode)) {
-                    App.Preferences.SourceCode = SourceCode;
-                }
-                if (type.HasFlag(CacheType.CursorPos)) {
-                    App.Preferences.CursorOffset = TextBoxCode.TextArea.Caret.Offset;
-                }
+                if (type.HasFlag(CacheType.SourceCode)) App.Preferences.SourceCode = SourceCode;
+                if (type.HasFlag(CacheType.CursorPos)) App.Preferences.CursorOffset = TextBoxCode.TextArea.Caret.Offset;
             }
         }
 
@@ -127,7 +115,7 @@ namespace Fiddle.UI {
             TextBoxCode.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
             TextBoxCode.TextArea.TextView.LineTransformers.Add(textMarkerService);
             IServiceContainer services =
-                (IServiceContainer)TextBoxCode.Document.ServiceProvider.GetService(typeof(IServiceContainer));
+                (IServiceContainer) TextBoxCode.Document.ServiceProvider.GetService(typeof(IServiceContainer));
             services?.AddService(typeof(ITextMarkerService), textMarkerService);
             _textMarkerService = textMarkerService;
         }
@@ -242,7 +230,7 @@ namespace Fiddle.UI {
         private async void ComboBoxLanguageSelected(object sender, SelectionChangedEventArgs e) {
             LockUi();
             ResetUnderline();
-            string value = ((ComboBoxItem)ComboBoxLanguage.SelectedValue).Content as string;
+            string value = ((ComboBoxItem) ComboBoxLanguage.SelectedValue).Content as string;
             try {
                 //Try to load the new compiler
                 _compiler?.Dispose();
@@ -256,7 +244,7 @@ namespace Fiddle.UI {
                     EditorDialogHost);
                 //Revert changes
                 ComboBoxLanguage.SelectedIndex = App.Preferences.SelectedLanguage;
-                value = ((ComboBoxItem)ComboBoxLanguage.SelectedValue).Content as string;
+                value = ((ComboBoxItem) ComboBoxLanguage.SelectedValue).Content as string;
                 _compiler?.Dispose();
                 _compiler = Helper.ChangeLanguage(value, SourceCode, TextBoxCode);
             }
@@ -385,7 +373,7 @@ namespace Fiddle.UI {
 
         //Show results view raw button click
         private void ButtonShowRaw(object sender, RoutedEventArgs e) {
-            RawText window = new RawText(TextBlockResults.Text) { Owner = this };
+            RawText window = new RawText(TextBlockResults.Text) {Owner = this};
             window.ShowDialog();
         }
 
