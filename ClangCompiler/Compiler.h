@@ -4,7 +4,10 @@ using namespace std;
 
 #pragma once
 
-string CompileC(string sourcecode);
-string ExecuteC(string assemblylocation);
-string Compile(string code);
-string Execute(string asmloc);
+extern "C" {
+	__declspec(dllexport) string Compile(string sourcecode);
+	__declspec(dllexport) string Execute(string assemblylocation);
+}
+
+string CompileC(string code);
+string ExecuteC(string asmloc);

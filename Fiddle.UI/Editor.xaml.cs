@@ -46,30 +46,67 @@ namespace Fiddle.UI {
         //Initialize all user-states from preferences
         private void LoadPreferences() {
             //Load last "state"
-            if (App.Preferences.SaveUserSettings) {
-                switch (App.Preferences.StartAction) {
-                    case StartAction.Continue:
-                        TextBoxCode.Text = App.Preferences.SourceCode;
-                        TextBoxCode.TextArea.Caret.Offset = App.Preferences.CursorOffset;
-                        TextBoxCode.TextArea.Caret.BringCaretToView();
-                        break;
-                    case StartAction.Specific:
-                        TextBoxCode.Text = App.Preferences.DefaultCode;
-                        break;
+            if (App.Preferences.CacheUserSettings) {
+                CacheType type = App.Preferences.CacheType;
+                if (type == 0)
+                    return;
+                if (type.HasFlag(CacheType.WindowSize)) {
+                    Width = App.Preferences.WindowWidth;
+                    Height = App.Preferences.WindowHeight;
                 }
+                if (type.HasFlag(CacheType.WindowPos)) {
+                    Left = App.Preferences.WindowLeft;
+                    Top = App.Preferences.WindowTop;
+                }
+                if (type.HasFlag(CacheType.WindowState)) {
+                    WindowState = App.Preferences.WindowState;
+                }
+                if (type.HasFlag(CacheType.ResultsViewSize)) {
+                    GridCodeResults.ColumnDefinitions[2].Width = new GridLength(App.Preferences.ResultsViewSize);
+                }
+                if (type.HasFlag(CacheType.SourceCode)) {
+                    TextBoxCode.Text = App.Preferences.SourceCode;
+                }
+                if (type.HasFlag(CacheType.CursorPos)) {
+                    TextBoxCode.TextArea.Caret.Offset = App.Preferences.CursorOffset;
+                    TextBoxCode.TextArea.Caret.BringCaretToView();
+                }
+            }
+        }
 
-                Width = App.Preferences.WindowWidth;
-                Height = App.Preferences.WindowHeight;
-                Left = App.Preferences.WindowLeft;
-                Top = App.Preferences.WindowTop;
-                WindowState = App.Preferences.WindowState;
-                GridCodeResults.ColumnDefinitions[2].Width = new GridLength(App.Preferences.ResultsViewSize);
+        //Window closes event (save preferences)
+        private void Window_Closing(object sender, CancelEventArgs e) {
+            SetStatus(StatusType.Wait, "Closing..");
+            if (App.Preferences.CacheUserSettings) {
+                CacheType type = App.Preferences.CacheType;
+                if (type == 0)
+                    return;
+                if (type.HasFlag(CacheType.WindowSize)) {
+                    App.Preferences.WindowWidth = Width;
+                    App.Preferences.WindowHeight = Height;
+                }
+                if (type.HasFlag(CacheType.WindowPos)) {
+                    App.Preferences.WindowLeft = Left;
+                    App.Preferences.WindowTop = Top;
+                }
+                if (type.HasFlag(CacheType.WindowState)) {
+                    App.Preferences.WindowState = WindowState;
+                }
+                if (type.HasFlag(CacheType.ResultsViewSize)) {
+                    App.Preferences.ResultsViewSize = GridCodeResults.ColumnDefinitions[2].Width.Value;
+                }
+                if (type.HasFlag(CacheType.SourceCode)) {
+                    App.Preferences.SourceCode = SourceCode;
+                }
+                if (type.HasFlag(CacheType.CursorPos)) {
+                    App.Preferences.CursorOffset = TextBoxCode.TextArea.Caret.Offset;
+                }
             }
         }
 
         //load the drop down menu (select saved language)
         private void LoadComboBox() {
-            if (App.Preferences.SelectedLanguage != -1)
+            if (App.Preferences.CacheType.HasFlag(CacheType.Language) && App.Preferences.SelectedLanguage != -1)
                 ComboBoxLanguage.SelectedIndex = App.Preferences.SelectedLanguage;
         }
 
@@ -105,21 +142,6 @@ namespace Fiddle.UI {
         //Window loaded event
         private void Window_Loaded(object sender, RoutedEventArgs e) {
             ResetStatus();
-        }
-
-        //Window closes event
-        private void Window_Closing(object sender, CancelEventArgs e) {
-            SetStatus(StatusType.Wait, "Closing..");
-            if (App.Preferences.SaveUserSettings) {
-                App.Preferences.WindowWidth = Width;
-                App.Preferences.WindowHeight = Height;
-                App.Preferences.WindowLeft = Left;
-                App.Preferences.WindowTop = Top;
-                App.Preferences.WindowState = WindowState;
-                App.Preferences.SourceCode = SourceCode;
-                App.Preferences.CursorOffset = TextBoxCode.TextArea.Caret.Offset;
-                App.Preferences.ResultsViewSize = GridCodeResults.ColumnDefinitions[2].Width.Value;
-            }
         }
 
         #endregion
@@ -225,7 +247,8 @@ namespace Fiddle.UI {
                 //Try to load the new compiler
                 _compiler?.Dispose();
                 _compiler = Helper.ChangeLanguage(value, SourceCode, TextBoxCode);
-                App.Preferences.SelectedLanguage = ComboBoxLanguage.SelectedIndex;
+                if (App.Preferences.CacheType.HasFlag(CacheType.Language)) //only save if cache type saves language
+                    App.Preferences.SelectedLanguage = ComboBoxLanguage.SelectedIndex;
                 Title = $"Fiddle - {value}";
                 _filePath = null;
             } catch (Exception ex) {

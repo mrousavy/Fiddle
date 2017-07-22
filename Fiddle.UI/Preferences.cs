@@ -1,14 +1,20 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
-using Newtonsoft.Json;
 
 namespace Fiddle.UI {
-    public enum StartAction {
-        [Description("Open a blank page on Fiddle startup")] Blank,
-        [Description("Load the last code")] Continue,
-        [Description("Load a specific code (Defined in Preferences.DefaultCode)")] Specific
+    [Flags]
+    public enum CacheType {
+        [Description("Cache nothing")] Nothing = 0,
+        [Description("Cache Window size")] WindowSize = 1,
+        [Description("Cache Window position")] WindowPos = 2,
+        [Description("Cache Window state")] WindowState = 4,
+        [Description("Cache Selected Language")] Language = 8,
+        [Description("Cache Results View size")] ResultsViewSize = 16,
+        [Description("Cache Source Code")] SourceCode = 32,
+        [Description("Cache Coursor Position in the sourcecode")] CursorPos = 64
     }
 
     public class Preferences {
@@ -16,17 +22,18 @@ namespace Fiddle.UI {
         ///     Value indicating if user settings should be saved/loaded (if disabled: all other settings in this file/class are
         ///     ignored (-> performance gain))
         /// </summary>
-        public bool SaveUserSettings { get; set; } = true;
+        public bool CacheUserSettings { get; set; } = true;
 
         /// <summary>
-        ///     The code to load when Preferences.StartAction is Specific
+        ///     The code to load when Preferences.CacheType is Specific
         /// </summary>
         public string DefaultCode { get; set; } = "";
 
         /// <summary>
-        ///     The start action for the source code (Blank is most performance)
+        ///     The start action for the source code (<see cref="UI.CacheType.Nothing" /> is most performance)
         /// </summary>
-        public StartAction StartAction { get; set; } = StartAction.Blank;
+        public CacheType CacheType { get; set; } = CacheType.WindowSize | CacheType.WindowPos | CacheType.WindowState |
+                                                   CacheType.Language | CacheType.ResultsViewSize;
 
         //All settings apply on startup and save on close:
         public int SelectedLanguage { get; set; } = -1; //The selected language in the editor
@@ -40,10 +47,10 @@ namespace Fiddle.UI {
             WindowState.Normal; //The editor's window state (minimized, normal, maximized)
 
         public string SourceCode { get; set; } =
-            ""; //The source code in the editor window (performance loss depending on the code length) (only relevant if StartAction.Continue)
+            ""; //The source code in the editor window (performance loss depending on the code length) (only relevant if CacheType.SourceCode)
 
         public int CursorOffset { get; set; } =
-            0; //The Cursor position in the source code (only relevant if StartAction.Continue)
+            0; //The Cursor position in the source code (only relevant if CacheType.CursorPos)
 
         public double ResultsViewSize { get; set; } =
             200; //The size of the Results View window (right side of editor window)
@@ -53,8 +60,12 @@ namespace Fiddle.UI {
         public static string AppData { get; } = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Fiddle");
 
-        public static string PreferencesFile { get; set; } = Path.Combine(AppData, "Preferences.json");
+        public static string PreferencesFile { get; set; } = Path.Combine(AppData, "preferences.json");
 
+        /// <summary>
+        ///     Load the user preferences from JSON file
+        /// </summary>
+        /// <returns>Deserialized JSON preferences</returns>
         public static Preferences Load() {
             if (!Directory.Exists(AppData))
                 Directory.CreateDirectory(AppData);
@@ -65,8 +76,12 @@ namespace Fiddle.UI {
             return JsonConvert.DeserializeObject<Preferences>(content);
         }
 
+        /// <summary>
+        ///     Save the user preferences to JSON file (or don't if <see cref="Preferences.CacheUserSettings" /> is disabled)
+        /// </summary>
+        /// <param name="prefs">The preferences object to serialize and write out</param>
         public static void WriteOut(Preferences prefs) {
-            if (!App.Preferences.SaveUserSettings) //don't save
+            if (!App.Preferences.CacheUserSettings) //don't save
                 return;
 
             if (!Directory.Exists(AppData))
