@@ -1,12 +1,15 @@
 #include "stdafx.h"
 #include <Windows.h>
 #include <iostream>
-#include <string.h>
-
+#include <string>
+using namespace std;
 
 
 char* CompileC(char* code) {
 	//TODO: Use %TEMP% for .c and .exe instead of CurrentWorkingDirectory
+	string source = "%TEMP%\\code.cpp";
+	string output = "%TEMP%\\output.exe";
+
 
 	//TODO: Compile cppfiddle.c to cppfiddle.exe
 	//..
@@ -46,11 +49,9 @@ char* ExecuteC(char* asmloc) {
 //Interface wrapper
 extern "C" {
 	__declspec(dllexport) char* Compile(char* sourcecode) {
-		return "test";
 		return CompileC(sourcecode);
 	}
 	__declspec(dllexport) char* Execute(char* assemblylocation) {
-		return "test";
 		return ExecuteC(assemblylocation);
 	}
 }

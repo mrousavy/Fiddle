@@ -31,10 +31,10 @@ namespace Fiddle.Compilers.Implementation.CPP {
         }
 
         public Task<IExecuteResult> Execute() {
-            IntPtr strPtr = Marshal.StringToHGlobalUni("assembly path");
+            IntPtr strPtr = Marshal.StringToHGlobalUni("assembly path goes here");
             string result = Marshal.PtrToStringAnsi(Execute(strPtr));
             Marshal.FreeHGlobal(strPtr);
-            return null;
+            throw new NotImplementedException();
         }
 
         public void Dispose() {
