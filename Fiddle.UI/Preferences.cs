@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
-using Newtonsoft.Json;
 
 namespace Fiddle.UI {
     [Flags]
@@ -42,6 +42,9 @@ namespace Fiddle.UI {
         public double WindowHeight { get; set; } = 700; //The editor's window height
         public double WindowLeft { get; set; } = 100; //The editor's window distance to the left corner of the screen
         public double WindowTop { get; set; } = 100; //The editor's window distance to the top corner of the screen
+
+        public string JdkPath { get; set; } = ""; //The path to Java Development Kit
+        public string PyPath { get; set; } = ""; //Python Libraries Search Path
 
         public WindowState WindowState { get; set; } =
             WindowState.Normal; //The editor's window state (minimized, normal, maximized)

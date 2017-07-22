@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Fiddle.Compilers.Implementation.CPP {
     public class CppCompiler : ICompiler {
-        public CppCompiler(string code) : this(code, new ExecutionProperties(), new CompilerProperties()) { }
+        public CppCompiler(string code, string[] imports = null) : this(code, new ExecutionProperties(), new CompilerProperties(), imports) { }
 
         public CppCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps,
             string[] imports = null) {

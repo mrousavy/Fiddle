@@ -1,12 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
-using Fiddle.Compilers.Implementation.CPP;
+﻿using Fiddle.Compilers.Implementation.CPP;
 using Fiddle.Compilers.Implementation.CSharp;
 using Fiddle.Compilers.Implementation.Java;
 using Fiddle.Compilers.Implementation.LUA;
 using Fiddle.Compilers.Implementation.Python;
 using Fiddle.Compilers.Implementation.VB;
 using Microsoft.CodeAnalysis;
+using System;
+using System.Threading.Tasks;
 
 namespace Fiddle.Compilers {
     public enum Language {
@@ -32,20 +32,22 @@ namespace Fiddle.Compilers {
         ///     If this value is null, all references that can be found will be added (C#), or pre-defined
         ///     imports will be used (other languages)
         /// </param>
+        /// <param name="jdkPath">Path to Java Development Kit</param>
+        /// <param name="pySearchPath">Python libraries search path</param>
         /// <exception cref="LanguageNotFoundException">When the given <see cref="Language" /> could not be found</exception>
         /// <returns>The initialized Compiler</returns>
-        public static ICompiler NewCompiler(Language language, string code, string[] imports = null) {
+        public static ICompiler NewCompiler(Language language, string code, string[] imports = null, string jdkPath = null, string pySearchPath = null) {
             switch (language) {
                 case Language.CSharp:
-                    return new CSharpCompiler(code);
+                    return new CSharpCompiler(code, imports);
                 case Language.Cpp:
-                    return new CppCompiler(code);
+                    return new CppCompiler(code, imports);
                 case Language.Vb:
-                    return new VbCompiler(code);
+                    return new VbCompiler(code, imports);
                 case Language.Python:
-                    return new PyCompiler(code);
+                    return new PyCompiler(code, pySearchPath);
                 case Language.Java:
-                    return new JavaCompiler(code);
+                    return new JavaCompiler(code, jdkPath);
                 case Language.Lua:
                     return new LuaCompiler(code);
                 default:

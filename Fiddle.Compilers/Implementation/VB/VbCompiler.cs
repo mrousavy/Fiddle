@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,23 +8,24 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.VisualBasic;
 
 #pragma warning disable 618
 
 namespace Fiddle.Compilers.Implementation.VB {
     public class VbCompiler : ICompiler {
-        public VbCompiler(string code) : this(code, new ExecutionProperties(), new CompilerProperties()) { }
+        public VbCompiler(string code, string[] imports = null) : this(code, new ExecutionProperties(), new CompilerProperties(), imports) { }
 
         public VbCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps,
             string[] imports = null) {
             SourceCode = code;
             ExecuteProperties = execProps;
             CompilerProperties = compProps;
-            if (imports == null)
-                LoadReferences();
-            else
+            if (imports == null) {
+                //TODO: Load references for VB (now: C#)
+                //LoadReferences();
+            } else {
                 Imports = imports;
+            }
 
             Create();
         }
@@ -56,7 +58,7 @@ namespace Fiddle.Compilers.Implementation.VB {
                 });
                 compileThread.Start();
                 bool graceful =
-                    compileThread.Join((int) CompilerProperties
+                    compileThread.Join((int)CompilerProperties
                         .Timeout); //Wait until compile Thread finishes with given timeout
                 sw.Stop();
 
@@ -96,7 +98,7 @@ namespace Fiddle.Compilers.Implementation.VB {
                         ScriptAssembly.EntryPoint == null
                             ? ScriptAssembly.DefinedTypes.Last().DeclaredMethods.First().Invoke(null, null)
                             : ScriptAssembly.EntryPoint.Invoke(null, null),
-                    (int) ExecuteProperties.Timeout);
+                    (int)ExecuteProperties.Timeout);
 
                 if (result.Successful) {
                     IExecuteResult executeResult = new VbExecuteResult(
@@ -148,8 +150,9 @@ namespace Fiddle.Compilers.Implementation.VB {
                     .Select(t => t.Namespace)
                     .Where(n => n != null && !ownNamespaces.Contains(n))
                     .Distinct());
+            IEnumerable<string> dllnames = allNamespaces.Select(n => n + ".dll");
 
-            Imports = allNamespaces.ToArray();
+            Imports = dllnames.ToArray();
         }
 
         private void Create() {
@@ -168,7 +171,8 @@ namespace Fiddle.Compilers.Implementation.VB {
             Parameters.ReferencedAssemblies.Add("System.Data.dll");
             Parameters.ReferencedAssemblies.Add("System.Deployment.dll");
             Parameters.ReferencedAssemblies.Add("System.Xml.dll");
-            //Parameters.ReferencedAssemblies.AddRange(Imports);
+            if (Imports != null && Imports.Length > 0)
+                Parameters.ReferencedAssemblies.AddRange(Imports);
         }
 
 

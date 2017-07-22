@@ -6,7 +6,6 @@ namespace Fiddle.UI {
     /// Interaction logic for Settings.xaml
     /// </summary>
     public partial class Settings {
-        private Preferences Prefs { get; set; }
         private new bool? DialogResult {
             set {
                 try {
@@ -17,17 +16,15 @@ namespace Fiddle.UI {
             }
         }
 
-        public Settings(Preferences prefs) {
+        public Settings() {
             InitializeComponent();
-            Prefs = prefs;
             Load();
         }
-
 
         //Save Preferences
         private void ButtonSave(object sender, RoutedEventArgs e) {
             Apply();
-            PreferencesManager.WriteOut(Prefs);
+            PreferencesManager.WriteOut(App.Preferences);
             try {
                 DialogResult = true;
             } catch {
@@ -37,7 +34,7 @@ namespace Fiddle.UI {
 
         //Open Settings
         private void ButtonCancel(object sender, RoutedEventArgs e) {
-            Prefs = PreferencesManager.Load();
+            App.Preferences = PreferencesManager.Load();
             try {
                 DialogResult = false;
             } catch {
@@ -48,36 +45,42 @@ namespace Fiddle.UI {
 
         private void Apply() {
             try {
-                Prefs.CacheUserSettings = Convert.ToBoolean(USettings.IsChecked);
-                Prefs.CacheType = CacheType.Nothing;
+                App.Preferences.CacheUserSettings = Convert.ToBoolean(USettings.IsChecked);
+                App.Preferences.JdkPath = Jdk.Text;
+                App.Preferences.PyPath = PyPaths.Text;
+
+                App.Preferences.CacheType = CacheType.Nothing;
                 if (WSize.IsChecked == true)
-                    Prefs.CacheType |= CacheType.WindowSize;
+                    App.Preferences.CacheType |= CacheType.WindowSize;
                 if (WPos.IsChecked == true)
-                    Prefs.CacheType |= CacheType.WindowPos;
+                    App.Preferences.CacheType |= CacheType.WindowPos;
                 if (WState.IsChecked == true)
-                    Prefs.CacheType |= CacheType.WindowState;
+                    App.Preferences.CacheType |= CacheType.WindowState;
                 if (Lang.IsChecked == true)
-                    Prefs.CacheType |= CacheType.Language;
+                    App.Preferences.CacheType |= CacheType.Language;
                 if (RvSize.IsChecked == true)
-                    Prefs.CacheType |= CacheType.ResultsViewSize;
+                    App.Preferences.CacheType |= CacheType.ResultsViewSize;
                 if (SCode.IsChecked == true)
-                    Prefs.CacheType |= CacheType.SourceCode;
+                    App.Preferences.CacheType |= CacheType.SourceCode;
                 if (CPos.IsChecked == true)
-                    Prefs.CacheType |= CacheType.CursorPos;
+                    App.Preferences.CacheType |= CacheType.CursorPos;
             } catch {
                 //error converting
             }
         }
 
         private void Load() {
-            USettings.IsChecked = Prefs.CacheUserSettings;
-            WSize.IsChecked = Prefs.CacheType.HasFlag(CacheType.WindowSize);
-            WPos.IsChecked = Prefs.CacheType.HasFlag(CacheType.WindowPos);
-            WState.IsChecked = Prefs.CacheType.HasFlag(CacheType.WindowState);
-            Lang.IsChecked = Prefs.CacheType.HasFlag(CacheType.Language);
-            RvSize.IsChecked = Prefs.CacheType.HasFlag(CacheType.ResultsViewSize);
-            SCode.IsChecked = Prefs.CacheType.HasFlag(CacheType.SourceCode);
-            CPos.IsChecked = Prefs.CacheType.HasFlag(CacheType.CursorPos);
+            USettings.IsChecked = App.Preferences.CacheUserSettings;
+            Jdk.Text = App.Preferences.JdkPath;
+            Jdk.Text = App.Preferences.JdkPath;
+            PyPaths.Text = App.Preferences.PyPath;
+            WSize.IsChecked = App.Preferences.CacheType.HasFlag(CacheType.WindowSize);
+            WPos.IsChecked = App.Preferences.CacheType.HasFlag(CacheType.WindowPos);
+            WState.IsChecked = App.Preferences.CacheType.HasFlag(CacheType.WindowState);
+            Lang.IsChecked = App.Preferences.CacheType.HasFlag(CacheType.Language);
+            RvSize.IsChecked = App.Preferences.CacheType.HasFlag(CacheType.ResultsViewSize);
+            SCode.IsChecked = App.Preferences.CacheType.HasFlag(CacheType.SourceCode);
+            CPos.IsChecked = App.Preferences.CacheType.HasFlag(CacheType.CursorPos);
         }
     }
 }

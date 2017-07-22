@@ -1,4 +1,9 @@
-﻿using System;
+﻿using Fiddle.Compilers;
+using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Highlighting.Xshd;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,11 +11,6 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Xml;
-using Fiddle.Compilers;
-using ICSharpCode.AvalonEdit;
-using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.AvalonEdit.Highlighting.Xshd;
-using Microsoft.Win32;
 
 namespace Fiddle.UI {
     public static class Helper {
@@ -18,26 +18,30 @@ namespace Fiddle.UI {
             switch (language) {
                 case "C#":
                     editor.SyntaxHighlighting = LoadXshd("CSharp.xshd");
-                    return Host.NewCompiler(Language.CSharp, sourceCode);
+                    return NewCompiler(Language.CSharp, sourceCode);
                 case "C++":
                     editor.SyntaxHighlighting = LoadXshd("Cpp.xshd");
-                    return Host.NewCompiler(Language.Cpp, sourceCode);
+                    return NewCompiler(Language.Cpp, sourceCode);
                 case "VB":
                     editor.SyntaxHighlighting = LoadXshd("VB.xshd");
-                    return Host.NewCompiler(Language.Vb, sourceCode);
+                    return NewCompiler(Language.Vb, sourceCode);
                 case "Python":
                     editor.SyntaxHighlighting = LoadXshd("Python.xshd");
-                    return Host.NewCompiler(Language.Python, sourceCode);
+                    return NewCompiler(Language.Python, sourceCode);
                 case "Java":
                     editor.SyntaxHighlighting = LoadXshd("Java.xshd");
-                    return Host.NewCompiler(Language.Java, sourceCode);
+                    return NewCompiler(Language.Java, sourceCode);
                 case "LUA":
                     editor.SyntaxHighlighting = LoadXshd("LUA.xshd");
-                    return Host.NewCompiler(Language.Lua, sourceCode);
+                    return NewCompiler(Language.Lua, sourceCode);
                 default:
                     MessageBox.Show("Language not found!");
                     return null;
             }
+        }
+
+        public static ICompiler NewCompiler(Language language, string sourceCode, string[] imports = null) {
+            return Host.NewCompiler(language, sourceCode, imports, App.Preferences.JdkPath, App.Preferences.PyPath);
         }
 
 
@@ -139,8 +143,8 @@ namespace Fiddle.UI {
                     ? $"{diagnostic.LineFrom}-{diagnostic.LineTo}"
                     : diagnostic.LineFrom.ToString();
 
-                items.Add(new Run($"{indent}#{counter++} Ln{lines}: ") {Foreground = Brushes.LightGray});
-                items.Add(new Run(diagnostic.Message + nl) {Foreground = brush});
+                items.Add(new Run($"{indent}#{counter++} Ln{lines}: ") { Foreground = Brushes.LightGray });
+                items.Add(new Run(diagnostic.Message + nl) { Foreground = brush });
             }
             return items;
         }
@@ -159,15 +163,15 @@ namespace Fiddle.UI {
 
                 if (result.ReturnValue == null) {
                     //NO RETURN VALUE
-                    items.Add(new Run($"Return value: /{nl}") {Foreground = Brushes.Gray});
+                    items.Add(new Run($"Return value: /{nl}") { Foreground = Brushes.Gray });
                 } else {
                     //RETURN VALUE(S)
                     Type type = result.ReturnValue.GetType();
                     items.Add(new Run("Return value: "));
-                    items.Add(new Run($"({type.Name}) ") {Foreground = Brushes.CadetBlue});
+                    items.Add(new Run($"({type.Name}) ") { Foreground = Brushes.CadetBlue });
                     if (type.IsArray) {
                         //MULTIPLE RETURN VALUES
-                        Array array = (Array) result.ReturnValue;
+                        Array array = (Array)result.ReturnValue;
                         string run = string.Join(", ", array.Cast<object>());
                         items.Add(new Run($"{run}{nl}") {
                             Foreground = Brushes.Orange,
@@ -183,7 +187,7 @@ namespace Fiddle.UI {
                 }
                 if (string.IsNullOrWhiteSpace(result.ConsoleOutput)) {
                     //NO CONSOLE OUTPUT
-                    items.Add(new Run($"Console output: /{nl}") {Foreground = Brushes.Gray});
+                    items.Add(new Run($"Console output: /{nl}") { Foreground = Brushes.Gray });
                 } else {
                     //CONSOLE OUTPUT
                     items.Add(new Run("Console output: "));
@@ -212,10 +216,10 @@ namespace Fiddle.UI {
 
                 if (result.Exception == null) {
                     //NO ERROR MESSAGE
-                    items.Add(new Run($"An unexpected error occured.{nl}") {Foreground = Brushes.Gray});
+                    items.Add(new Run($"An unexpected error occured.{nl}") { Foreground = Brushes.Gray });
                 } else {
                     //ERROR MESSAGE
-                    items.Add(new Run($"{result.Exception.GetType().Name}: ") {Foreground = Brushes.OrangeRed});
+                    items.Add(new Run($"{result.Exception.GetType().Name}: ") { Foreground = Brushes.OrangeRed });
                     items.Add(new Run($"\"{result.Exception.Message}\"{nl}"));
                 }
                 if (result.CompileResult.Diagnostics?.Any() == true) {

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -23,7 +24,7 @@ namespace Fiddle.Compilers.Implementation.Java {
                 Arguments = commandLineOptions + " " + javaFilePathName
             };
             using (Process javacProcess = Process.Start(startInfo)) {
-                bool graceful = javacProcess.WaitForExit((int) properties.Timeout);
+                bool graceful = javacProcess.WaitForExit((int)properties.Timeout);
 
                 if (graceful) {
                     string error = await javacProcess.StandardError.ReadToEndAsync();
@@ -40,40 +41,20 @@ namespace Fiddle.Compilers.Implementation.Java {
         /// </summary>
         /// <param name="javaPath">Path to the Java dir (C:\Program Files\Java)</param>
         /// <returns>The found javac path or null if not found</returns>
-        public static string SearchJavac(string javaPath) {
+        public static Tuple<string, string> SearchJavaExecutables(string javaPath) {
             DirectoryInfo javaInfo = new DirectoryInfo(javaPath);
-            if (javaInfo.Exists)
-                foreach (DirectoryInfo info in javaInfo.EnumerateDirectories())
+            if (javaInfo.Exists) {
+                foreach (DirectoryInfo info in javaInfo.EnumerateDirectories()) {
                     if (info.Name.ToLower().Contains("jdk")) {
-                        string javacPath = Path.Combine(info.FullName, "bin", "javac.exe");
-                        FileInfo javac = new FileInfo(javacPath);
-                        if (javac.Exists)
-                            return javacPath;
+                        string javaBinJavac = Path.Combine(info.FullName, "bin", "javac.exe");
+                        FileInfo javac = new FileInfo(javaBinJavac);
+                        string javaBinJava = Path.Combine(info.FullName, "bin", "java.exe");
+                        FileInfo java = new FileInfo(javaBinJava);
+                        if (javac.Exists && java.Exists)
+                            return new Tuple<string, string>(javac.FullName, java.FullName);
                     }
-
-            return null;
-        }
-
-        /// <summary>
-        ///     Search for the JRE Directory and java in the specified path
-        /// </summary>
-        /// <param name="javaPath">Path to the Java dir (C:\Program Files\Java)</param>
-        /// <returns>The found java path or null if not found</returns>
-        public static string SearchJava(string javaPath) {
-            DirectoryInfo javaInfo = new DirectoryInfo(javaPath);
-            if (javaInfo.Exists)
-                foreach (DirectoryInfo info in javaInfo.EnumerateDirectories())
-                    if (info.Name.ToLower().Contains("jdk")) {
-                        string javaExePath = Path.Combine(info.FullName, "bin", "java.exe");
-                        FileInfo javac = new FileInfo(javaExePath);
-                        if (javac.Exists)
-                            return javaExePath;
-                    } else if (info.Name.ToLower().Contains("jre")) {
-                        string javaExePath = Path.Combine(info.FullName, "bin", "java.exe");
-                        FileInfo javac = new FileInfo(javaExePath);
-                        if (javac.Exists)
-                            return javaExePath;
-                    }
+                }
+            }
 
             return null;
         }

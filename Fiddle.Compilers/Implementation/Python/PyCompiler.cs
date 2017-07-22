@@ -1,20 +1,21 @@
-﻿using System;
+﻿using Microsoft.Scripting;
+using Microsoft.Scripting.Hosting;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Scripting;
-using Microsoft.Scripting.Hosting;
 
 namespace Fiddle.Compilers.Implementation.Python {
     public class PyCompiler : ICompiler {
-        public PyCompiler(string code) : this(code, new CompilerProperties(), new ExecutionProperties()) { }
+        public PyCompiler(string code, string libSearchPath = null) : this(code, new CompilerProperties(), new ExecutionProperties(), libSearchPath) { }
 
-        public PyCompiler(string code, ICompilerProperties cProps, IExecutionProperties eProps) {
+        public PyCompiler(string code, ICompilerProperties cProps, IExecutionProperties eProps, string libSearchPath = null) {
             SourceCode = code;
             CompilerProperties = cProps;
             ExecuteProperties = eProps;
+            LibSearchPath = libSearchPath;
         }
 
         public MemoryStream Stream { get; set; }
@@ -25,6 +26,7 @@ namespace Fiddle.Compilers.Implementation.Python {
         public IExecutionProperties ExecuteProperties { get; }
         public ICompilerProperties CompilerProperties { get; }
         public string SourceCode { get; set; }
+        public string LibSearchPath { get; set; }
         public ICompileResult CompileResult { get; private set; }
         public IExecuteResult ExecuteResult { get; private set; }
         public Language Language { get; } = Language.Python;
@@ -42,6 +44,12 @@ namespace Fiddle.Compilers.Implementation.Python {
                 //Spawn a new thread with the compile process
                 Thread compileThread = new Thread(() => {
                     ScriptEngine engine = IronPython.Hosting.Python.CreateEngine();
+                    //Add library search path
+                    if (!string.IsNullOrWhiteSpace(LibSearchPath)) {
+                        ICollection<string> paths = engine.GetSearchPaths();
+                        paths.Add(LibSearchPath);
+                        engine.SetSearchPaths(paths);
+                    }
                     engine.Runtime.IO.SetOutput(Stream, Writer);
                     Scope = engine.CreateScope();
                     Source = engine.CreateScriptSourceFromString(SourceCode);
@@ -49,7 +57,7 @@ namespace Fiddle.Compilers.Implementation.Python {
                 });
                 compileThread.Start();
                 //Join the thread into main thread with specified timeout
-                bool graceful = compileThread.Join((int) CompilerProperties.Timeout);
+                bool graceful = compileThread.Join((int)CompilerProperties.Timeout);
                 sw.Stop();
 
                 if (!graceful)
@@ -73,7 +81,7 @@ namespace Fiddle.Compilers.Implementation.Python {
 
             ExecuteThreaded<object>.ThreadRunResult result = await ExecuteThreaded<object>.Execute(() =>
                     Compilation.Execute(Scope),
-                (int) ExecuteProperties.Timeout);
+                (int)ExecuteProperties.Timeout);
 
             if (result.ReturnValue?.GetType() == typeof(Exception)) {
                 IExecuteResult execResultInner = new PyExecuteResult(

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -6,13 +9,10 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Scripting;
 
 namespace Fiddle.Compilers.Implementation.CSharp {
     public class CSharpCompiler : ICompiler {
-        public CSharpCompiler(string code) : this(code, new ExecutionProperties(), new CompilerProperties()) { }
+        public CSharpCompiler(string code, string[] imports = null) : this(code, new ExecutionProperties(), new CompilerProperties(), imports) { }
 
         public CSharpCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps,
             string[] imports = null) {
@@ -56,7 +56,7 @@ namespace Fiddle.Compilers.Implementation.CSharp {
                 });
                 compileThread.Start();
                 bool graceful =
-                    compileThread.Join((int) CompilerProperties
+                    compileThread.Join((int)CompilerProperties
                         .Timeout); //Wait until compile Thread finishes with given timeout
                 sw.Stop();
 
@@ -115,7 +115,7 @@ namespace Fiddle.Compilers.Implementation.CSharp {
 
             StringBuilder builder = new StringBuilder();
             Globals globals = new Globals(builder);
-            int timeout = (int) ExecuteProperties.Timeout;
+            int timeout = (int)ExecuteProperties.Timeout;
 
             ExecuteThreaded<ScriptState<object>>.ThreadRunResult threadRunResult =
                 await ExecuteThreaded<ScriptState<object>>.Execute(() =>
