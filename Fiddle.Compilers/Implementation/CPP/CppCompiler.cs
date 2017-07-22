@@ -24,12 +24,16 @@ namespace Fiddle.Compilers.Implementation.CPP {
         public Language Language { get; } = Language.Cpp;
 
         public Task<ICompileResult> Compile() {
-            string result = Compile("test");
+            IntPtr strPtr = Marshal.StringToHGlobalUni("source code goes here");
+            string result = Marshal.PtrToStringAnsi(Compile(strPtr));
+            Marshal.FreeHGlobal(strPtr);
             throw new NotImplementedException();
         }
 
         public Task<IExecuteResult> Execute() {
-            string result = Execute("test");
+            IntPtr strPtr = Marshal.StringToHGlobalUni("assembly path");
+            string result = Marshal.PtrToStringAnsi(Execute(strPtr));
+            Marshal.FreeHGlobal(strPtr);
             return null;
         }
 
@@ -39,9 +43,9 @@ namespace Fiddle.Compilers.Implementation.CPP {
 
 
         [DllImport("ClangCompiler.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Compile")]
-        private static extern string Compile(string sourcecode);
+        private static extern IntPtr Compile(IntPtr sourcecode);
 
         [DllImport("ClangCompiler.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "Execute")]
-        private static extern string Execute(string filepath);
+        private static extern IntPtr Execute(IntPtr filepath);
     }
 }
