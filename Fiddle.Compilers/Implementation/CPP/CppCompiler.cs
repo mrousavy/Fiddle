@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CodeDom.Compiler;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace Fiddle.Compilers.Implementation.CPP {
@@ -12,7 +13,6 @@ namespace Fiddle.Compilers.Implementation.CPP {
             ExecuteProperties = execProps;
             CompilerProperties = compProps;
 
-            throw new NotImplementedException();
         }
 
         private CodeDomProvider Provider { get; set; }
@@ -24,15 +24,24 @@ namespace Fiddle.Compilers.Implementation.CPP {
         public Language Language { get; } = Language.Cpp;
 
         public Task<ICompileResult> Compile() {
+            string result = Compile("test");
             throw new NotImplementedException();
         }
 
         public Task<IExecuteResult> Execute() {
-            throw new NotImplementedException();
+            string result = Execute("test");
+            return null;
         }
 
         public void Dispose() {
             Provider?.Dispose();
         }
+
+
+        [DllImport("ClangCompiler.dll", EntryPoint = "Compile")]
+        private static extern string Compile(string sourcecode);
+
+        [DllImport("ClangCompiler.dll", EntryPoint = "Execute")]
+        private static extern string Execute(string filepath);
     }
 }
