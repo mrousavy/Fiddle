@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Fiddle.Compilers;
+using ICSharpCode.AvalonEdit.AddIn;
+using ICSharpCode.SharpDevelop.Editor;
+using MaterialDesignThemes.Wpf;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -9,10 +13,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using Fiddle.Compilers;
-using ICSharpCode.AvalonEdit.AddIn;
-using ICSharpCode.SharpDevelop.Editor;
-using MaterialDesignThemes.Wpf;
+using System.Windows.Media.Animation;
 
 namespace Fiddle.UI {
     /// <summary>
@@ -115,7 +116,7 @@ namespace Fiddle.UI {
             TextBoxCode.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
             TextBoxCode.TextArea.TextView.LineTransformers.Add(textMarkerService);
             IServiceContainer services =
-                (IServiceContainer) TextBoxCode.Document.ServiceProvider.GetService(typeof(IServiceContainer));
+                (IServiceContainer)TextBoxCode.Document.ServiceProvider.GetService(typeof(IServiceContainer));
             services?.AddService(typeof(ITextMarkerService), textMarkerService);
             _textMarkerService = textMarkerService;
         }
@@ -230,7 +231,7 @@ namespace Fiddle.UI {
         private async void ComboBoxLanguageSelected(object sender, SelectionChangedEventArgs e) {
             LockUi();
             ResetUnderline();
-            string value = ((ComboBoxItem) ComboBoxLanguage.SelectedValue).Content as string;
+            string value = ((ComboBoxItem)ComboBoxLanguage.SelectedValue).Content as string;
             try {
                 //Try to load the new compiler
                 _compiler?.Dispose();
@@ -244,7 +245,7 @@ namespace Fiddle.UI {
                     EditorDialogHost);
                 //Revert changes
                 ComboBoxLanguage.SelectedIndex = App.Preferences.SelectedLanguage;
-                value = ((ComboBoxItem) ComboBoxLanguage.SelectedValue).Content as string;
+                value = ((ComboBoxItem)ComboBoxLanguage.SelectedValue).Content as string;
                 _compiler?.Dispose();
                 _compiler = Helper.ChangeLanguage(value, SourceCode, TextBoxCode);
             }
@@ -283,7 +284,6 @@ namespace Fiddle.UI {
             ClearResultView();
             IEnumerable<Run> runs = Helper.BuildRuns(result);
             TextBlockResults.Inlines.AddRange(runs);
-            RawBtn.Visibility = Visibility.Visible;
         }
 
         //Set Result View content
@@ -291,13 +291,11 @@ namespace Fiddle.UI {
             ClearResultView();
             IEnumerable<Run> runs = Helper.BuildRuns(result);
             TextBlockResults.Inlines.AddRange(runs);
-            RawBtn.Visibility = Visibility.Visible;
         }
 
         //Clear result view
         private void ClearResultView() {
             TextBlockResults.Text = "";
-            RawBtn.Visibility = Visibility.Collapsed;
         }
 
         //Actually save code file
@@ -373,8 +371,25 @@ namespace Fiddle.UI {
 
         //Show results view raw button click
         private void ButtonShowRaw(object sender, RoutedEventArgs e) {
-            RawText window = new RawText(TextBlockResults.Text) {Owner = this};
+            RawText window = new RawText(TextBlockResults.Text) { Owner = this };
             window.ShowDialog();
+        }
+
+        //Show Raw Button (Mouse over)
+        private void TextBlockResultsMEnter(object sender, MouseEventArgs e) {
+            if (!string.IsNullOrWhiteSpace(TextBlockResults.Text)) {
+                DoubleAnimation fadeOut = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200));
+                RawBtn.Visibility = Visibility.Visible;
+                RawBtn.BeginAnimation(OpacityProperty, fadeOut);
+            }
+        }
+        //Hide Raw Button (Mouse leave)
+        private void TextBlockResultsMLeave(object sender, MouseEventArgs e) {
+            if (!string.IsNullOrWhiteSpace(TextBlockResults.Text)) {
+                DoubleAnimation fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(200));
+                fadeOut.Completed += delegate { RawBtn.Visibility = Visibility.Collapsed; };
+                RawBtn.BeginAnimation(OpacityProperty, fadeOut);
+            }
         }
 
         //Ctrl + S Command (Save)
@@ -391,7 +406,6 @@ namespace Fiddle.UI {
         private void F5(object sender, ExecutedRoutedEventArgs e) {
             Execute();
         }
-
         #endregion
     }
 }

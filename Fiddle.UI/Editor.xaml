@@ -131,7 +131,9 @@
                     Margin="5">
                     <Grid
                         Background="#374349"
-                        HorizontalAlignment="Stretch">
+                        HorizontalAlignment="Stretch"
+                        MouseEnter="TextBlockResultsMEnter"
+                        MouseLeave="TextBlockResultsMLeave">
                         <TextBlock
                             Margin="10"
                             Foreground="White"
