@@ -139,6 +139,11 @@ namespace Fiddle.UI {
 
         //Actually compile code
         private async void Compile() {
+            if (_compiler == null) {
+                await DialogHelper.ShowErrorDialog("Please select a language first!", EditorDialogHost);
+                return;
+            }
+
             ClearResultView();
             SetStatus(StatusType.Wait, "Compiling..");
 
@@ -169,6 +174,11 @@ namespace Fiddle.UI {
 
         //Actually execute code
         private async void Execute() {
+            if (_compiler == null) {
+                await DialogHelper.ShowErrorDialog("Please select a language first!", EditorDialogHost);
+                return;
+            }
+
             ClearResultView();
             SetStatus(StatusType.Wait, "Executing..");
 
@@ -195,7 +205,7 @@ namespace Fiddle.UI {
         //Underline Errors red and warnings/infos Yellow in code
         private void CodeUnderline() {
             ResetUnderline();
-            if (_compiler.CompileResult?.Diagnostics == null || !_compiler.CompileResult.Diagnostics.Any())
+            if (_compiler?.CompileResult?.Diagnostics == null || !_compiler.CompileResult.Diagnostics.Any())
                 return;
 
             foreach (IDiagnostic diagnostic in _compiler.CompileResult.Diagnostics)
