@@ -1,12 +1,10 @@
 #include <iostream>
+#include <string>
+using namespace std;
 
 #pragma once
-class Compiler
-{
-public:
-	Compiler();
-	~Compiler();
-	string Compile(string code);
-	string Execute();
-};
 
+string CompileC(string sourcecode);
+string ExecuteC(string assemblylocation);
+string Compile(string code);
+string Execute(string asmloc);

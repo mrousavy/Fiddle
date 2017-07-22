@@ -1,11 +1,20 @@
 #include "stdafx.h"
-#include "Compiler.h"
 #include <iostream>
 
 using namespace std;
 
 
-string Compiler::Compile(string sourcecode) {
+extern "C" __declspec(dllexport) string Compile(string sourcecode) {
+	Compile(sourcecode);
+}
+extern "C" __declspec(dllexport) string Execute(string assemblylocation) {
+	ExecuteC(assemblylocation);
+}
+
+
+
+
+string CompileC(string code) {
 	//TODO: Use %TEMP% for .c and .exe instead of CurrentWorkingDirectory
 
 	//TODO: Compile cppfiddle.c to cppfiddle.exe
@@ -31,7 +40,7 @@ string Compiler::Compile(string sourcecode) {
 	return output;
 }
 
-string Compiler::Execute() {
+string ExecuteC(string asmloc) {
 	// Path to the executable
 	string outputPath = "cppfiddle";
 
@@ -40,13 +49,4 @@ string Compiler::Execute() {
 
 	string output; //TODO: Read console output of cppfiddle.exe
 	return output;
-}
-
-Compiler::Compiler()
-{
-}
-
-
-Compiler::~Compiler()
-{
 }
