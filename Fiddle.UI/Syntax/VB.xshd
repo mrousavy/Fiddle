@@ -154,12 +154,6 @@
       <Word>WithEvents</Word>
       <Word>WriteOnly</Word>
       <Word>Xor</Word>
-      <Word>#Const</Word>
-      <Word>#ExternalSource</Word>
-      <Word>#If</Word>
-      <Word>#Then</Word>
-      <Word>#Else</Word>
-      <Word>#Region</Word>
       <Word>-</Word>
       <Word>&amp;</Word>
       <Word>&amp;=</Word>
