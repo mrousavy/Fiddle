@@ -369,6 +369,14 @@ namespace Fiddle.UI {
             Save();
         }
 
+        //Open Settings
+        private void ButtonSettings(object sender, RoutedEventArgs e) {
+            LockUi();
+            Settings settings = new Settings(App.Preferences) { Owner = this };
+            settings.ShowDialog();
+            UnlockUi();
+        }
+
         //Compile Button click
         private void ButtonCompile(object sender, RoutedEventArgs e) {
             Compile();

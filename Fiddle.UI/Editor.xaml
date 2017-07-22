@@ -31,7 +31,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -69,6 +69,19 @@
                     Padding="-10" ToolTip="Execute (F5)">
                 <md:PackIcon Kind="Play" Foreground="Green"
                              HorizontalAlignment="Center"
+                             VerticalAlignment="Center"
+                             Height="25" Width="25" />
+            </Button>
+            
+            <!--Save Button-->
+            <Button Grid.Row="0" Grid.Column="3" Margin="10"
+                    Background="#263238" Height="45" Width="45"
+                    Click="ButtonSettings" BorderBrush="#263238"
+                    Padding="-10" ToolTip="Settings"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center">
+                <md:PackIcon Kind="Settings" Foreground="Gray"
+                             HorizontalAlignment="Right"
                              VerticalAlignment="Center"
                              Height="25" Width="25" />
             </Button>
