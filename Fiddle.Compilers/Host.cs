@@ -1,7 +1,6 @@
 ﻿using Fiddle.Compilers.Implementation.CPP;
 using Fiddle.Compilers.Implementation.CSharp;
 using Fiddle.Compilers.Implementation.Java;
-using Fiddle.Compilers.Implementation.LUA;
 using Fiddle.Compilers.Implementation.Python;
 using Fiddle.Compilers.Implementation.VB;
 using Microsoft.CodeAnalysis;
@@ -13,7 +12,6 @@ namespace Fiddle.Compilers {
         Cpp,
         CSharp,
         Java,
-        Lua,
         Python,
         Vb
     }
@@ -48,8 +46,6 @@ namespace Fiddle.Compilers {
                     return new PyCompiler(code, pySearchPath);
                 case Language.Java:
                     return new JavaCompiler(code, jdkPath);
-                case Language.Lua:
-                    return new LuaCompiler(code);
                 default:
                     throw new LanguageNotFoundException(language);
             }

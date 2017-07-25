@@ -146,7 +146,6 @@
     <EmbeddedResource Include="Syntax\Python.xshd" />
     <EmbeddedResource Include="Syntax\CSharp.xshd" />
     <EmbeddedResource Include="Syntax\Java.xshd" />
-    <EmbeddedResource Include="Syntax\LUA.xshd" />
     <EmbeddedResource Include="Syntax\VB.xshd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
