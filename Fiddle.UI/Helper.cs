@@ -6,8 +6,10 @@ using Microsoft.Win32;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -103,6 +105,12 @@ namespace Fiddle.UI {
         }
 
 
+        private static Uri BuildHelpLink(string errorMessage)
+        {
+            string query = WebUtility.UrlEncode(errorMessage);
+            return new Uri($"https://stackoverflow.com/search?q={query}"); //premium help service
+        }
+
         public static string ConcatErrors(IEnumerable<Exception> errorsList) {
             string errors = "";
             const int maxErrors = 7; //do not show more than [maxErrors] errors in Message
@@ -123,8 +131,8 @@ namespace Fiddle.UI {
             return errors;
         }
 
-        public static IEnumerable<Run> BuildDiagnostics(IEnumerable<IDiagnostic> diagnostics, string indent = "") {
-            IList<Run> items = new List<Run>();
+        public static IEnumerable<Inline> BuildDiagnostics(IEnumerable<IDiagnostic> diagnostics, string indent = "") {
+            IList<Inline> items = new List<Inline>();
             int counter = 1;
             string nl = Environment.NewLine;
             foreach (IDiagnostic diagnostic in diagnostics) {
@@ -145,16 +153,26 @@ namespace Fiddle.UI {
                     : diagnostic.LineFrom.ToString();
 
                 items.Add(new Run($"{indent}#{counter++} Ln{lines}: ") { Foreground = Brushes.LightGray });
-                items.Add(new Run(diagnostic.Message + nl) { Foreground = brush });
+                if (diagnostic.Severity == Severity.Error) {
+                    Uri url = BuildHelpLink(diagnostic.Message);
+                    Run childInline = new Run(diagnostic.Message + nl) {Foreground = brush};
+                    Hyperlink link = new Hyperlink(childInline) { Foreground = brush, NavigateUri = url };
+                    link.Click += delegate {
+                        Process.Start(url.ToString());
+                    };
+                    items.Add(link);
+                } else {
+                    items.Add(new Run(diagnostic.Message + nl) { Foreground = brush });
+                }
             }
             return items;
         }
 
-        public static IEnumerable<Run> BuildRuns(IExecuteResult result) {
+        public static IEnumerable<Inline> BuildRuns(IExecuteResult result) {
             string nl = Environment.NewLine;
             if (result.Success) {
                 //Execute: SUCCESS, Compile: SUCCESS
-                List<Run> items = new List<Run> {
+                List<Inline> items = new List<Inline> {
                     new Run($"Execution successful! (Took {result.Time}ms){nl}") {
                         Foreground = Brushes.Green,
                         FontWeight = FontWeights.Bold,
@@ -224,7 +242,7 @@ namespace Fiddle.UI {
 
             if (result.CompileResult.Success) {
                 //Execute: FAIL, Compile: SUCCESS
-                List<Run> items = new List<Run> {
+                List<Inline> items = new List<Inline> {
                     new Run($"Execution failed! (Took {result.Time}ms){nl}") {
                         Foreground = Brushes.Red,
                         FontWeight = FontWeights.Bold,
@@ -238,7 +256,13 @@ namespace Fiddle.UI {
                 } else {
                     //ERROR MESSAGE
                     items.Add(new Run($"Ln{result.ExceptionLineNr}: {result.Exception.GetType().Name}: ") { Foreground = Brushes.OrangeRed });
-                    items.Add(new Run($"\"{result.Exception.Message}\"{nl}"));
+                    Uri url = BuildHelpLink(result.Exception.Message);
+                    Run childInline = new Run($"\"{result.Exception.Message}\"{nl}") { Foreground = Brushes.OrangeRed };
+                    Hyperlink link = new Hyperlink(childInline) { Foreground = Brushes.OrangeRed, NavigateUri = url };
+                    link.Click += delegate {
+                        Process.Start(url.ToString());
+                    };
+                    items.Add(link);
                 }
                 if (result.CompileResult.Diagnostics?.Any() == true) {
                     //DIAGNOSTICS
@@ -253,11 +277,11 @@ namespace Fiddle.UI {
             return BuildRuns(result.CompileResult);
         }
 
-        public static IEnumerable<Run> BuildRuns(ICompileResult result) {
+        public static IEnumerable<Inline> BuildRuns(ICompileResult result) {
             string nl = Environment.NewLine;
             if (result.Success) {
                 //Compile: SUCCESS
-                List<Run> items = new List<Run> {
+                List<Inline> items = new List<Inline> {
                     new Run($"Compilation successful! (Took {result.Time}ms){nl}") {
                         Foreground = Brushes.Green,
                         FontWeight = FontWeights.Bold,
@@ -271,7 +295,7 @@ namespace Fiddle.UI {
                 return items;
             } else {
                 //Compile: FAIL
-                List<Run> items = new List<Run> {
+                List<Inline> items = new List<Inline> {
                     new Run($"Compilation failed!{nl}") {
                         Foreground = Brushes.Red,
                         FontWeight = FontWeights.Bold,

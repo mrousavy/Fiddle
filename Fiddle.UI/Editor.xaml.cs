@@ -292,14 +292,14 @@ namespace Fiddle.UI {
         //Set Result View content
         private void SetResultView(ICompileResult result) {
             ClearResultView();
-            IEnumerable<Run> runs = Helper.BuildRuns(result);
+            IEnumerable<Inline> runs = Helper.BuildRuns(result);
             TextBlockResults.Inlines.AddRange(runs);
         }
 
         //Set Result View content
         private void SetResultView(IExecuteResult result) {
             ClearResultView();
-            IEnumerable<Run> runs = Helper.BuildRuns(result);
+            IEnumerable<Inline> runs = Helper.BuildRuns(result);
             TextBlockResults.Inlines.AddRange(runs);
         }
 
