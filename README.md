@@ -11,7 +11,6 @@
 - [ ] **C++** 	_(TODO: everything)_
 - [x] **C#**
 - [x] **Java** 	_(TODO: Return values)_
-- [x] **LUA**
 - [x] **Python**
 - [x] **VB** 	_(TODO: Better Entry point)_
 
