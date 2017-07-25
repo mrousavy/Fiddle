@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Fiddle.Compilers.Implementation.CSharp {
     public class CSharpExecuteResult : IExecuteResult {
@@ -18,5 +19,15 @@ namespace Fiddle.Compilers.Implementation.CSharp {
         public object ReturnValue { get; }
         public ICompileResult CompileResult { get; }
         public Exception Exception { get; }
+
+        public int ExceptionLineNr
+        {
+            get
+            {
+                if (Exception == null) return -1;
+                StackTrace trace = new StackTrace(Exception, true);
+                return trace.GetFrame(0).GetFileLineNumber();
+            }
+        }
     }
 }

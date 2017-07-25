@@ -219,7 +219,7 @@ namespace Fiddle.UI {
                     items.Add(new Run($"An unexpected error occured.{nl}") { Foreground = Brushes.Gray });
                 } else {
                     //ERROR MESSAGE
-                    items.Add(new Run($"{result.Exception.GetType().Name}: ") { Foreground = Brushes.OrangeRed });
+                    items.Add(new Run($"Ln{result.ExceptionLineNr}: {result.Exception.GetType().Name}: ") { Foreground = Brushes.OrangeRed });
                     items.Add(new Run($"\"{result.Exception.Message}\"{nl}"));
                 }
                 if (result.CompileResult.Diagnostics?.Any() == true) {

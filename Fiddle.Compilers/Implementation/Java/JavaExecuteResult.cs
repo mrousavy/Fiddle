@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Fiddle.Compilers.Implementation.Java {
     public class JavaExecuteResult : IExecuteResult {
@@ -23,5 +24,15 @@ namespace Fiddle.Compilers.Implementation.Java {
         public ICompileResult CompileResult { get; set; }
 
         public Exception Exception { get; set; }
+
+        public int ExceptionLineNr
+        {
+            get
+            {
+                if (Exception == null) return -1;
+                StackTrace trace = new StackTrace(Exception, true);
+                return trace.GetFrame(0).GetFileLineNumber();
+            }
+        }
     }
 }

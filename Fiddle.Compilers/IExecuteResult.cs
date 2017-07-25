@@ -36,5 +36,9 @@ namespace Fiddle.Compilers {
         ///     The thrown exception, if <see cref="Success" /> then this field is null
         /// </summary>
         Exception Exception { get; }
+        /// <summary>
+        /// The Line Number of the Exception that occured (or -1 if none)
+        /// </summary>
+        int ExceptionLineNr { get; }
     }
 }
