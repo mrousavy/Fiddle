@@ -4,6 +4,7 @@ using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using Microsoft.Win32;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -168,7 +169,14 @@ namespace Fiddle.UI {
                     //RETURN VALUE(S)
                     Type type = result.ReturnValue.GetType();
                     items.Add(new Run("Return value: "));
-                    items.Add(new Run($"({type.Name}) ") { Foreground = Brushes.CadetBlue });
+                    string typeName;
+                    if (type.IsGenericType) {
+                        typeName = $"{type.Name.Remove(type.Name.IndexOf('`'))}" +
+                                   $"<{string.Join(", ", type.GenericTypeArguments.Select(a => a.Name))}>";
+                    } else {
+                        typeName = type.Name;
+                    }
+                    items.Add(new Run($"({typeName}) ") { Foreground = Brushes.CadetBlue });
                     if (type.IsArray) {
                         //MULTIPLE RETURN VALUES
                         Array array = (Array)result.ReturnValue;
@@ -177,9 +185,19 @@ namespace Fiddle.UI {
                             Foreground = Brushes.Orange,
                             FontFamily = new FontFamily("Consolas")
                         });
+                    } else if (result.ReturnValue is IList && type.IsGenericType) {
+                        //MULTIPLE RETURN VALUES
+                        IList list = (IList)result.ReturnValue;
+                        string run = string.Join(", ", list.Cast<object>());
+                        items.Add(new Run($"{run}{nl}")
+                        {
+                            Foreground = Brushes.Orange,
+                            FontFamily = new FontFamily("Consolas")
+                        });
                     } else {
                         //SINGLE RETURN VALUE
-                        items.Add(new Run($"{result.ReturnValue}{nl}") {
+                        items.Add(new Run($"{result.ReturnValue}{nl}")
+                        {
                             Foreground = Brushes.Orange,
                             FontFamily = new FontFamily("Consolas")
                         });
