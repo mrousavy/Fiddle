@@ -35,6 +35,8 @@ namespace Fiddle.Compilers.Implementation {
                 runThread.Start();
                 graceful = runThread.Join(timeout);
                 sw.Stop();
+                if (!graceful)
+                    runThread.Abort();
                 tcs.SetResult(true);
             }).Start();
 
@@ -74,6 +76,8 @@ namespace Fiddle.Compilers.Implementation {
                 runThread.Start();
                 graceful = runThread.Join(timeout);
                 sw.Stop();
+                if (!graceful)
+                    runThread.Abort();
                 tcs.SetResult(true);
             }).Start();
 
