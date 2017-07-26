@@ -8,7 +8,7 @@ namespace Fiddle.UI
     /// <summary>
     ///     Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App 
     {
         public App()
         {
@@ -40,7 +40,7 @@ namespace Fiddle.UI
                     Process.Start("http://github.com/mrousavy/Fiddle/issues/new");
                     Process.Start("explorer.exe", $"/select, \"{path}\"");
                 }
-                Current.Shutdown();
+                Process.GetCurrentProcess().Kill();
             }
             catch
             {
