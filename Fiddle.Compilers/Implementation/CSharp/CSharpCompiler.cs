@@ -15,7 +15,7 @@ namespace Fiddle.Compilers.Implementation.CSharp {
         public CSharpCompiler(string code, string[] imports = null) : this(code, new ExecutionProperties(), new CompilerProperties(), imports) { }
 
         public CSharpCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps,
-            string[] imports = null) {
+            string[] imports = null, IGlobals globals = null) {
             SourceCode = code;
             ExecuteProperties = execProps;
             CompilerProperties = compProps;
@@ -24,6 +24,7 @@ namespace Fiddle.Compilers.Implementation.CSharp {
             else
                 Imports = imports;
 
+            Globals = globals ?? new Globals(new StringBuilder());
             Create();
         }
 
@@ -36,6 +37,7 @@ namespace Fiddle.Compilers.Implementation.CSharp {
         public ICompileResult CompileResult { get; private set; }
         public IExecuteResult ExecuteResult { get; private set; }
         public Language Language { get; } = Language.CSharp;
+        public IGlobals Globals { get; }
 
         public async Task<ICompileResult> Compile() {
             if (Script.Code != SourceCode)
@@ -112,14 +114,12 @@ namespace Fiddle.Compilers.Implementation.CSharp {
             if (!CompileResult.Success)
                 return new CSharpExecuteResult(-1, null, null, CompileResult,
                     new CompileException("The compilation was not successful!"));
-
-            StringBuilder builder = new StringBuilder();
-            Globals globals = new Globals(builder);
+            
             int timeout = (int)ExecuteProperties.Timeout;
 
             ExecuteThreaded<ScriptState<object>>.ThreadRunResult threadRunResult =
                 await ExecuteThreaded<ScriptState<object>>.Execute(() =>
-                    Script.RunAsync(globals, CatchException), timeout);
+                    Script.RunAsync(Globals, CatchException), timeout);
 
             ScriptState<object> state = threadRunResult.ReturnValue;
             int elapsed = threadRunResult.ElapsedMilliseconds;
@@ -127,7 +127,7 @@ namespace Fiddle.Compilers.Implementation.CSharp {
             IExecuteResult result;
             if (threadRunResult.Successful) {
                 object returnValue = state.ReturnValue;
-                string stdout = builder.ToString();
+                string stdout = Globals.Console.GetStringBuilder().ToString();
                 result = new CSharpExecuteResult(
                     elapsed,
                     stdout,
@@ -181,7 +181,7 @@ namespace Fiddle.Compilers.Implementation.CSharp {
             ScriptOptions options = ScriptOptions.Default
                 .WithReferences(Imports)
                 .WithImports(Imports);
-            Script = CSharpScript.Create(SourceCode, options, typeof(Globals));
+            Script = CSharpScript.Create(SourceCode, options, Globals.GetType());
         }
 
 

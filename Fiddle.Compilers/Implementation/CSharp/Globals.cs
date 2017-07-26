@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 
 namespace Fiddle.Compilers.Implementation.CSharp {
-    public class Globals {
+    public class Globals : IGlobals {
         public Globals(StringBuilder builder) {
             Console = new StringWriter(builder);
             Random = new Random();

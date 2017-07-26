@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -18,11 +19,11 @@ using Fiddle.Compilers.Implementation;
 
 namespace Fiddle.UI {
     public static class Helper {
-        public static ICompiler ChangeLanguage(string language, string sourceCode, TextEditor editor) {
+        public static ICompiler ChangeLanguage(string language, string sourceCode, TextEditor editor, Editor caller) {
             switch (language) {
                 case "C#":
                     editor.SyntaxHighlighting = LoadXshd("CSharp.xshd");
-                    return NewCompiler(Language.CSharp, sourceCode);
+                    return NewCompiler(Language.CSharp, sourceCode, caller: caller);
                 case "C++":
                     editor.SyntaxHighlighting = LoadXshd("Cpp.xshd");
                     return NewCompiler(Language.Cpp, sourceCode);
@@ -44,10 +45,16 @@ namespace Fiddle.UI {
             }
         }
 
-        public static ICompiler NewCompiler(Language language, string sourceCode, string[] imports = null, string langVersion = null) {
+        public static ICompiler NewCompiler(Language language, string sourceCode, string[] imports = null, string langVersion = null, Editor caller = null) {
             IExecutionProperties exProps = new ExecutionProperties(App.Preferences.ExecuteTimeout);
             ICompilerProperties comProps= new CompilerProperties(App.Preferences.ExecuteTimeout, langVersion);
-            return Host.NewCompiler(language, sourceCode, imports, App.Preferences.JdkPath, App.Preferences.PyPath, exProps, comProps);
+            Compilers.Properties properties = new Compilers.Properties(language, sourceCode, 
+                imports,
+                App.Preferences.JdkPath,
+                App.Preferences.PyPath,
+                exProps, comProps,
+                new CSharpGlobals(new StringBuilder(), caller));
+            return Host.NewCompiler(properties);
         }
 
 

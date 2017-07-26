@@ -159,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompileException.cs" />
+    <Compile Include="IGlobals.cs" />
     <Compile Include="Implementation\CPP\CppCompiler.cs" />
     <Compile Include="Implementation\CSharp\CSharpDiagnostic.cs" />
     <Compile Include="Implementation\CSharp\Globals.cs" />
