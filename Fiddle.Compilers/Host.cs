@@ -10,12 +10,87 @@ using Fiddle.Compilers.Implementation.LUA;
 
 namespace Fiddle.Compilers {
     public enum Language {
+        /// <summary>
+        /// C++
+        /// </summary>
         Cpp,
+        /// <summary>
+        /// C# .NET
+        /// </summary>
         CSharp,
+        /// <summary>
+        /// Java
+        /// </summary>
         Java,
+        /// <summary>
+        /// NLUA (KeraLua)
+        /// </summary>
         Lua,
+        /// <summary>
+        /// IronPython
+        /// </summary>
         Python,
+        /// <summary>
+        /// Visual Basic .NET
+        /// </summary>
         Vb
+    }
+
+    /// <summary>
+    /// A set of properties for compiler creation
+    /// </summary>
+    public struct Properties {
+        /// <summary>
+        /// The language to use for compilation and execution
+        /// </summary>
+        public Language Language { get; set; }
+        /// <summary>
+        /// The source code
+        /// </summary>
+        public string Code { get; set; }
+        /// <summary>
+        /// All imports/namespaces that should be added to the script environment.
+        /// If this value is null, all references that can be found will be added (C#), or pre-defined
+        /// imports will be used (other languages)
+        /// </summary>
+        public string[] Imports { get; set; }
+        /// <summary>
+        /// Path to Java Development Kit
+        /// </summary>
+        public string JdkPath { get; set; }
+        /// <summary>
+        /// Python libraries search path
+        /// </summary>
+        public string PySearchPath { get; set; }
+        /// <summary>
+        /// Given Execution Properties for the compiler (Use <see cref="Fiddle.Compilers.Implementation.ExecutionProperties"/>)
+        /// </summary>
+        public IExecutionProperties ExecuteProperties { get; set; }
+        /// <summary>
+        /// Given Compilation Properties for the compiler (Use <see cref="Fiddle.Compilers.Implementation.CompilerProperties"/>)
+        /// </summary>
+        public ICompilerProperties CompilerProperties { get; set; }
+        /// <summary>
+        /// Global variables to be used in a language (e.g. C#) (e.g. for redirecting Console to a StreamWriter)
+        /// </summary>
+        public IGlobals Globals { get; set; }
+
+        public Properties(Language language, string code, 
+            string[] imports = null,
+            string jdkPath = null,
+            string pyPath = null,
+            IExecutionProperties exProps = null,
+            ICompilerProperties comProps = null,
+            IGlobals globals = null) {
+            Language = language;
+            Code = code;
+            Imports = imports;
+            JdkPath = jdkPath;
+            PySearchPath = pyPath;
+            ExecuteProperties = exProps;
+            CompilerProperties = comProps;
+            Globals = globals;
+        }
     }
 
     /// <summary>
@@ -25,33 +100,32 @@ namespace Fiddle.Compilers {
         /// <summary>
         ///     Create a new <see cref="ICompiler" /> with the given Language
         /// </summary>
-        /// <param name="language">The language to use for compilation and execution</param>
-        /// <param name="code">The source code</param>
-        /// <param name="imports">
-        ///     All imports/namespaces that should be added to the script environment.
-        ///     If this value is null, all references that can be found will be added (C#), or pre-defined
-        ///     imports will be used (other languages)
-        /// </param>
-        /// <param name="jdkPath">Path to Java Development Kit</param>
-        /// <param name="pySearchPath">Python libraries search path</param>
-        /// <param name="executionProperties">Given Execution Properties for the compiler (Use <see cref="Fiddle.Compilers.Implementation.ExecutionProperties"/>)</param>
-        /// <param name="compilerProperties">Given Compilation Properties for the compiler (Use <see cref="Fiddle.Compilers.Implementation.CompilerProperties"/>)</param>
+        /// <param name="properties">Given Compilation and Execution Properties for the compiler creation</param>
         /// <exception cref="LanguageNotFoundException">When the given <see cref="Language" /> could not be found</exception>
         /// <returns>The initialized Compiler</returns>
-        public static ICompiler NewCompiler(Language language, string code, string[] imports = null, string jdkPath = null, string pySearchPath = null, IExecutionProperties executionProperties = null, ICompilerProperties compilerProperties = null) {
+        public static ICompiler NewCompiler(Properties properties) {
+            string code = properties.Code;
+            IExecutionProperties exProps = properties.ExecuteProperties;
+            ICompilerProperties comProps = properties.CompilerProperties;
+            string[] imports = properties.Imports;
+            string pySearchPath = properties.PySearchPath;
+            string jdkPath = properties.JdkPath;
+            Language language = properties.Language;
+            IGlobals globals = properties.Globals;
+
             switch (language) {
                 case Language.CSharp:
-                    return new CSharpCompiler(code, executionProperties, compilerProperties, imports);
+                    return new CSharpCompiler(code, exProps, comProps, imports, globals);
                 case Language.Cpp:
-                    return new CppCompiler(code, executionProperties, compilerProperties, imports);
+                    return new CppCompiler(code, exProps, comProps, imports);
                 case Language.Vb:
-                    return new VbCompiler(code, executionProperties, compilerProperties, imports);
+                    return new VbCompiler(code, exProps, comProps, imports);
                 case Language.Python:
-                    return new PyCompiler(code, executionProperties, compilerProperties, pySearchPath);
+                    return new PyCompiler(code, exProps, comProps, pySearchPath);
                 case Language.Java:
-                    return new JavaCompiler(code, executionProperties, compilerProperties, jdkPath);
+                    return new JavaCompiler(code, exProps, comProps, jdkPath);
                 case Language.Lua:
-                    return new LuaCompiler(code, executionProperties, compilerProperties);
+                    return new LuaCompiler(code, exProps, comProps);
                 default:
                     throw new LanguageNotFoundException(language);
             }
@@ -65,7 +139,7 @@ namespace Fiddle.Compilers {
         /// <exception cref="LanguageNotFoundException">When the given <see cref="Language" /> could not be found</exception>
         /// <returns>The execution result</returns>
         public static async Task<ICompileResult> Compile(Language language, string code) {
-            return await NewCompiler(language, code).Compile();
+            return await NewCompiler(new Properties { Language = language, Code = code }).Compile();
         }
 
         /// <summary>
@@ -76,7 +150,7 @@ namespace Fiddle.Compilers {
         /// <exception cref="LanguageNotFoundException">When the given <see cref="Language" /> could not be found</exception>
         /// <returns>The execution result</returns>
         public static async Task<IExecuteResult> Execute(Language language, string code) {
-            return await NewCompiler(language, code).Execute();
+            return await NewCompiler(new Properties{Language = language, Code = code}).Execute();
         }
 
         /// <summary>
