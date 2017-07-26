@@ -56,6 +56,8 @@ Name: "CreateDesktopIcon"; Description: "Create a desktop shortcut"; GroupDescri
 
 [Files]
 Source: "{#MyAppBuildDirectory}\*"; DestDir: {app}; Flags: ignoreversion
+Source: "{#MyAppBuildDirectory}\x64\*"; DestDir: {app}; Flags: ignoreversion
+Source: "{#MyAppBuildDirectory}\x86\*"; DestDir: {app}; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppSettingsNameFriendly}"; Filename: "{app}\{#MyAppSettingsFilename}"; WorkingDir: "{app}"
