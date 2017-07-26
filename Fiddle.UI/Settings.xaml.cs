@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Fiddle.UI {
     /// <summary>
@@ -22,8 +25,8 @@ namespace Fiddle.UI {
         }
 
         //Save Preferences
-        private void ButtonSave(object sender, RoutedEventArgs e) {
-            Apply();
+        private async void ButtonSave(object sender, RoutedEventArgs e) {
+            await Apply();
             PreferencesManager.WriteOut(App.Preferences);
             try {
                 DialogResult = true;
@@ -43,11 +46,13 @@ namespace Fiddle.UI {
         }
 
 
-        private void Apply() {
+        private async Task Apply() {
             try {
                 App.Preferences.CacheUserSettings = Convert.ToBoolean(USettings.IsChecked);
                 App.Preferences.JdkPath = Jdk.Text;
                 App.Preferences.PyPath = PyPaths.Text;
+                App.Preferences.CompileTimeout = long.Parse(ComTimeout.Text);
+                App.Preferences.ExecuteTimeout = long.Parse(ExTimeout.Text);
 
                 App.Preferences.CacheType = CacheType.Nothing;
                 if (WSize.IsChecked == true)
@@ -64,8 +69,9 @@ namespace Fiddle.UI {
                     App.Preferences.CacheType |= CacheType.SourceCode;
                 if (CPos.IsChecked == true)
                     App.Preferences.CacheType |= CacheType.CursorPos;
-            } catch {
+            } catch(Exception ex) {
                 //error converting
+                await DialogHelper.ShowErrorDialog($"Could not save data! ({ex.Message})", DialogHost);
             }
         }
 
@@ -74,6 +80,8 @@ namespace Fiddle.UI {
             Jdk.Text = App.Preferences.JdkPath;
             Jdk.Text = App.Preferences.JdkPath;
             PyPaths.Text = App.Preferences.PyPath;
+            ComTimeout.Text = App.Preferences.CompileTimeout.ToString();
+            ExTimeout.Text = App.Preferences.ExecuteTimeout.ToString();
             WSize.IsChecked = App.Preferences.CacheType.HasFlag(CacheType.WindowSize);
             WPos.IsChecked = App.Preferences.CacheType.HasFlag(CacheType.WindowPos);
             WState.IsChecked = App.Preferences.CacheType.HasFlag(CacheType.WindowState);
@@ -81,6 +89,31 @@ namespace Fiddle.UI {
             RvSize.IsChecked = App.Preferences.CacheType.HasFlag(CacheType.ResultsViewSize);
             SCode.IsChecked = App.Preferences.CacheType.HasFlag(CacheType.SourceCode);
             CPos.IsChecked = App.Preferences.CacheType.HasFlag(CacheType.CursorPos);
+        }
+
+
+        private static bool IsTextAllowed(string text)
+        {
+            Regex regex = new Regex("^[0-9]+$"); //regex that matches disallowed text
+            return !regex.IsMatch(text);
+        }
+
+        private void TimeoutTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !IsTextAllowed(e.Text);
+        }
+
+        // Use the DataObject.Pasting Handler 
+        private void TextBoxPasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(string))) {
+                string text = (string)e.DataObject.GetData(typeof(string));
+                if (!IsTextAllowed(text)) {
+                    e.CancelCommand();
+                }
+            } else {
+                e.CancelCommand();
+            }
         }
     }
 }
