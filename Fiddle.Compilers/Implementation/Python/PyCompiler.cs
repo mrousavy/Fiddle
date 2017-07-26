@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Fiddle.Compilers.Implementation.Python {
     public class PyCompiler : ICompiler {
-        public PyCompiler(string code, string libSearchPath = null) : this(code, new CompilerProperties(), new ExecutionProperties(), libSearchPath) { }
+        public PyCompiler(string code, string libSearchPath = null) : this(code,  new ExecutionProperties(), new CompilerProperties(), libSearchPath) { }
 
-        public PyCompiler(string code, ICompilerProperties cProps, IExecutionProperties eProps, string libSearchPath = null) {
+        public PyCompiler(string code, IExecutionProperties eProps, ICompilerProperties cProps, string libSearchPath = null) {
             SourceCode = code;
             CompilerProperties = cProps;
             ExecuteProperties = eProps;

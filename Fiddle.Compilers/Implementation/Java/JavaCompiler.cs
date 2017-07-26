@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Fiddle.Compilers.Implementation.Java {
     public class JavaCompiler : ICompiler {
-        public JavaCompiler(string code, string jdkPath = null) : this(code, new ExecutionProperties(), new CompilerProperties(), jdkPath) { }
+        public JavaCompiler(string code, string jdkPath = null) : this(code,  new ExecutionProperties(), new CompilerProperties(), jdkPath) { }
 
         public JavaCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps, string jdkPath = null) {
             SourceCode = code;

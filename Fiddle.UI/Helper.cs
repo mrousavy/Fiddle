@@ -14,6 +14,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Xml;
+using Fiddle.Compilers.Implementation;
 
 namespace Fiddle.UI {
     public static class Helper {
@@ -40,8 +41,10 @@ namespace Fiddle.UI {
             }
         }
 
-        public static ICompiler NewCompiler(Language language, string sourceCode, string[] imports = null) {
-            return Host.NewCompiler(language, sourceCode, imports, App.Preferences.JdkPath, App.Preferences.PyPath);
+        public static ICompiler NewCompiler(Language language, string sourceCode, string[] imports = null, string langVersion = null) {
+            IExecutionProperties exProps = new ExecutionProperties(App.Preferences.ExecuteTimeout);
+            ICompilerProperties comProps= new CompilerProperties(App.Preferences.ExecuteTimeout, langVersion);
+            return Host.NewCompiler(language, sourceCode, imports, App.Preferences.JdkPath, App.Preferences.PyPath, exProps, comProps);
         }
 
 

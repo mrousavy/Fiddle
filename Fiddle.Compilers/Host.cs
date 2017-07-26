@@ -32,20 +32,22 @@ namespace Fiddle.Compilers {
         /// </param>
         /// <param name="jdkPath">Path to Java Development Kit</param>
         /// <param name="pySearchPath">Python libraries search path</param>
+        /// <param name="executionProperties">Given Execution Properties for the compiler (Use <see cref="Fiddle.Compilers.Implementation.ExecutionProperties"/>)</param>
+        /// <param name="compilerProperties">Given Compilation Properties for the compiler (Use <see cref="Fiddle.Compilers.Implementation.CompilerProperties"/>)</param>
         /// <exception cref="LanguageNotFoundException">When the given <see cref="Language" /> could not be found</exception>
         /// <returns>The initialized Compiler</returns>
-        public static ICompiler NewCompiler(Language language, string code, string[] imports = null, string jdkPath = null, string pySearchPath = null) {
+        public static ICompiler NewCompiler(Language language, string code, string[] imports = null, string jdkPath = null, string pySearchPath = null, IExecutionProperties executionProperties = null, ICompilerProperties compilerProperties = null) {
             switch (language) {
                 case Language.CSharp:
-                    return new CSharpCompiler(code, imports);
+                    return new CSharpCompiler(code, executionProperties, compilerProperties, imports);
                 case Language.Cpp:
-                    return new CppCompiler(code, imports);
+                    return new CppCompiler(code, executionProperties, compilerProperties, imports);
                 case Language.Vb:
-                    return new VbCompiler(code, imports);
+                    return new VbCompiler(code, executionProperties, compilerProperties, imports);
                 case Language.Python:
-                    return new PyCompiler(code, pySearchPath);
+                    return new PyCompiler(code, executionProperties, compilerProperties, pySearchPath);
                 case Language.Java:
-                    return new JavaCompiler(code, jdkPath);
+                    return new JavaCompiler(code, executionProperties, compilerProperties, jdkPath);
                 default:
                     throw new LanguageNotFoundException(language);
             }
