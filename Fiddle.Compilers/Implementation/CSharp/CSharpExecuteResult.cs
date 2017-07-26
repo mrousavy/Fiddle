@@ -26,7 +26,9 @@ namespace Fiddle.Compilers.Implementation.CSharp {
             {
                 if (Exception == null) return -1;
                 StackTrace trace = new StackTrace(Exception, true);
-                return trace.GetFrame(0).GetFileLineNumber();
+                if (trace.FrameCount <= 0) return 0;
+                StackFrame frame = trace.GetFrame(0);
+                    return frame != default(StackFrame) ? frame.GetFileLineNumber() : 0;
             }
         }
     }
