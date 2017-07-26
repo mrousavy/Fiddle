@@ -150,6 +150,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Syntax\Cpp.xshd" />
+    <None Include="Syntax\LUA.xshd" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

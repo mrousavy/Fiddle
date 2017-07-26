@@ -35,6 +35,9 @@ namespace Fiddle.UI {
                 case "Java":
                     editor.SyntaxHighlighting = LoadXshd("Java.xshd");
                     return NewCompiler(Language.Java, sourceCode);
+                case "LUA":
+                    editor.SyntaxHighlighting = LoadXshd("LUA.xshd");
+                    return NewCompiler(Language.Lua, sourceCode);
                 default:
                     MessageBox.Show("Language not found!");
                     return null;
@@ -97,6 +100,8 @@ namespace Fiddle.UI {
                     return "Visual Basic source files (*.vb)|*.vb|All files (*.*)|*.*";
                 case Language.Java:
                     return "Java source files (*.java)|*.java|All files (*.*)|*.*";
+                case Language.Lua:
+                    return "LUA source files (*.lua)|*.lua|All files (*.*)|*.*";
                 default:
                     return "All files (*.*)|*.*";
             }

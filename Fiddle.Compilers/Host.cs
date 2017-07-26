@@ -6,12 +6,14 @@ using Fiddle.Compilers.Implementation.VB;
 using Microsoft.CodeAnalysis;
 using System;
 using System.Threading.Tasks;
+using Fiddle.Compilers.Implementation.LUA;
 
 namespace Fiddle.Compilers {
     public enum Language {
         Cpp,
         CSharp,
         Java,
+        Lua,
         Python,
         Vb
     }
@@ -48,6 +50,8 @@ namespace Fiddle.Compilers {
                     return new PyCompiler(code, executionProperties, compilerProperties, pySearchPath);
                 case Language.Java:
                     return new JavaCompiler(code, executionProperties, compilerProperties, jdkPath);
+                case Language.Lua:
+                    return new LuaCompiler(code, executionProperties, compilerProperties);
                 default:
                     throw new LanguageNotFoundException(language);
             }
