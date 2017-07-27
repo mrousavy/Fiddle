@@ -34,7 +34,7 @@ You can use the following **Globals/Variables** inside your code:
 ```py
 RunUi(
     Editor.Hide
-);
+)
 ```
 
 ## Properties
