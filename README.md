@@ -48,7 +48,9 @@ A directory will get created at `%appdata%\Fiddle` containing `Preferences.json`
 		3. Add **Language Name** (filename-friendly) to `Fiddle.Compilers\Host.Language` enum
 		4. Add **Language Name** to `Fiddle.UI\Editor.xaml` in `ComboBox` as `ComboBoxItem`
 		5. Add **Compiler initialization** to `Fiddle.UI\Helper.ChangeLanguage(..)` with name from `ComboBoxItem`
-		6. (Optionally) Add **file-extension** to `Fiddle.UI\Helper.GetFilterForLanguage(..)`
-		7. (Optionally) Add **Syntax highlighting definition** to `Fiddle.UI\Syntax\[LanguageName].xshd`		
+		6. Add Language name to every other function that handles language names hardcoded in `Fiddle.UI\Helper.cs`
+		7. (Optionally) Add **file-extension** to `Fiddle.UI\Helper.GetFilterForLanguage(..)`
+		8. (Optionally) Add **Syntax highlighting definition** to `Fiddle.UI\Syntax\[LanguageName].xshd`
+		9. (Optionally) Add **Documentation** (using [this template](https://github.com/mrousavy/Fiddle/blob/master/Doc/CSharp.md)) to `Doc\[LanguageName].md` and linking it in `Doc\README.md`		
 3. **Commit & Push**
 4. Create a new **pull request** _(on your fork)_
