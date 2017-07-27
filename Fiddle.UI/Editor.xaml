@@ -20,7 +20,8 @@
         Closing="Window_Closing"
         AllowDrop="True"
         DragEnter="OnWindowDragEnter"
-        DragLeave="OnWindowDragLeave">
+        DragLeave="OnWindowDragLeave"
+        Drop="OnDragDrop">
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static local:Editor.CommandSave}" Executed="CtrlS" />
         <CommandBinding Command="{x:Static local:Editor.CommandCompile}" Executed="F6" />
@@ -215,12 +216,14 @@
             </Grid>
 
             <!--Drag and Drop popup-->
-            <md:Card Name="PopupCard" Grid.Row="0" Grid.Column="0"
-                     VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Border Name="PopupCard" Grid.Row="0" Grid.Column="0"
+                     VerticalAlignment="Center" HorizontalAlignment="Center"
+                     Background="{DynamicResource MaterialDesignLightBackground}"
+                     IsHitTestVisible="False" CornerRadius="7">
 
-                <md:Card.RenderTransform>
-                    <ScaleTransform x:Name="PopupCardScaleTransform"/>
-                </md:Card.RenderTransform>
+                <Border.RenderTransform>
+                    <ScaleTransform x:Name="PopupCardScaleTransform" ScaleX="0" ScaleY="0"/>
+                </Border.RenderTransform>
 
                 <Grid>
                     <Grid.RowDefinitions>
@@ -228,12 +231,34 @@
                         <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
 
-                    <Image Source="Resources/dnd.png" Height="200"/>
+                    <Grid HorizontalAlignment="Stretch" Grid.Row="0" Margin="50">
+                        <md:PackIcon Kind="File" Width="70" Height="70" 
+                                     HorizontalAlignment="Center" Margin="40,0,0,0"
+                                     Foreground="#5092fc" Name="PackIconFileRight">
+                            <md:PackIcon.RenderTransform>
+                                <RotateTransform Angle="25" CenterX="35" CenterY="35"/>
+                            </md:PackIcon.RenderTransform>
+                        </md:PackIcon>
+                        <md:PackIcon Kind="File" Width="70" Height="70"
+                                     HorizontalAlignment="Center" Margin="-40,0,0,0"
+                                     Foreground="#84b3ff" Name="PackIconFileLeft">
+                            <md:PackIcon.RenderTransform>
+                                <TransformGroup>
+                                    <RotateTransform Angle="-25" CenterX="35" CenterY="35"/>
+                                </TransformGroup>
+                            </md:PackIcon.RenderTransform>
+                        </md:PackIcon>
+                        <md:PackIcon Kind="CodeBraces" Width="70" Height="70"
+                                     HorizontalAlignment="Center" Name="PackIconBraces"
+                                     Foreground="{DynamicResource MaterialDesignPaper}">
+                        </md:PackIcon>
+                    </Grid>
                     <Label HorizontalAlignment="Center" Grid.Row="1"
                            Content="Drop your files here" Name="DropHereLabel"
-                           FontSize="14" VerticalAlignment="Bottom"/>
+                           FontSize="14" VerticalAlignment="Bottom"
+                           Foreground="{DynamicResource MaterialDesignPaper}"/>
                 </Grid>
-            </md:Card>
+            </Border>
         </Grid>
     </md:DialogHost>
 </Window>

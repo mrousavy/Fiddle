@@ -5,6 +5,7 @@ using Fiddle.Compilers.Implementation.Python;
 using Fiddle.Compilers.Implementation.VB;
 using Microsoft.CodeAnalysis;
 using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Fiddle.Compilers.Implementation.LUA;
 
@@ -13,26 +14,32 @@ namespace Fiddle.Compilers {
         /// <summary>
         /// C++
         /// </summary>
+        [Description("C++")]
         Cpp,
         /// <summary>
         /// C# .NET
         /// </summary>
+        [Description("C#")]
         CSharp,
         /// <summary>
         /// Java
         /// </summary>
+        [Description("Java")]
         Java,
         /// <summary>
         /// NLUA (KeraLua)
         /// </summary>
+        [Description("LUA")]
         Lua,
         /// <summary>
         /// IronPython
         /// </summary>
+        [Description("Python")]
         Python,
         /// <summary>
         /// Visual Basic .NET
         /// </summary>
+        [Description("VB")]
         Vb
     }
 

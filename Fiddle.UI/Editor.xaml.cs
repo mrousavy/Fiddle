@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,8 +16,6 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
 
 namespace Fiddle.UI {
     /// <summary>
@@ -29,8 +28,7 @@ namespace Fiddle.UI {
         private ICompiler _compiler; //Compiler instance
         private string _filePath; //path to file - Ctrl + S will save without SaveFileDialog if not null
         private bool _needsUpdate; //need to reset textbox underlines & statusmessage?
-        private BitmapImage _dndbitmap; //bitmapimage for Drag & Drop
-        private Image _dndimage; //image for Drag & Drop
+        private bool _dropIsOpen; //is Drag & Drop popup open?
         private ITextMarkerService _textMarkerService; //underlines
         private Timer _dialogTimeout;
 
@@ -42,7 +40,6 @@ namespace Fiddle.UI {
             LoadPreferences();
             LoadTextMarkerService();
             LoadHotkeys();
-            LoadResources();
             TextBoxCode.Focus();
         }
 
@@ -74,12 +71,6 @@ namespace Fiddle.UI {
                     TextBoxCode.TextArea.Caret.BringCaretToView();
                 }
             }
-        }
-
-        private void LoadResources() {
-            _dndbitmap = new BitmapImage(new Uri("pack://application:,,,/Resources/dnd.png"));
-            _dndimage = new Image {Source = _dndbitmap, IsHitTestVisible = false};
-            _dndimage.Drop += OnDragDrop;
         }
 
         //Window closes event (save preferences)
@@ -439,8 +430,6 @@ namespace Fiddle.UI {
         }
         #endregion
 
-        private bool _dropIsOpen;
-
         private async void OpenDropPopup() {
             if (_dropIsOpen) return;
             _dropIsOpen = true;
@@ -451,6 +440,7 @@ namespace Fiddle.UI {
             Task popupy = PopupCardScaleTransform.AnimateAsync(ScaleTransform.ScaleYProperty, 0, 1, 150);
 
             await Task.WhenAll(brighten, popupx, popupy);
+            PopupCard.BringIntoView();
         }
 
         private async void CloseDropPopup() {
@@ -481,13 +471,7 @@ namespace Fiddle.UI {
         private async void OnDragDrop(object sender, DragEventArgs e) {
             try {
                 CloseDropPopup();
-
-                if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
-                    if (e.Data.GetData(DataFormats.FileDrop) is string[] files && files.Length > 0) {
-                        string content = File.ReadAllText(files[0]);
-                        TextBoxCode.Text = content;
-                    }
-                }
+                _compiler = Helper.LoadDragDrop(e, this, _compiler);
             } catch(Exception ex) {
                 //some unknown error
                 await DialogHelper.ShowErrorDialog($"Could not load file! ({ex.Message})", EditorDialogHost);

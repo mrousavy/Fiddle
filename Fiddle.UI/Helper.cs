@@ -12,6 +12,7 @@ using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Xml;
@@ -45,6 +46,25 @@ namespace Fiddle.UI {
             }
         }
 
+        public static string LanguageToFriendly(Language language) {
+            switch (language) {
+                case Language.CSharp:
+                    return "C#";
+                case Language.Cpp:
+                    return "C++";
+                case Language.Vb:
+                    return "VB";
+                case Language.Python:
+                    return "Python";
+                case Language.Java:
+                    return "Java";
+                case Language.Lua:
+                    return "Lua";
+                default:
+                    return "";
+            }
+        }
+
         public static ICompiler NewCompiler(Language language, string sourceCode, Editor caller, string[] imports = null, string langVersion = null) {
             IExecutionProperties exProps = new ExecutionProperties(App.Preferences.ExecuteTimeout);
             ICompilerProperties comProps= new CompilerProperties(App.Preferences.ExecuteTimeout, langVersion);
@@ -57,7 +77,6 @@ namespace Fiddle.UI {
             return Host.NewCompiler(properties);
         }
 
-
         private static IHighlightingDefinition LoadXshd(string resourceName) {
             Type type = typeof(Helper);
             string fullName = $"{type.Namespace}.Syntax.{resourceName}";
@@ -68,6 +87,32 @@ namespace Fiddle.UI {
                     return HighlightingLoader.Load(reader, HighlightingManager.Instance);
                 }
             }
+        }
+
+        public static ICompiler LoadDragDrop(DragEventArgs args, Editor caller, ICompiler currentCompiler) {
+            ICompiler compiler = currentCompiler;
+
+            if (args.Data.GetDataPresent(DataFormats.FileDrop)) {
+                if (args.Data.GetData(DataFormats.FileDrop) is string[] files && files.Length > 0) {
+                    string file = files[0];
+                    string content = File.ReadAllText(file);
+                    
+                    Language lang = GetLanguageForFilename(file);
+                    if (currentCompiler.Language != lang) {
+                        compiler = NewCompiler(lang, content, caller);
+                        string name = LanguageToFriendly(lang);
+                        foreach (ComboBoxItem value in caller.ComboBoxLanguage.Items) {
+                            if (value.Content.ToString() == name) {
+                                caller.ComboBoxLanguage.SelectedValue = value;
+                                App.Preferences.SelectedLanguage = caller.ComboBoxLanguage.SelectedIndex;
+                            }
+                        }
+                        caller.Title = $"Fiddle - {name}";
+                    }
+                    caller.TextBoxCode.Text = content;
+                }
+            }
+            return compiler;
         }
 
 
@@ -93,6 +138,23 @@ namespace Fiddle.UI {
             if (result == true)
                 File.WriteAllText(dialog.FileName, code);
             return dialog.FileName;
+        }
+
+        private static Language GetLanguageForFilename(string filename) {
+            if (filename.EndsWith(".cpp"))
+                return Language.Cpp;
+            if (filename.EndsWith(".cs"))
+                return Language.CSharp;
+            if (filename.EndsWith(".py"))
+                return Language.Python;
+            if (filename.EndsWith(".vb"))
+                return Language.Vb;
+            if (filename.EndsWith(".java"))
+                return Language.Java;
+            if (filename.EndsWith(".lua"))
+                return Language.Lua;
+
+            return default(Language);
         }
 
         private static string GetFilterForLanguage(Language language) {
