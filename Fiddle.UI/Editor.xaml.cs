@@ -9,6 +9,7 @@ using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -29,10 +30,20 @@ namespace Fiddle.UI {
         private ICompiler _compiler; //Compiler instance
         private string _filePath; //path to file - Ctrl + S will save without SaveFileDialog if not null
         private bool _needsUpdate; //need to reset textbox underlines & statusmessage?
+        private bool _passedControl;
         private BitmapImage _dndbitmap; //bitmapimage for Drag & Drop
         private Image _dndimage; //image for Drag & Drop
         private ITextMarkerService _textMarkerService; //underlines
         private Timer _dialogTimeout;
+
+        private bool PassingControl {
+            get {
+                bool before = _passedControl;
+                _passedControl = false;
+                return before;
+            }
+            set => _passedControl = value;
+        }
 
         //constructor
         public Editor() {
@@ -78,9 +89,9 @@ namespace Fiddle.UI {
 
         private void LoadResources() {
             _dndbitmap = new BitmapImage(new Uri("pack://application:,,,/Resources/dnd.png"));
-            _dndimage = new Image {Source = _dndbitmap};
-            _dndimage.Drop += OnDragDrop;
-            _dndimage.DragEnter += ImageDragEnter;
+            _dndimage = new Image {Source = _dndbitmap, IsHitTestVisible = false};
+            //_dndimage.DragEnter += ImageDragEnter;
+            //_dndimage.DragLeave += ImageDragLeave;
         }
 
         //Window closes event (save preferences)
@@ -451,7 +462,10 @@ namespace Fiddle.UI {
             }
         }
 
-        private void OnWindowDragLeave(object sender, DragEventArgs e) {
+        private async void OnWindowDragLeave(object sender, DragEventArgs e) {
+            await Task.Delay(5); //Delay leave action until DragEnter has fired for sure
+            if (PassingControl) return; //ignore this event if the drag is just passing over between 2 controls
+            
             EditorDialogHost.IsHitTestVisible = true;
             _dialogTimeout?.Dispose();
             DialogHelper.CloseDialog(EditorDialogHost);
@@ -475,17 +489,14 @@ namespace Fiddle.UI {
 
         private void TimeoutDialogClose(object state) {
             Dispatcher.Invoke(() => {
-                DialogHelper.CloseDialog(EditorDialogHost);
+                Point mpos = PointFromScreen(Helper.GetMousePosition());
+                if (mpos.X < 0 || mpos.X > Width || mpos.Y < 0 || mpos.Y > Height)
+                    DialogHelper.CloseDialog(EditorDialogHost);
             });
         }
 
-        private void EditorDragEnter(object sender, DragEventArgs e)
-        {
-            Console.WriteLine("Enter editor");
-        }
-        private void ImageDragEnter(object sender, DragEventArgs e)
-        {
-            Console.WriteLine("Enter image");
+        private void DialogDragEnter(object sender, DragEventArgs e) {
+            PassingControl = true;
         }
     }
 }

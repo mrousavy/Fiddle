@@ -21,7 +21,7 @@
         AllowDrop="True"
         DragEnter="OnWindowDragEnter"
         DragLeave="OnWindowDragLeave"
-        Drop="OnWindowDragLeave">
+        Drop="OnDragDrop">
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static local:Editor.CommandSave}" Executed="CtrlS" />
         <CommandBinding Command="{x:Static local:Editor.CommandCompile}" Executed="F6" />
@@ -29,7 +29,7 @@
     </Window.CommandBindings>
 
     <md:DialogHost Name="EditorDialogHost" CloseOnClickAway="True"
-                   AllowDrop="False" DragEnter="EditorDragEnter">
+                   PreviewDragEnter="DialogDragEnter">
         <Grid Name="EditorGrid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />

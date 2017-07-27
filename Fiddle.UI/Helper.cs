@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -114,8 +115,22 @@ namespace Fiddle.UI {
         }
 
 
-        private static Uri BuildHelpLink(string errorMessage)
-        {
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool GetCursorPos(ref Win32Point pt);
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct Win32Point {
+            public int X;
+            public int Y;
+        }
+        public static Point GetMousePosition() {
+            Win32Point w32Mouse = new Win32Point();
+            GetCursorPos(ref w32Mouse);
+            return new Point(w32Mouse.X, w32Mouse.Y);
+        }
+
+        private static Uri BuildHelpLink(string errorMessage) {
             string query = WebUtility.UrlEncode(errorMessage);
             return new Uri($"https://stackoverflow.com/search?q={query}"); //premium help service
         }
