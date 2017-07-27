@@ -37,13 +37,18 @@ namespace Fiddle.Compilers.Implementation.LUA {
             if (Lua == default(Lua)) {
                 Lua = new Lua();
                 Lua.RegisterFunction("print", this, typeof(LuaCompiler).GetMethod("Print")); //console out
+                //Initialize Globals
+                try { 
                 if (Globals != null) {
                     foreach (PropertyInfo property in Globals.GetType().GetProperties()) {
                         Lua[property.Name] = property.GetValue(Globals);
                     }
                 }
+                } catch
+                {
+                    //reflection can cause many exceptions
+                }
             }
-
             ICompileResult compileResult = new LuaCompileResult(0, SourceCode, null, null, null);
             CompileResult = compileResult;
             return Task.FromResult(compileResult);
@@ -54,6 +59,10 @@ namespace Fiddle.Compilers.Implementation.LUA {
                 await Compile();
             Writer?.Dispose();
             Writer = new StringWriter();
+            if (Globals != null) {
+                Globals.Console?.Dispose();
+                Globals.Console = Writer;
+            }
 
             ExecuteThreaded<object[]>.ThreadRunResult result = await ExecuteThreaded<object[]>.Execute(() =>
                 Lua.DoString(SourceCode), (int) ExecuteProperties.Timeout);

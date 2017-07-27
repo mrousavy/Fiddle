@@ -374,7 +374,7 @@ namespace Fiddle.UI {
             LockUi();
             Settings settings = new Settings { Owner = this };
             settings.ShowDialog();
-            _compiler = Helper.NewCompiler(_compiler.Language, SourceCode);
+            _compiler = Helper.NewCompiler(_compiler.Language, SourceCode, this);
             UnlockUi();
         }
 

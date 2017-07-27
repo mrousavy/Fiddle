@@ -4,18 +4,20 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Fiddle.Compilers.Implementation.Python {
     public class PyCompiler : ICompiler {
-        public PyCompiler(string code, string libSearchPath = null) : this(code,  new ExecutionProperties(), new CompilerProperties(), libSearchPath) { }
+        public PyCompiler(string code, string libSearchPath = null, IGlobals globals = null) : this(code,  new ExecutionProperties(), new CompilerProperties(), libSearchPath, globals) { }
 
-        public PyCompiler(string code, IExecutionProperties eProps, ICompilerProperties cProps, string libSearchPath = null) {
+        public PyCompiler(string code, IExecutionProperties eProps, ICompilerProperties cProps, string libSearchPath = null, IGlobals globals = null) {
             SourceCode = code;
             CompilerProperties = cProps;
             ExecuteProperties = eProps;
             LibSearchPath = libSearchPath;
+            Globals = globals;
         }
 
         public MemoryStream Stream { get; set; }
@@ -29,6 +31,7 @@ namespace Fiddle.Compilers.Implementation.Python {
         public string LibSearchPath { get; set; }
         public ICompileResult CompileResult { get; private set; }
         public IExecuteResult ExecuteResult { get; private set; }
+        public IGlobals Globals { get; }
         public Language Language { get; } = Language.Python;
 
 
@@ -52,6 +55,7 @@ namespace Fiddle.Compilers.Implementation.Python {
                     }
                     engine.Runtime.IO.SetOutput(Stream, Writer);
                     Scope = engine.CreateScope();
+                    InitGlobals();
                     Source = engine.CreateScriptSourceFromString(SourceCode);
                     Compilation = Source.Compile(listener);
                 });
@@ -113,6 +117,21 @@ namespace Fiddle.Compilers.Implementation.Python {
             Stream = new MemoryStream();
             Writer?.Dispose();
             Writer = new StringWriter();
+            if(Globals != null)
+                Globals.Console = Writer;
+        }
+
+        private void InitGlobals() {
+            //Initialize Globals
+            try {
+                if (Globals != null) {
+                    foreach (PropertyInfo property in Globals.GetType().GetProperties()) {
+                        Scope.SetVariable(property.Name, property.GetValue(Globals));
+                    }
+                }
+            } catch {
+                //reflection can cause many exceptions
+            }
         }
 
 

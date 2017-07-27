@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -23,29 +22,29 @@ namespace Fiddle.UI {
             switch (language) {
                 case "C#":
                     editor.SyntaxHighlighting = LoadXshd("CSharp.xshd");
-                    return NewCompiler(Language.CSharp, sourceCode, caller: caller);
+                    return NewCompiler(Language.CSharp, sourceCode, caller);
                 case "C++":
                     editor.SyntaxHighlighting = LoadXshd("Cpp.xshd");
-                    return NewCompiler(Language.Cpp, sourceCode);
+                    return NewCompiler(Language.Cpp, sourceCode, caller);
                 case "VB":
                     editor.SyntaxHighlighting = LoadXshd("VB.xshd");
-                    return NewCompiler(Language.Vb, sourceCode);
+                    return NewCompiler(Language.Vb, sourceCode, caller);
                 case "Python":
                     editor.SyntaxHighlighting = LoadXshd("Python.xshd");
-                    return NewCompiler(Language.Python, sourceCode);
+                    return NewCompiler(Language.Python, sourceCode, caller);
                 case "Java":
                     editor.SyntaxHighlighting = LoadXshd("Java.xshd");
-                    return NewCompiler(Language.Java, sourceCode);
+                    return NewCompiler(Language.Java, sourceCode, caller);
                 case "LUA":
                     editor.SyntaxHighlighting = LoadXshd("LUA.xshd");
-                    return NewCompiler(Language.Lua, sourceCode);
+                    return NewCompiler(Language.Lua, sourceCode, caller);
                 default:
                     MessageBox.Show("Language not found!");
                     return null;
             }
         }
 
-        public static ICompiler NewCompiler(Language language, string sourceCode, string[] imports = null, string langVersion = null, Editor caller = null) {
+        public static ICompiler NewCompiler(Language language, string sourceCode, Editor caller, string[] imports = null, string langVersion = null) {
             IExecutionProperties exProps = new ExecutionProperties(App.Preferences.ExecuteTimeout);
             ICompilerProperties comProps= new CompilerProperties(App.Preferences.ExecuteTimeout, langVersion);
             Compilers.Properties properties = new Compilers.Properties(language, sourceCode, 

@@ -121,7 +121,7 @@ namespace Fiddle.Compilers {
                 case Language.Vb:
                     return new VbCompiler(code, exProps, comProps, imports);
                 case Language.Python:
-                    return new PyCompiler(code, exProps, comProps, pySearchPath);
+                    return new PyCompiler(code, exProps, comProps, pySearchPath, globals);
                 case Language.Java:
                     return new JavaCompiler(code, exProps, comProps, jdkPath);
                 case Language.Lua:
