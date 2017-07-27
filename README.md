@@ -15,6 +15,8 @@
 - [x] **Python**
 - [x] **VB** 	_(TODO: Better Entry point)_
 
+[Detailed documentation about implemented languages](https://github.com/mrousavy/Fiddle/tree/master/Doc)
+
 [Other ToDo's](https://github.com/mrousavy/Fiddle/projects)
 
 ## Screenshots
