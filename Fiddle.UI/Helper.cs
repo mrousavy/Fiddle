@@ -53,7 +53,7 @@ namespace Fiddle.UI {
                 App.Preferences.JdkPath,
                 App.Preferences.PyPath,
                 exProps, comProps,
-                new CSharpGlobals(new StringBuilder(), caller));
+                new FiddleGlobals(caller));
             return Host.NewCompiler(properties);
         }
 

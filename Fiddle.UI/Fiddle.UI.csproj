@@ -96,7 +96,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CSharpGlobals.cs" />
+    <Compile Include="FiddleGlobals.cs" />
     <Compile Include="DialogHelper.cs" />
     <Compile Include="Dialogs\ErrorDialog.xaml.cs">
       <DependentUpon>ErrorDialog.xaml</DependentUpon>
@@ -148,7 +148,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Syntax\Cpp.xshd" />
-    <None Include="Syntax\LUA.xshd" />
+    <EmbeddedResource Include="Syntax\LUA.xshd" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

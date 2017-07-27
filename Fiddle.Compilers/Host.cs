@@ -125,7 +125,7 @@ namespace Fiddle.Compilers {
                 case Language.Java:
                     return new JavaCompiler(code, exProps, comProps, jdkPath);
                 case Language.Lua:
-                    return new LuaCompiler(code, exProps, comProps);
+                    return new LuaCompiler(code, exProps, comProps, globals);
                 default:
                     throw new LanguageNotFoundException(language);
             }

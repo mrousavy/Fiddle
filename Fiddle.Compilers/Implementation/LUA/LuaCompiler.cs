@@ -1,15 +1,21 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using NLua;
+using NLua.Exceptions;
 
 namespace Fiddle.Compilers.Implementation.LUA {
     public class LuaCompiler : ICompiler {
         public LuaCompiler(string code) : this(code, new ExecutionProperties(), new CompilerProperties()) { }
 
-        public LuaCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps) {
+        public LuaCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps, IGlobals globals = null) {
             SourceCode = code;
             ExecuteProperties = execProps;
             CompilerProperties = compProps;
+            Globals = globals;
         }
 
         public string[] Imports { get; set; }
@@ -21,6 +27,7 @@ namespace Fiddle.Compilers.Implementation.LUA {
         public ICompileResult CompileResult { get; private set; }
         public IExecuteResult ExecuteResult { get; private set; }
         public Language Language { get; } = Language.Lua;
+        public IGlobals Globals { get; }
 
         /// <summary>
         ///     Initialize Lua Script State (this function does not compile, LUA is a scripting language)
@@ -30,6 +37,11 @@ namespace Fiddle.Compilers.Implementation.LUA {
             if (Lua == default(Lua)) {
                 Lua = new Lua();
                 Lua.RegisterFunction("print", this, typeof(LuaCompiler).GetMethod("Print")); //console out
+                if (Globals != null) {
+                    foreach (PropertyInfo property in Globals.GetType().GetProperties()) {
+                        Lua[property.Name] = property.GetValue(Globals);
+                    }
+                }
             }
 
             ICompileResult compileResult = new LuaCompileResult(0, SourceCode, null, null, null);
@@ -46,6 +58,18 @@ namespace Fiddle.Compilers.Implementation.LUA {
             ExecuteThreaded<object[]>.ThreadRunResult result = await ExecuteThreaded<object[]>.Execute(() =>
                 Lua.DoString(SourceCode), (int) ExecuteProperties.Timeout);
 
+            if(result.Exception is LuaScriptException scriptEx) {
+                Regex number = new Regex("[0-9]+");
+                Match match = number.Match(scriptEx.Message);
+                if (match.Success) {
+                    int num = int.Parse(match.Value);
+                    List<IDiagnostic> diagnostics =
+                        new List<IDiagnostic> { new LuaDiagnostic(scriptEx.Message, num, Severity.Error) };
+                    CompileResult = new LuaCompileResult(result.ElapsedMilliseconds, SourceCode, diagnostics, diagnostics,
+                        new List<Exception> {scriptEx});
+                }
+            }
+            
             IExecuteResult executeResult =
                 new LuaExecuteResult(
                     result.ElapsedMilliseconds,

@@ -114,7 +114,11 @@ namespace Fiddle.Compilers.Implementation.CSharp {
             if (!CompileResult.Success)
                 return new CSharpExecuteResult(-1, null, null, CompileResult,
                     new CompileException("The compilation was not successful!"));
-            
+
+            //Reset builder/Clear console
+            StringBuilder builder = new StringBuilder();
+            Globals.Console?.Dispose();
+            Globals.Console = new System.IO.StringWriter(builder);
             int timeout = (int)ExecuteProperties.Timeout;
 
             ExecuteThreaded<ScriptState<object>>.ThreadRunResult threadRunResult =
@@ -127,7 +131,7 @@ namespace Fiddle.Compilers.Implementation.CSharp {
             IExecuteResult result;
             if (threadRunResult.Successful) {
                 object returnValue = state.ReturnValue;
-                string stdout = Globals.Console.GetStringBuilder().ToString();
+                string stdout = builder.ToString();
                 result = new CSharpExecuteResult(
                     elapsed,
                     stdout,

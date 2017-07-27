@@ -2,12 +2,12 @@
 
 namespace Fiddle.Compilers.Implementation.LUA {
     public class LuaDiagnostic : IDiagnostic {
-        public LuaDiagnostic(string message, int lnFrom, int lnTo, int chFrom, int chTo, Severity severity) {
+        public LuaDiagnostic(string message, int line, Severity severity) {
             Message = message;
-            LineFrom = lnFrom;
-            LineTo = lnTo;
-            CharFrom = chFrom;
-            CharTo = chTo;
+            LineFrom = line;
+            LineTo = line;
+            CharFrom = 1;
+            CharTo = 1;
             Severity = severity;
         }
 
@@ -24,7 +24,7 @@ namespace Fiddle.Compilers.Implementation.LUA {
         }
 
         public override string ToString() {
-            return $"[{Severity}] Ln{LineFrom}-{LineTo} Ch{CharFrom}-{CharTo}: {Message}";
+            return $"[{Severity}] Ln{LineFrom}: {Message}";
         }
     }
 }
