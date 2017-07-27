@@ -16,7 +16,8 @@ namespace Fiddle.UI {
         }
 
         public static void CloseDialog(DialogHost host) {
-            DialogHost.CloseDialogCommand.Execute(null, host);
+            if (host.IsOpen)
+                DialogHost.CloseDialogCommand.Execute(null, host);
         }
     }
 }

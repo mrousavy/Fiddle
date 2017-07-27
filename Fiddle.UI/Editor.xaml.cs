@@ -8,12 +8,15 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
+using Image = System.Windows.Controls.Image;
 
 namespace Fiddle.UI {
     /// <summary>
@@ -26,8 +29,10 @@ namespace Fiddle.UI {
         private ICompiler _compiler; //Compiler instance
         private string _filePath; //path to file - Ctrl + S will save without SaveFileDialog if not null
         private bool _needsUpdate; //need to reset textbox underlines & statusmessage?
-
+        private BitmapImage _dndbitmap; //bitmapimage for Drag & Drop
+        private Image _dndimage; //image for Drag & Drop
         private ITextMarkerService _textMarkerService; //underlines
+        private Timer _dialogTimeout;
 
         //constructor
         public Editor() {
@@ -37,6 +42,7 @@ namespace Fiddle.UI {
             LoadPreferences();
             LoadTextMarkerService();
             LoadHotkeys();
+            LoadResources();
             TextBoxCode.Focus();
         }
 
@@ -68,6 +74,13 @@ namespace Fiddle.UI {
                     TextBoxCode.TextArea.Caret.BringCaretToView();
                 }
             }
+        }
+
+        private void LoadResources() {
+            _dndbitmap = new BitmapImage(new Uri("pack://application:,,,/Resources/dnd.png"));
+            _dndimage = new Image {Source = _dndbitmap};
+            _dndimage.Drop += OnDragDrop;
+            _dndimage.DragEnter += ImageDragEnter;
         }
 
         //Window closes event (save preferences)
@@ -426,5 +439,53 @@ namespace Fiddle.UI {
             Execute();
         }
         #endregion
+
+        private async void OnWindowDragEnter(object sender, DragEventArgs e) {
+            EditorDialogHost.IsHitTestVisible = false;
+            _dialogTimeout?.Dispose();
+            _dialogTimeout = new Timer(TimeoutDialogClose, null, 2500, Timeout.Infinite);
+            if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
+                if (!EditorDialogHost.IsOpen) {
+                    await EditorDialogHost.ShowDialog(_dndimage).ConfigureAwait(false);
+                }
+            }
+        }
+
+        private void OnWindowDragLeave(object sender, DragEventArgs e) {
+            EditorDialogHost.IsHitTestVisible = true;
+            _dialogTimeout?.Dispose();
+            DialogHelper.CloseDialog(EditorDialogHost);
+        }
+
+        private async void OnDragDrop(object sender, DragEventArgs e) {
+            try {
+                DialogHelper.CloseDialog(EditorDialogHost);
+
+                if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
+                    if (e.Data.GetData(DataFormats.FileDrop) is string[] files && files.Length > 0) {
+                        string content = File.ReadAllText(files[0]);
+                        TextBoxCode.Text = content;
+                    }
+                }
+            } catch(Exception ex) {
+                //some unknown error
+                await DialogHelper.ShowErrorDialog($"Could not load file! ({ex.Message})", EditorDialogHost);
+            }
+        }
+
+        private void TimeoutDialogClose(object state) {
+            Dispatcher.Invoke(() => {
+                DialogHelper.CloseDialog(EditorDialogHost);
+            });
+        }
+
+        private void EditorDragEnter(object sender, DragEventArgs e)
+        {
+            Console.WriteLine("Enter editor");
+        }
+        private void ImageDragEnter(object sender, DragEventArgs e)
+        {
+            Console.WriteLine("Enter image");
+        }
     }
 }
