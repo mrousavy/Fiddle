@@ -20,198 +20,220 @@
         Closing="Window_Closing"
         AllowDrop="True"
         DragEnter="OnWindowDragEnter"
-        DragLeave="OnWindowDragLeave"
-        Drop="OnDragDrop">
+        DragLeave="OnWindowDragLeave">
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static local:Editor.CommandSave}" Executed="CtrlS" />
         <CommandBinding Command="{x:Static local:Editor.CommandCompile}" Executed="F6" />
         <CommandBinding Command="{x:Static local:Editor.CommandExecute}" Executed="F5" />
     </Window.CommandBindings>
 
-    <md:DialogHost Name="EditorDialogHost" CloseOnClickAway="True"
-                   PreviewDragEnter="DialogDragEnter">
-        <Grid Name="EditorGrid">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-
-            <!--Language Selection-->
-            <ComboBox Grid.Row="0" Grid.Column="0" Margin="15 10 10 10"
-                      md:HintAssist.Hint="Language" Name="ComboBoxLanguage"
-                      SelectionChanged="ComboBoxLanguageSelected">
-                <ComboBoxItem>C#</ComboBoxItem>
-                <ComboBoxItem>VB</ComboBoxItem>
-                <ComboBoxItem>C++</ComboBoxItem>
-                <ComboBoxItem>Python</ComboBoxItem>
-                <ComboBoxItem>Java</ComboBoxItem>
-                <ComboBoxItem>LUA</ComboBoxItem>
-            </ComboBox>
-
-            <!--Compile Button-->
-            <Button Grid.Row="0" Grid.Column="1" Margin="10"
-                    Background="#263238" Height="45" Width="45"
-                    Click="ButtonCompile" BorderBrush="#263238"
-                    Padding="-10" ToolTip="Compile (F6)">
-                <md:PackIcon Kind="AutoFix" Foreground="Gray"
-                             HorizontalAlignment="Center"
-                             VerticalAlignment="Center"
-                             Height="25" Width="25" />
-            </Button>
-
-            <!--Execute Button-->
-            <Button Grid.Row="0" Grid.Column="2" Margin="10"
-                    Background="#263238" Height="45" Width="45"
-                    Click="ButtonExecute" BorderBrush="#263238"
-                    Padding="-10" ToolTip="Execute (F5)">
-                <md:PackIcon Kind="Play" Foreground="Green"
-                             HorizontalAlignment="Center"
-                             VerticalAlignment="Center"
-                             Height="25" Width="25" />
-            </Button>
-
-            <!--Save Button-->
-            <Button Grid.Row="0" Grid.Column="3" Margin="10"
-                    Background="#263238" Height="45" Width="45"
-                    Click="ButtonSettings" BorderBrush="#263238"
-                    Padding="-10" ToolTip="Settings"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center">
-                <md:PackIcon Kind="Settings" Foreground="Gray"
-                             HorizontalAlignment="Right"
-                             VerticalAlignment="Center"
-                             Height="25" Width="25" />
-            </Button>
-
-            <!--Save Button-->
-            <Button Grid.Row="0" Grid.Column="4" Margin="10"
-                    Background="#263238" Height="45" Width="45"
-                    Click="ButtonSave" BorderBrush="#263238"
-                    Padding="-10" ToolTip="Save (Ctrl + S)"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center">
-                <md:PackIcon Kind="ContentSave" Foreground="DodgerBlue"
-                             HorizontalAlignment="Right"
-                             VerticalAlignment="Center"
-                             Height="25" Width="25" />
-            </Button>
-
-            <!--Container for Code & Results View-->
-            <Grid
-                Grid.Row="1"
-                Grid.Column="0" Grid.ColumnSpan="5"
-                Name="GridCodeResults">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <!--TODO: WordWrap or Horizontal Scrollbar?-->
-                <!--Source Code Editor-->
-                <avalonEdit:TextEditor
-                    xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
-                    Name="TextBoxCode"
-                    FontFamily="Consolas"
-                    FontSize="12pt" TabIndex="0"
-                    WordWrap="True" Padding="10"
-                    Foreground="White" Margin="5"
-                    Background="#374349"
-                    VerticalScrollBarVisibility="Auto"
-                    HorizontalScrollBarVisibility="Auto"
-                    ShowLineNumbers="True"
-                    TextChanged="TextBoxCode_DocumentChanged" />
-
-                <!--Splitter-->
-                <GridSplitter
-                    Grid.Column="1"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Stretch"
-                    Width="5"
-                    Height="Auto"
-                    Margin="0,5,0,5"
-                    Name="GridSplitter" />
-
-                <!--Compile/Execute Result View-->
-                <ScrollViewer
-                    Grid.Column="2"
-                    VerticalScrollBarVisibility="Auto"
-                    HorizontalScrollBarVisibility="Disabled"
-                    Margin="5">
-                    <Grid MouseEnter="TextBlockResultsMEnter"
-                        MouseLeave="TextBlockResultsMLeave"
-                          Background="#374349"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch">
-                        <TextBlock
-                            Margin="10"
-                            Foreground="White"
-                            FontSize="14"
-                            Name="TextBlockResults"
-                            TextWrapping="Wrap" />
-                        <Button Background="#263238" Height="45" Width="45"
-                                Click="ButtonShowRaw" BorderBrush="#263238"
-                                Padding="-10" ToolTip="Show Raw"
-                                Margin="5" Name="RawBtn" Visibility="Collapsed" 
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Top">
-                            <md:PackIcon Kind="CodeBrackets" Foreground="Green"
-                                         HorizontalAlignment="Right"
-                                         VerticalAlignment="Center"
-                                         Height="25" Width="25" />
-                        </Button>
-                    </Grid>
-                </ScrollViewer>
-            </Grid>
-
-            <!--Status Bar-->
-            <Grid Grid.Row="2" Margin="5"
-                  Grid.Column="0" Grid.ColumnSpan="5"
-                  Background="#374349"
-                  Name="GridResultsView"
-                  VerticalAlignment="Center">
-
+    <md:DialogHost Name="EditorDialogHost" CloseOnClickAway="True">
+        <Grid>
+            <Grid Name="EditorGrid">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
-                <md:PackIcon Name="IconStatus"
-                             Grid.Column="0"
-                             Kind="CodeBraces"
-                             HorizontalAlignment="Center"
-                             VerticalAlignment="Stretch"
-                             Margin="5" />
+                <!--Language Selection-->
+                <ComboBox Grid.Row="0" Grid.Column="0" Margin="15 10 10 10"
+                          md:HintAssist.Hint="Language" Name="ComboBoxLanguage"
+                          SelectionChanged="ComboBoxLanguageSelected">
+                    <ComboBoxItem>C#</ComboBoxItem>
+                    <ComboBoxItem>VB</ComboBoxItem>
+                    <ComboBoxItem>C++</ComboBoxItem>
+                    <ComboBoxItem>Python</ComboBoxItem>
+                    <ComboBoxItem>Java</ComboBoxItem>
+                    <ComboBoxItem>LUA</ComboBoxItem>
+                </ComboBox>
 
-                <TextBlock Name="TextBlockStatusMessage"
-                           Grid.Column="1"
-                           Text="Loading.."
-                           VerticalAlignment="Center"
-                           TextWrapping="Wrap"
-                           Margin="5" />
-                <TextBlock Name="TextBlockCompileTime"
-                           Grid.Column="2"
-                           ToolTip="Compile time (ms)"
-                           VerticalAlignment="Center"
-                           TextWrapping="Wrap"
-                           Margin="5" />
-                <TextBlock Name="TextBlockExecuteTime"
-                           Grid.Column="3"
-                           ToolTip="Execute time (ms)"
-                           VerticalAlignment="Center"
-                           TextWrapping="Wrap"
-                           Margin="5" />
+                <!--Compile Button-->
+                <Button Grid.Row="0" Grid.Column="1" Margin="10"
+                        Background="#263238" Height="45" Width="45"
+                        Click="ButtonCompile" BorderBrush="#263238"
+                        Padding="-10" ToolTip="Compile (F6)">
+                    <md:PackIcon Kind="AutoFix" Foreground="Gray"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"
+                                 Height="25" Width="25" />
+                </Button>
+
+                <!--Execute Button-->
+                <Button Grid.Row="0" Grid.Column="2" Margin="10"
+                        Background="#263238" Height="45" Width="45"
+                        Click="ButtonExecute" BorderBrush="#263238"
+                        Padding="-10" ToolTip="Execute (F5)">
+                    <md:PackIcon Kind="Play" Foreground="Green"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"
+                                 Height="25" Width="25" />
+                </Button>
+
+                <!--Save Button-->
+                <Button Grid.Row="0" Grid.Column="3" Margin="10"
+                        Background="#263238" Height="45" Width="45"
+                        Click="ButtonSettings" BorderBrush="#263238"
+                        Padding="-10" ToolTip="Settings"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center">
+                    <md:PackIcon Kind="Settings" Foreground="Gray"
+                                 HorizontalAlignment="Right"
+                                 VerticalAlignment="Center"
+                                 Height="25" Width="25" />
+                </Button>
+
+                <!--Save Button-->
+                <Button Grid.Row="0" Grid.Column="4" Margin="10"
+                        Background="#263238" Height="45" Width="45"
+                        Click="ButtonSave" BorderBrush="#263238"
+                        Padding="-10" ToolTip="Save (Ctrl + S)"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center">
+                    <md:PackIcon Kind="ContentSave" Foreground="DodgerBlue"
+                                 HorizontalAlignment="Right"
+                                 VerticalAlignment="Center"
+                                 Height="25" Width="25" />
+                </Button>
+
+                <!--Container for Code & Results View-->
+                <Grid
+                    Grid.Row="1"
+                    Grid.Column="0" Grid.ColumnSpan="5"
+                    Name="GridCodeResults">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!--TODO: WordWrap or Horizontal Scrollbar?-->
+                    <!--Source Code Editor-->
+                    <avalonEdit:TextEditor
+                        xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+                        Name="TextBoxCode"
+                        FontFamily="Consolas"
+                        FontSize="12pt" TabIndex="0"
+                        WordWrap="True" Padding="10"
+                        Foreground="White" Margin="5"
+                        Background="#374349"
+                        VerticalScrollBarVisibility="Auto"
+                        HorizontalScrollBarVisibility="Auto"
+                        ShowLineNumbers="True"
+                        TextChanged="TextBoxCode_DocumentChanged" />
+
+                    <!--Splitter-->
+                    <GridSplitter
+                        Grid.Column="1"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Stretch"
+                        Width="5"
+                        Height="Auto"
+                        Margin="0,5,0,5"
+                        Name="GridSplitter" />
+
+                    <!--Compile/Execute Result View-->
+                    <ScrollViewer
+                        Grid.Column="2"
+                        VerticalScrollBarVisibility="Auto"
+                        HorizontalScrollBarVisibility="Disabled"
+                        Margin="5">
+                        <Grid MouseEnter="TextBlockResultsMEnter"
+                            MouseLeave="TextBlockResultsMLeave"
+                              Background="#374349"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch">
+                            <TextBlock
+                                Margin="10"
+                                Foreground="White"
+                                FontSize="14"
+                                Name="TextBlockResults"
+                                TextWrapping="Wrap" />
+                            <Button Background="#263238" Height="45" Width="45"
+                                    Click="ButtonShowRaw" BorderBrush="#263238"
+                                    Padding="-10" ToolTip="Show Raw"
+                                    Margin="5" Name="RawBtn" Visibility="Collapsed" 
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Top">
+                                <md:PackIcon Kind="CodeBrackets" Foreground="Green"
+                                             HorizontalAlignment="Right"
+                                             VerticalAlignment="Center"
+                                             Height="25" Width="25" />
+                            </Button>
+                        </Grid>
+                    </ScrollViewer>
+                </Grid>
+
+                <!--Status Bar-->
+                <Grid Grid.Row="2" Margin="5"
+                      Grid.Column="0" Grid.ColumnSpan="5"
+                      Background="#374349"
+                      Name="GridResultsView"
+                      VerticalAlignment="Center">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <md:PackIcon Name="IconStatus"
+                                 Grid.Column="0"
+                                 Kind="CodeBraces"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Stretch"
+                                 Margin="5" />
+
+                    <TextBlock Name="TextBlockStatusMessage"
+                               Grid.Column="1"
+                               Text="Loading.."
+                               VerticalAlignment="Center"
+                               TextWrapping="Wrap"
+                               Margin="5" />
+                    <TextBlock Name="TextBlockCompileTime"
+                               Grid.Column="2"
+                               ToolTip="Compile time (ms)"
+                               VerticalAlignment="Center"
+                               TextWrapping="Wrap"
+                               Margin="5" />
+                    <TextBlock Name="TextBlockExecuteTime"
+                               Grid.Column="3"
+                               ToolTip="Execute time (ms)"
+                               VerticalAlignment="Center"
+                               TextWrapping="Wrap"
+                               Margin="5" />
+                </Grid>
+
             </Grid>
+
+            <!--Drag and Drop popup-->
+            <md:Card Name="PopupCard" Grid.Row="0" Grid.Column="0"
+                     VerticalAlignment="Center" HorizontalAlignment="Center">
+
+                <md:Card.RenderTransform>
+                    <ScaleTransform x:Name="PopupCardScaleTransform"/>
+                </md:Card.RenderTransform>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="30"/>
+                    </Grid.RowDefinitions>
+
+                    <Image Source="Resources/dnd.png" Height="200"/>
+                    <Label HorizontalAlignment="Center" Grid.Row="1"
+                           Content="Drop your files here" Name="DropHereLabel"
+                           FontSize="14" VerticalAlignment="Bottom"/>
+                </Grid>
+            </md:Card>
         </Grid>
     </md:DialogHost>
 </Window>

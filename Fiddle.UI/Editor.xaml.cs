@@ -17,7 +17,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using Image = System.Windows.Controls.Image;
 
 namespace Fiddle.UI {
     /// <summary>
@@ -30,20 +29,10 @@ namespace Fiddle.UI {
         private ICompiler _compiler; //Compiler instance
         private string _filePath; //path to file - Ctrl + S will save without SaveFileDialog if not null
         private bool _needsUpdate; //need to reset textbox underlines & statusmessage?
-        private bool _passedControl;
         private BitmapImage _dndbitmap; //bitmapimage for Drag & Drop
         private Image _dndimage; //image for Drag & Drop
         private ITextMarkerService _textMarkerService; //underlines
         private Timer _dialogTimeout;
-
-        private bool PassingControl {
-            get {
-                bool before = _passedControl;
-                _passedControl = false;
-                return before;
-            }
-            set => _passedControl = value;
-        }
 
         //constructor
         public Editor() {
@@ -90,8 +79,7 @@ namespace Fiddle.UI {
         private void LoadResources() {
             _dndbitmap = new BitmapImage(new Uri("pack://application:,,,/Resources/dnd.png"));
             _dndimage = new Image {Source = _dndbitmap, IsHitTestVisible = false};
-            //_dndimage.DragEnter += ImageDragEnter;
-            //_dndimage.DragLeave += ImageDragLeave;
+            _dndimage.Drop += OnDragDrop;
         }
 
         //Window closes event (save preferences)
@@ -155,6 +143,8 @@ namespace Fiddle.UI {
         //Window loaded event
         private void Window_Loaded(object sender, RoutedEventArgs e) {
             ResetStatus();
+            PopupCardScaleTransform.CenterX = PopupCard.ActualWidth / 2;
+            PopupCardScaleTransform.CenterY = PopupCard.ActualHeight / 2;
         }
 
         #endregion
@@ -421,17 +411,15 @@ namespace Fiddle.UI {
         //Show Raw Button (Mouse over)
         private void TextBlockResultsMEnter(object sender, MouseEventArgs e) {
             if (!string.IsNullOrWhiteSpace(TextBlockResults.Text)) {
-                DoubleAnimation fadeOut = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200));
                 RawBtn.Visibility = Visibility.Visible;
-                RawBtn.BeginAnimation(OpacityProperty, fadeOut);
+                RawBtn.Animate(OpacityProperty, 0, 1, 200);
             }
         }
         //Hide Raw Button (Mouse leave)
-        private void TextBlockResultsMLeave(object sender, MouseEventArgs e) {
+        private async void TextBlockResultsMLeave(object sender, MouseEventArgs e) {
             if (!string.IsNullOrWhiteSpace(TextBlockResults.Text)) {
-                DoubleAnimation fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(200));
-                fadeOut.Completed += delegate { RawBtn.Visibility = Visibility.Collapsed; };
-                RawBtn.BeginAnimation(OpacityProperty, fadeOut);
+                await RawBtn.AnimateAsync(OpacityProperty, 1, 0, 200);
+                RawBtn.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -451,29 +439,48 @@ namespace Fiddle.UI {
         }
         #endregion
 
-        private async void OnWindowDragEnter(object sender, DragEventArgs e) {
-            EditorDialogHost.IsHitTestVisible = false;
-            _dialogTimeout?.Dispose();
-            _dialogTimeout = new Timer(TimeoutDialogClose, null, 2500, Timeout.Infinite);
+        private bool _dropIsOpen;
+
+        private async void OpenDropPopup() {
+            if (_dropIsOpen) return;
+            _dropIsOpen = true;
+
+            EditorGrid.IsHitTestVisible = false;
+            Task brighten = EditorGrid.AnimateAsync(OpacityProperty, Opacity, 0.4, 100);
+            Task popupx = PopupCardScaleTransform.AnimateAsync(ScaleTransform.ScaleXProperty, 0, 1, 150);
+            Task popupy = PopupCardScaleTransform.AnimateAsync(ScaleTransform.ScaleYProperty, 0, 1, 150);
+
+            await Task.WhenAll(brighten, popupx, popupy);
+        }
+
+        private async void CloseDropPopup() {
+            if (!_dropIsOpen) return;
+            _dropIsOpen = false;
+
+            EditorGrid.IsHitTestVisible = true;
+            Task dim = EditorGrid.AnimateAsync(OpacityProperty, Opacity, 1, 100);
+            Task popupx = PopupCardScaleTransform.AnimateAsync(ScaleTransform.ScaleXProperty, PopupCardScaleTransform.ScaleX, 0, 150);
+            Task popupy = PopupCardScaleTransform.AnimateAsync(ScaleTransform.ScaleYProperty, PopupCardScaleTransform.ScaleY, 0, 150);
+
+            await Task.WhenAll(dim, popupx,popupy);
+        }
+
+        private void OnWindowDragEnter(object sender, DragEventArgs e) {
             if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
-                if (!EditorDialogHost.IsOpen) {
-                    await EditorDialogHost.ShowDialog(_dndimage).ConfigureAwait(false);
-                }
+                e.Effects = DragDropEffects.Move;
+                _dialogTimeout?.Dispose();
+                _dialogTimeout = new Timer(TimeoutDialogClose, null, 2500, Timeout.Infinite);
+                OpenDropPopup();
             }
         }
 
-        private async void OnWindowDragLeave(object sender, DragEventArgs e) {
-            await Task.Delay(5); //Delay leave action until DragEnter has fired for sure
-            if (PassingControl) return; //ignore this event if the drag is just passing over between 2 controls
-            
-            EditorDialogHost.IsHitTestVisible = true;
-            _dialogTimeout?.Dispose();
-            DialogHelper.CloseDialog(EditorDialogHost);
+        private void OnWindowDragLeave(object sender, DragEventArgs e) {
+            CloseDropPopup();
         }
 
         private async void OnDragDrop(object sender, DragEventArgs e) {
             try {
-                DialogHelper.CloseDialog(EditorDialogHost);
+                CloseDropPopup();
 
                 if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
                     if (e.Data.GetData(DataFormats.FileDrop) is string[] files && files.Length > 0) {
@@ -491,12 +498,8 @@ namespace Fiddle.UI {
             Dispatcher.Invoke(() => {
                 Point mpos = PointFromScreen(Helper.GetMousePosition());
                 if (mpos.X < 0 || mpos.X > Width || mpos.Y < 0 || mpos.Y > Height)
-                    DialogHelper.CloseDialog(EditorDialogHost);
+                    CloseDropPopup();
             });
-        }
-
-        private void DialogDragEnter(object sender, DragEventArgs e) {
-            PassingControl = true;
         }
     }
 }
