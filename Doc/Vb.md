@@ -17,9 +17,11 @@
 Keep in mind that every VB fiddle code has to be written like the following:
 
 ```vb
-Module [MName]
-	[Function or Sub]
-EndModule
+Public Module [MName]
+    Public [Function or Sub]
+	    ' ...
+    End [Function or Sub]
+End Module
 ```
 
 Where `[MName]` is any Module name (eg: `Main`), and `[Function or Sub]` can be either a returning function ([`Function`](https://docs.microsoft.com/en-us/dotnet/visual-basic/programming-guide/language-features/procedures/function-procedures)) or a void function ([`Sub`](https://docs.microsoft.com/en-us/dotnet/visual-basic/programming-guide/language-features/procedures/sub-procedures)). The **first found method will be the entry point.**
