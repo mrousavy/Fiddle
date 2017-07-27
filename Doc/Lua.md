@@ -14,7 +14,7 @@
 - [x] Diagnostics
 - [x] Errors
 
-[Example code](https://github.com/mrousavy/Fiddle/blob/master/Fiddle.Compilers/Implementation/Lua/LuaDemo.lua) | [Projects](https://github.com/mrousavy/Fiddle/projects)
+[Example code](https://github.com/mrousavy/Fiddle/blob/master/Fiddle.Compilers/Implementation/LUA/LuaDemo.lua) | [Projects](https://github.com/mrousavy/Fiddle/projects)
 
 ## Globals
 You can use the following **Globals/Variables** inside your code:
