@@ -5,6 +5,9 @@
 	<p align="center">
 		Fiddle is a lightweight tool to <strong>edit</strong>, <strong>compile</strong> and <strong>run</strong> simple <strong>scripts</strong> in any of the <a href="#languages">supported languages</a>.
 	</p>
+	<p align="center">
+		<a href="https://github.com/mrousavy/Fiddle/releases/latest"><img src="https://img.shields.io/badge/download-fiddle-green.svg" alt="Download"/></a>
+	</p>
 </p>
 
 ## Languages
