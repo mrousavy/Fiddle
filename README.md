@@ -32,6 +32,18 @@ A directory will get created at `%appdata%\Fiddle` containing `Preferences.json`
 
 `Preferences.json` can get edited with the Settings window in Fiddle or by manually changing it via any text editor. The settings window cannot modify the `imports[]` property, this is not fully implemented.
 
+## Features
+These features apply to [all imported languages](#languages)
+
+* **Rich UI** thanks to the [Material Design in XAML](http://materialdesigninxaml.net/) library
+* **Editing code with custom syntax highlighting**
+* **Compiling code with result view** including diagnostic messages, error messages and even line markers
+* **Executing/Evaluating code/scripts**
+* **Customizing settings** and **resuming last session** (window position, location, code, etc)
+* **Saving code** to file
+* **Loading code** from file (via drag and drop)
+* **Seamlessly switching** between languages
+
 ## Contributing
 1. Fork **Fiddle** and **clone the fork**.
 2. Make changes
