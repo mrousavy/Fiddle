@@ -38,7 +38,7 @@ These features apply to [all imported languages](#languages)
 * **Rich UI** thanks to the [Material Design in XAML](http://materialdesigninxaml.net/) library
 * **Editing code with custom syntax highlighting**
 * **Compiling code with result view** including diagnostic messages, error messages and even line markers
-* **Executing/Evaluating code/scripts**
+* **Executing/Evaluating code/scripts** and viewing results (+ **expanding arrays/collections**)
 * **Customizing settings** and **resuming last session** (window position, location, code, etc)
 * **Saving code** to file
 * **Loading code** from file (via drag and drop)
