@@ -14,7 +14,7 @@
 - [x] Diagnostics
 - [x] Errors
 
-([Projects](https://github.com/mrousavy/Fiddle/projects))
+[Example Code](https://github.com/mrousavy/Fiddle/blob/master/Fiddle.Compilers/Implementation/CSharp/CSharpDemo.cs) | [Projects](https://github.com/mrousavy/Fiddle/projects)
 
 ## Globals
 You can use the following **Globals/Variables** inside your code:
@@ -33,7 +33,7 @@ You can use the following **Globals/Variables** inside your code:
 
 ```cs
 RunUi(()=>{
-		Editor.Opacity = 0.5;
+	Editor.Opacity = 0.5;
 });
 ```
 

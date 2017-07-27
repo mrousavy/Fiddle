@@ -14,7 +14,7 @@
 - [ ] Diagnostics
 - [ ] Errors
 
-([Projects](https://github.com/mrousavy/Fiddle/projects))
+[Example code](https://github.com/mrousavy/Fiddle/blob/master/Fiddle.Compilers/Implementation/Cpp/CppDemo.cpp) | [Projects](https://github.com/mrousavy/Fiddle/projects)
 
 ## Globals
 /
