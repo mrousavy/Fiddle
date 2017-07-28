@@ -289,10 +289,10 @@ namespace Fiddle.UI {
                             Foreground = Brushes.Orange,
                             FontFamily = new FontFamily("Consolas")
                         });
-                    } else if (result.ReturnValue is IList && type.IsGenericType) {
+                    } else if (result.ReturnValue is IEnumerable && type.IsGenericType) {
                         //MULTIPLE RETURN VALUES
-                        IList list = (IList)result.ReturnValue;
-                        string run = string.Join(", ", list.Cast<object>());
+                        IEnumerable enumerable = (IEnumerable)result.ReturnValue;
+                        string run = string.Join(", ", enumerable.Cast<object>());
                         items.Add(new Run($"{run}{nl}")
                         {
                             Foreground = Brushes.Orange,
