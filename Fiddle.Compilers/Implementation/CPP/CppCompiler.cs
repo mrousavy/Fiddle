@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 
 namespace Fiddle.Compilers.Implementation.CPP {
     public class CppCompiler : ICompiler {
-        public CppCompiler(string code, string[] imports = null) : this(code, new ExecutionProperties(), new CompilerProperties(), imports) { }
+        public CppCompiler(string code, string[] imports = null) : this(code, new ExecutionProperties(),
+            new CompilerProperties(), imports) { }
 
         public CppCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps,
             string[] imports = null) {
             SourceCode = code;
             ExecuteProperties = execProps;
             CompilerProperties = compProps;
-
         }
 
         private CodeDomProvider Provider { get; set; }

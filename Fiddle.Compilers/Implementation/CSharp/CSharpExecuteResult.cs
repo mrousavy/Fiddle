@@ -20,15 +20,13 @@ namespace Fiddle.Compilers.Implementation.CSharp {
         public ICompileResult CompileResult { get; }
         public Exception Exception { get; }
 
-        public int ExceptionLineNr
-        {
-            get
-            {
+        public int ExceptionLineNr {
+            get {
                 if (Exception == null) return -1;
                 StackTrace trace = new StackTrace(Exception, true);
                 if (trace.FrameCount <= 0) return 0;
                 StackFrame frame = trace.GetFrame(0);
-                    return frame != default(StackFrame) ? frame.GetFileLineNumber() : 0;
+                return frame != default(StackFrame) ? frame.GetFileLineNumber() : 0;
             }
         }
     }

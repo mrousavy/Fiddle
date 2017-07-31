@@ -1,18 +1,20 @@
-﻿using Microsoft.Scripting;
-using Microsoft.Scripting.Hosting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Scripting;
+using Microsoft.Scripting.Hosting;
 
 namespace Fiddle.Compilers.Implementation.Python {
     public class PyCompiler : ICompiler {
-        public PyCompiler(string code, string libSearchPath = null, IGlobals globals = null) : this(code,  new ExecutionProperties(), new CompilerProperties(), libSearchPath, globals) { }
+        public PyCompiler(string code, string libSearchPath = null, IGlobals globals = null) : this(code,
+            new ExecutionProperties(), new CompilerProperties(), libSearchPath, globals) { }
 
-        public PyCompiler(string code, IExecutionProperties eProps, ICompilerProperties cProps, string libSearchPath = null, IGlobals globals = null) {
+        public PyCompiler(string code, IExecutionProperties eProps, ICompilerProperties cProps,
+            string libSearchPath = null, IGlobals globals = null) {
             SourceCode = code;
             CompilerProperties = cProps;
             ExecuteProperties = eProps;
@@ -25,13 +27,13 @@ namespace Fiddle.Compilers.Implementation.Python {
         private ScriptScope Scope { get; set; }
         private CompiledCode Compilation { get; set; }
         private ScriptSource Source { get; set; }
+        public string LibSearchPath { get; set; }
+        public IGlobals Globals { get; }
         public IExecutionProperties ExecuteProperties { get; }
         public ICompilerProperties CompilerProperties { get; }
         public string SourceCode { get; set; }
-        public string LibSearchPath { get; set; }
         public ICompileResult CompileResult { get; private set; }
         public IExecuteResult ExecuteResult { get; private set; }
-        public IGlobals Globals { get; }
         public Language Language { get; } = Language.Python;
 
 
@@ -61,7 +63,7 @@ namespace Fiddle.Compilers.Implementation.Python {
                 });
                 compileThread.Start();
                 //Join the thread into main thread with specified timeout
-                bool graceful = compileThread.Join((int)CompilerProperties.Timeout);
+                bool graceful = compileThread.Join((int) CompilerProperties.Timeout);
                 sw.Stop();
 
                 if (!graceful)
@@ -85,7 +87,7 @@ namespace Fiddle.Compilers.Implementation.Python {
 
             ExecuteThreaded<object>.ThreadRunResult result = await ExecuteThreaded<object>.Execute(() =>
                     Compilation.Execute(Scope),
-                (int)ExecuteProperties.Timeout);
+                (int) ExecuteProperties.Timeout);
 
             if (result.ReturnValue?.GetType() == typeof(Exception)) {
                 IExecuteResult execResultInner = new PyExecuteResult(
@@ -117,18 +119,16 @@ namespace Fiddle.Compilers.Implementation.Python {
             Stream = new MemoryStream();
             Writer?.Dispose();
             Writer = new StringWriter();
-            if(Globals != null)
+            if (Globals != null)
                 Globals.Console = Writer;
         }
 
         private void InitGlobals() {
             //Initialize Globals
             try {
-                if (Globals != null) {
-                    foreach (PropertyInfo property in Globals.GetType().GetProperties()) {
+                if (Globals != null)
+                    foreach (PropertyInfo property in Globals.GetType().GetProperties())
                         Scope.SetVariable(property.Name, property.GetValue(Globals));
-                    }
-                }
             } catch {
                 //reflection can cause many exceptions
             }

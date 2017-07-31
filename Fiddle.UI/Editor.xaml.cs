@@ -1,14 +1,9 @@
-﻿using Fiddle.Compilers;
-using ICSharpCode.AvalonEdit.AddIn;
-using ICSharpCode.SharpDevelop.Editor;
-using MaterialDesignThemes.Wpf;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -16,6 +11,10 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using Fiddle.Compilers;
+using ICSharpCode.AvalonEdit.AddIn;
+using ICSharpCode.SharpDevelop.Editor;
+using MaterialDesignThemes.Wpf;
 
 namespace Fiddle.UI {
     /// <summary>
@@ -26,11 +25,11 @@ namespace Fiddle.UI {
         public static RoutedCommand CommandCompile = new RoutedCommand(); //F6
         public static RoutedCommand CommandExecute = new RoutedCommand(); //F5
         private ICompiler _compiler; //Compiler instance
+        private Timer _dialogTimeout;
+        private bool _dropIsOpen; //is Drag & Drop popup open?
         private string _filePath; //path to file - Ctrl + S will save without SaveFileDialog if not null
         private bool _needsUpdate; //need to reset textbox underlines & statusmessage?
-        private bool _dropIsOpen; //is Drag & Drop popup open?
         private ITextMarkerService _textMarkerService; //underlines
-        private Timer _dialogTimeout;
 
         //constructor
         public Editor() {
@@ -44,6 +43,66 @@ namespace Fiddle.UI {
         }
 
         private string SourceCode => TextBoxCode.Text;
+
+        private async void OpenDropPopup() {
+            if (_dropIsOpen) return;
+            _dropIsOpen = true;
+
+            EditorGrid.IsHitTestVisible = false;
+            Task brighten = EditorGrid.AnimateAsync(OpacityProperty, Opacity, 0.4, 100);
+            Task popupx = PopupCardScaleTransform.AnimateAsync(ScaleTransform.ScaleXProperty, 0, 1, 150);
+            Task popupy = PopupCardScaleTransform.AnimateAsync(ScaleTransform.ScaleYProperty, 0, 1, 150);
+
+            await Task.WhenAll(brighten, popupx, popupy);
+            PopupCard.BringIntoView();
+        }
+
+        private async void CloseDropPopup() {
+            if (!_dropIsOpen) return;
+            _dropIsOpen = false;
+
+            EditorGrid.IsHitTestVisible = true;
+            Task dim = EditorGrid.AnimateAsync(OpacityProperty, Opacity, 1, 100);
+            Task popupx =
+                PopupCardScaleTransform.AnimateAsync(ScaleTransform.ScaleXProperty, PopupCardScaleTransform.ScaleX, 0,
+                    150);
+            Task popupy =
+                PopupCardScaleTransform.AnimateAsync(ScaleTransform.ScaleYProperty, PopupCardScaleTransform.ScaleY, 0,
+                    150);
+
+            await Task.WhenAll(dim, popupx, popupy);
+        }
+
+        private void OnWindowDragEnter(object sender, DragEventArgs e) {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
+                e.Effects = DragDropEffects.Move;
+                _dialogTimeout?.Dispose();
+                _dialogTimeout = new Timer(TimeoutDialogClose, null, 2500, Timeout.Infinite);
+                OpenDropPopup();
+            }
+        }
+
+        private void OnWindowDragLeave(object sender, DragEventArgs e) {
+            CloseDropPopup();
+        }
+
+        private async void OnDragDrop(object sender, DragEventArgs e) {
+            try {
+                CloseDropPopup();
+                _compiler = Helper.LoadDragDrop(e, this, _compiler);
+            } catch (Exception ex) {
+                //some unknown error
+                await DialogHelper.ShowErrorDialog($"Could not load file! ({ex.Message})", EditorDialogHost);
+            }
+        }
+
+        private void TimeoutDialogClose(object state) {
+            Dispatcher.Invoke(() => {
+                Point mpos = PointFromScreen(Helper.GetMousePosition());
+                if (mpos.X < 0 || mpos.X > Width || mpos.Y < 0 || mpos.Y > Height)
+                    CloseDropPopup();
+            });
+        }
 
         #region Prefs & Inits
 
@@ -119,7 +178,7 @@ namespace Fiddle.UI {
             TextBoxCode.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
             TextBoxCode.TextArea.TextView.LineTransformers.Add(textMarkerService);
             IServiceContainer services =
-                (IServiceContainer)TextBoxCode.Document.ServiceProvider.GetService(typeof(IServiceContainer));
+                (IServiceContainer) TextBoxCode.Document.ServiceProvider.GetService(typeof(IServiceContainer));
             services?.AddService(typeof(ITextMarkerService), textMarkerService);
             _textMarkerService = textMarkerService;
         }
@@ -246,7 +305,7 @@ namespace Fiddle.UI {
         private async void ComboBoxLanguageSelected(object sender, SelectionChangedEventArgs e) {
             LockUi();
             ResetUnderline();
-            string value = ((ComboBoxItem)ComboBoxLanguage.SelectedValue).Content as string;
+            string value = ((ComboBoxItem) ComboBoxLanguage.SelectedValue).Content as string;
             try {
                 //Try to load the new compiler
                 _compiler?.Dispose();
@@ -260,7 +319,7 @@ namespace Fiddle.UI {
                     EditorDialogHost);
                 //Revert changes
                 ComboBoxLanguage.SelectedIndex = App.Preferences.SelectedLanguage;
-                value = ((ComboBoxItem)ComboBoxLanguage.SelectedValue).Content as string;
+                value = ((ComboBoxItem) ComboBoxLanguage.SelectedValue).Content as string;
                 _compiler?.Dispose();
                 _compiler = Helper.ChangeLanguage(value, SourceCode, TextBoxCode, this);
             }
@@ -377,7 +436,7 @@ namespace Fiddle.UI {
         //Open Settings
         private void ButtonSettings(object sender, RoutedEventArgs e) {
             LockUi();
-            Settings settings = new Settings { Owner = this };
+            Settings settings = new Settings {Owner = this};
             settings.ShowDialog();
             _compiler = Helper.NewCompiler(_compiler.Language, SourceCode, this);
             UnlockUi();
@@ -395,7 +454,7 @@ namespace Fiddle.UI {
 
         //Show results view raw button click
         private void ButtonShowRaw(object sender, RoutedEventArgs e) {
-            RawText window = new RawText(TextBlockResults.Text) { Owner = this };
+            RawText window = new RawText(TextBlockResults.Text) {Owner = this};
             window.ShowDialog();
         }
 
@@ -406,6 +465,7 @@ namespace Fiddle.UI {
                 RawBtn.Animate(OpacityProperty, 0, 1, 200);
             }
         }
+
         //Hide Raw Button (Mouse leave)
         private async void TextBlockResultsMLeave(object sender, MouseEventArgs e) {
             if (!string.IsNullOrWhiteSpace(TextBlockResults.Text)) {
@@ -428,62 +488,7 @@ namespace Fiddle.UI {
         private void F5(object sender, ExecutedRoutedEventArgs e) {
             Execute();
         }
+
         #endregion
-
-        private async void OpenDropPopup() {
-            if (_dropIsOpen) return;
-            _dropIsOpen = true;
-
-            EditorGrid.IsHitTestVisible = false;
-            Task brighten = EditorGrid.AnimateAsync(OpacityProperty, Opacity, 0.4, 100);
-            Task popupx = PopupCardScaleTransform.AnimateAsync(ScaleTransform.ScaleXProperty, 0, 1, 150);
-            Task popupy = PopupCardScaleTransform.AnimateAsync(ScaleTransform.ScaleYProperty, 0, 1, 150);
-
-            await Task.WhenAll(brighten, popupx, popupy);
-            PopupCard.BringIntoView();
-        }
-
-        private async void CloseDropPopup() {
-            if (!_dropIsOpen) return;
-            _dropIsOpen = false;
-
-            EditorGrid.IsHitTestVisible = true;
-            Task dim = EditorGrid.AnimateAsync(OpacityProperty, Opacity, 1, 100);
-            Task popupx = PopupCardScaleTransform.AnimateAsync(ScaleTransform.ScaleXProperty, PopupCardScaleTransform.ScaleX, 0, 150);
-            Task popupy = PopupCardScaleTransform.AnimateAsync(ScaleTransform.ScaleYProperty, PopupCardScaleTransform.ScaleY, 0, 150);
-
-            await Task.WhenAll(dim, popupx,popupy);
-        }
-
-        private void OnWindowDragEnter(object sender, DragEventArgs e) {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
-                e.Effects = DragDropEffects.Move;
-                _dialogTimeout?.Dispose();
-                _dialogTimeout = new Timer(TimeoutDialogClose, null, 2500, Timeout.Infinite);
-                OpenDropPopup();
-            }
-        }
-
-        private void OnWindowDragLeave(object sender, DragEventArgs e) {
-            CloseDropPopup();
-        }
-
-        private async void OnDragDrop(object sender, DragEventArgs e) {
-            try {
-                CloseDropPopup();
-                _compiler = Helper.LoadDragDrop(e, this, _compiler);
-            } catch(Exception ex) {
-                //some unknown error
-                await DialogHelper.ShowErrorDialog($"Could not load file! ({ex.Message})", EditorDialogHost);
-            }
-        }
-
-        private void TimeoutDialogClose(object state) {
-            Dispatcher.Invoke(() => {
-                Point mpos = PointFromScreen(Helper.GetMousePosition());
-                if (mpos.X < 0 || mpos.X > Width || mpos.Y < 0 || mpos.Y > Height)
-                    CloseDropPopup();
-            });
-        }
     }
 }

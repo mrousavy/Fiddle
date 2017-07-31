@@ -25,10 +25,8 @@ namespace Fiddle.Compilers.Implementation.Java {
 
         public Exception Exception { get; set; }
 
-        public int ExceptionLineNr
-        {
-            get
-            {
+        public int ExceptionLineNr {
+            get {
                 if (Exception == null) return -1;
                 StackTrace trace = new StackTrace(Exception, true);
                 if (trace.FrameCount <= 0) return 0;

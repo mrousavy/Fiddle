@@ -6,9 +6,14 @@ using System.Windows.Input;
 
 namespace Fiddle.UI {
     /// <summary>
-    /// Interaction logic for Settings.xaml
+    ///     Interaction logic for Settings.xaml
     /// </summary>
     public partial class Settings {
+        public Settings() {
+            InitializeComponent();
+            Load();
+        }
+
         private new bool? DialogResult {
             set {
                 try {
@@ -17,11 +22,6 @@ namespace Fiddle.UI {
                     //window is not .ShowDialog
                 }
             }
-        }
-
-        public Settings() {
-            InitializeComponent();
-            Load();
         }
 
         //Save Preferences
@@ -69,7 +69,7 @@ namespace Fiddle.UI {
                     App.Preferences.CacheType |= CacheType.SourceCode;
                 if (CPos.IsChecked == true)
                     App.Preferences.CacheType |= CacheType.CursorPos;
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 //error converting
                 await DialogHelper.ShowErrorDialog($"Could not save data! ({ex.Message})", DialogHost);
             }
@@ -92,25 +92,20 @@ namespace Fiddle.UI {
         }
 
 
-        private static bool IsTextAllowed(string text)
-        {
+        private static bool IsTextAllowed(string text) {
             Regex regex = new Regex("[^0-9-]+"); //regex that matches disallowed text
             return !regex.IsMatch(text);
         }
 
-        private void TimeoutTextInput(object sender, TextCompositionEventArgs e)
-        {
+        private void TimeoutTextInput(object sender, TextCompositionEventArgs e) {
             e.Handled = !IsTextAllowed(e.Text);
         }
 
         // Use the DataObject.Pasting Handler 
-        private void TextBoxPasting(object sender, DataObjectPastingEventArgs e)
-        {
+        private void TextBoxPasting(object sender, DataObjectPastingEventArgs e) {
             if (e.DataObject.GetDataPresent(typeof(string))) {
-                string text = (string)e.DataObject.GetData(typeof(string));
-                if (!IsTextAllowed(text)) {
-                    e.CancelCommand();
-                }
+                string text = (string) e.DataObject.GetData(typeof(string));
+                if (!IsTextAllowed(text)) e.CancelCommand();
             } else {
                 e.CancelCommand();
             }

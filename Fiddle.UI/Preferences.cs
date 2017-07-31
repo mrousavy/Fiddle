@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
+using Newtonsoft.Json;
 
 namespace Fiddle.UI {
     [Flags]
@@ -58,9 +58,10 @@ namespace Fiddle.UI {
         public double ResultsViewSize { get; set; } =
             200; //The size of the Results View window (right side of editor window)
 
-        public long ExecuteTimeout { get; set; } = 
+        public long ExecuteTimeout { get; set; } =
             10000; //The maximum amount of time (in ms) code can execute before being terminated (-1 = no timeout)
-        public long CompileTimeout { get; set; } = 
+
+        public long CompileTimeout { get; set; } =
             10000; //The maximum amount of time (in ms) code can compile before being terminated (-1 = no timeout)
     }
 

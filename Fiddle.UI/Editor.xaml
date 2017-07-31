@@ -147,7 +147,7 @@
                         HorizontalScrollBarVisibility="Disabled"
                         Margin="5">
                         <Grid MouseEnter="TextBlockResultsMEnter"
-                            MouseLeave="TextBlockResultsMLeave"
+                              MouseLeave="TextBlockResultsMLeave"
                               Background="#374349"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch">
@@ -160,7 +160,7 @@
                             <Button Background="#263238" Height="45" Width="45"
                                     Click="ButtonShowRaw" BorderBrush="#263238"
                                     Padding="-10" ToolTip="Show Raw"
-                                    Margin="5" Name="RawBtn" Visibility="Collapsed" 
+                                    Margin="5" Name="RawBtn" Visibility="Collapsed"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Top">
                                 <md:PackIcon Kind="CodeBrackets" Foreground="Green"
@@ -217,26 +217,26 @@
 
             <!--Drag and Drop popup-->
             <Border Name="PopupCard" Grid.Row="0" Grid.Column="0"
-                     VerticalAlignment="Center" HorizontalAlignment="Center"
-                     Background="{DynamicResource MaterialDesignLightBackground}"
-                     IsHitTestVisible="False" CornerRadius="7">
+                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Background="{DynamicResource MaterialDesignLightBackground}"
+                    IsHitTestVisible="False" CornerRadius="7">
 
                 <Border.RenderTransform>
-                    <ScaleTransform x:Name="PopupCardScaleTransform" ScaleX="0" ScaleY="0"/>
+                    <ScaleTransform x:Name="PopupCardScaleTransform" ScaleX="0" ScaleY="0" />
                 </Border.RenderTransform>
 
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="30" />
                     </Grid.RowDefinitions>
 
                     <Grid HorizontalAlignment="Stretch" Grid.Row="0" Margin="50">
-                        <md:PackIcon Kind="File" Width="70" Height="70" 
+                        <md:PackIcon Kind="File" Width="70" Height="70"
                                      HorizontalAlignment="Center" Margin="40,0,0,0"
                                      Foreground="#5092fc" Name="PackIconFileRight">
                             <md:PackIcon.RenderTransform>
-                                <RotateTransform Angle="25" CenterX="35" CenterY="35"/>
+                                <RotateTransform Angle="25" CenterX="35" CenterY="35" />
                             </md:PackIcon.RenderTransform>
                         </md:PackIcon>
                         <md:PackIcon Kind="File" Width="70" Height="70"
@@ -244,19 +244,18 @@
                                      Foreground="#84b3ff" Name="PackIconFileLeft">
                             <md:PackIcon.RenderTransform>
                                 <TransformGroup>
-                                    <RotateTransform Angle="-25" CenterX="35" CenterY="35"/>
+                                    <RotateTransform Angle="-25" CenterX="35" CenterY="35" />
                                 </TransformGroup>
                             </md:PackIcon.RenderTransform>
                         </md:PackIcon>
                         <md:PackIcon Kind="CodeBraces" Width="70" Height="70"
                                      HorizontalAlignment="Center" Name="PackIconBraces"
-                                     Foreground="{DynamicResource MaterialDesignPaper}">
-                        </md:PackIcon>
+                                     Foreground="{DynamicResource MaterialDesignPaper}" />
                     </Grid>
                     <Label HorizontalAlignment="Center" Grid.Row="1"
                            Content="Drop your files here" Name="DropHereLabel"
                            FontSize="14" VerticalAlignment="Bottom"
-                           Foreground="{DynamicResource MaterialDesignPaper}"/>
+                           Foreground="{DynamicResource MaterialDesignPaper}" />
                 </Grid>
             </Border>
         </Grid>

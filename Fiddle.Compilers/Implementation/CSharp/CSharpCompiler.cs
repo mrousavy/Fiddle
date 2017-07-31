@@ -1,18 +1,20 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Scripting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
 
 namespace Fiddle.Compilers.Implementation.CSharp {
     public class CSharpCompiler : ICompiler {
-        public CSharpCompiler(string code, string[] imports = null) : this(code, new ExecutionProperties(), new CompilerProperties(), imports) { }
+        public CSharpCompiler(string code, string[] imports = null) : this(code, new ExecutionProperties(),
+            new CompilerProperties(), imports) { }
 
         public CSharpCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps,
             string[] imports = null, IGlobals globals = null) {
@@ -31,13 +33,13 @@ namespace Fiddle.Compilers.Implementation.CSharp {
         public string[] Imports { get; set; }
 
         private Script<object> Script { get; set; }
+        public IGlobals Globals { get; }
         public IExecutionProperties ExecuteProperties { get; }
         public ICompilerProperties CompilerProperties { get; }
         public string SourceCode { get; set; }
         public ICompileResult CompileResult { get; private set; }
         public IExecuteResult ExecuteResult { get; private set; }
         public Language Language { get; } = Language.CSharp;
-        public IGlobals Globals { get; }
 
         public async Task<ICompileResult> Compile() {
             if (Script.Code != SourceCode)
@@ -58,7 +60,7 @@ namespace Fiddle.Compilers.Implementation.CSharp {
                 });
                 compileThread.Start();
                 bool graceful =
-                    compileThread.Join((int)CompilerProperties
+                    compileThread.Join((int) CompilerProperties
                         .Timeout); //Wait until compile Thread finishes with given timeout
                 sw.Stop();
 
@@ -118,8 +120,8 @@ namespace Fiddle.Compilers.Implementation.CSharp {
             //Reset builder/Clear console
             StringBuilder builder = new StringBuilder();
             Globals.Console?.Dispose();
-            Globals.Console = new System.IO.StringWriter(builder);
-            int timeout = (int)ExecuteProperties.Timeout;
+            Globals.Console = new StringWriter(builder);
+            int timeout = (int) ExecuteProperties.Timeout;
 
             ExecuteThreaded<ScriptState<object>>.ThreadRunResult threadRunResult =
                 await ExecuteThreaded<ScriptState<object>>.Execute(() =>

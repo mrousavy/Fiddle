@@ -2,16 +2,14 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using System.Windows.Threading;
 
-namespace Fiddle.UI
-{
+namespace Fiddle.UI {
     /// <summary>
     ///     Interaction logic for App.xaml
     /// </summary>
-    public partial class App 
-    {
-        public App()
-        {
+    public partial class App {
+        public App() {
             //Load prefs
             Preferences = PreferencesManager.Load();
 
@@ -20,36 +18,32 @@ namespace Fiddle.UI
             Current.Exit += delegate { PreferencesManager.WriteOut(Preferences); };
         }
 
-        private static void UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
-        {
-            try
-            {
+        public static Preferences Preferences { get; set; }
+
+        private static void UnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e) {
+            try {
                 string nl = Environment.NewLine;
                 string path = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Fiddle", "error.txt");
                 string content = BuildBody(e.Exception);
                 File.WriteAllText(path, content);
                 MessageBoxResult result = MessageBox.Show($"An unknown error occured in Fiddle.{nl}{nl}" +
-                                $"An error report has been saved to \"{path}\".{nl}" +
-                                $"You can help by submitting the report.{nl}" +
-                                "Do you want to go there now?",
+                                                          $"An error report has been saved to \"{path}\".{nl}" +
+                                                          $"You can help by submitting the report.{nl}" +
+                                                          "Do you want to go there now?",
                     "Fiddle - Unexpected Error",
                     MessageBoxButton.YesNo);
-                if (result == MessageBoxResult.Yes)
-                {
+                if (result == MessageBoxResult.Yes) {
                     Process.Start("http://github.com/mrousavy/Fiddle/issues/new");
                     Process.Start("explorer.exe", $"/select, \"{path}\"");
                 }
                 Process.GetCurrentProcess().Kill();
-            }
-            catch
-            {
+            } catch {
                 // all hope is lost
             }
         }
 
-        private static string BuildBody(Exception ex)
-        {
+        private static string BuildBody(Exception ex) {
             string nl = Environment.NewLine;
             const string header1 = "THIS ERROR REPORT FILE WAS AUTOMATICALLY CREATED BY FIDDLE";
             const string header2 = "PLEASE SUBMIT THIS FILE AT: http://github.com/mrousavy/Fiddle/issues/new";
@@ -61,8 +55,7 @@ namespace Fiddle.UI
             return content;
         }
 
-        private static string GetExceptionDetails(Exception ex, string indent = "")
-        {
+        private static string GetExceptionDetails(Exception ex, string indent = "") {
             string nl = Environment.NewLine;
             string details = string.Empty;
             indent += "\t";
@@ -77,7 +70,5 @@ namespace Fiddle.UI
 
             return details;
         }
-
-        public static Preferences Preferences { get; set; }
     }
 }

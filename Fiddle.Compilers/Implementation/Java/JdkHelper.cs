@@ -24,7 +24,7 @@ namespace Fiddle.Compilers.Implementation.Java {
                 Arguments = commandLineOptions + " " + javaFilePathName
             };
             using (Process javacProcess = Process.Start(startInfo)) {
-                bool graceful = javacProcess.WaitForExit((int)properties.Timeout);
+                bool graceful = javacProcess.WaitForExit((int) properties.Timeout);
 
                 if (graceful) {
                     string error = await javacProcess.StandardError.ReadToEndAsync();
@@ -43,8 +43,8 @@ namespace Fiddle.Compilers.Implementation.Java {
         /// <returns>The found javac path or null if not found</returns>
         public static Tuple<string, string> SearchJavaExecutables(string javaPath) {
             DirectoryInfo javaInfo = new DirectoryInfo(javaPath);
-            if (javaInfo.Exists) {
-                foreach (DirectoryInfo info in javaInfo.EnumerateDirectories()) {
+            if (javaInfo.Exists)
+                foreach (DirectoryInfo info in javaInfo.EnumerateDirectories())
                     if (info.Name.ToLower().Contains("jdk")) {
                         string javaBinJavac = Path.Combine(info.FullName, "bin", "javac.exe");
                         FileInfo javac = new FileInfo(javaBinJavac);
@@ -53,8 +53,6 @@ namespace Fiddle.Compilers.Implementation.Java {
                         if (javac.Exists && java.Exists)
                             return new Tuple<string, string>(javac.FullName, java.FullName);
                     }
-                }
-            }
 
             return null;
         }

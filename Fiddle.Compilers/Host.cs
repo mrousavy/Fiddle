@@ -1,88 +1,96 @@
-﻿using Fiddle.Compilers.Implementation.CPP;
+﻿using System;
+using System.ComponentModel;
+using System.Threading.Tasks;
+using Fiddle.Compilers.Implementation.CPP;
 using Fiddle.Compilers.Implementation.CSharp;
 using Fiddle.Compilers.Implementation.Java;
+using Fiddle.Compilers.Implementation.LUA;
 using Fiddle.Compilers.Implementation.Python;
 using Fiddle.Compilers.Implementation.VB;
 using Microsoft.CodeAnalysis;
-using System;
-using System.ComponentModel;
-using System.Threading.Tasks;
-using Fiddle.Compilers.Implementation.LUA;
 
 namespace Fiddle.Compilers {
     public enum Language {
         /// <summary>
-        /// C++
+        ///     C++
         /// </summary>
-        [Description("C++")]
-        Cpp,
+        [Description("C++")] Cpp,
+
         /// <summary>
-        /// C# .NET
+        ///     C# .NET
         /// </summary>
-        [Description("C#")]
-        CSharp,
+        [Description("C#")] CSharp,
+
         /// <summary>
-        /// Java
+        ///     Java
         /// </summary>
-        [Description("Java")]
-        Java,
+        [Description("Java")] Java,
+
         /// <summary>
-        /// NLUA (KeraLua)
+        ///     NLUA (KeraLua)
         /// </summary>
-        [Description("LUA")]
-        Lua,
+        [Description("LUA")] Lua,
+
         /// <summary>
-        /// IronPython
+        ///     IronPython
         /// </summary>
-        [Description("Python")]
-        Python,
+        [Description("Python")] Python,
+
         /// <summary>
-        /// Visual Basic .NET
+        ///     Visual Basic .NET
         /// </summary>
-        [Description("VB")]
-        Vb
+        [Description("VB")] Vb
     }
 
     /// <summary>
-    /// A set of properties for compiler creation
+    ///     A set of properties for compiler creation
     /// </summary>
     public struct Properties {
         /// <summary>
-        /// The language to use for compilation and execution
+        ///     The language to use for compilation and execution
         /// </summary>
         public Language Language { get; set; }
+
         /// <summary>
-        /// The source code
+        ///     The source code
         /// </summary>
         public string Code { get; set; }
+
         /// <summary>
-        /// All imports/namespaces that should be added to the script environment.
-        /// If this value is null, all references that can be found will be added (C#), or pre-defined
-        /// imports will be used (other languages)
+        ///     All imports/namespaces that should be added to the script environment.
+        ///     If this value is null, all references that can be found will be added (C#), or pre-defined
+        ///     imports will be used (other languages)
         /// </summary>
         public string[] Imports { get; set; }
+
         /// <summary>
-        /// Path to Java Development Kit
+        ///     Path to Java Development Kit
         /// </summary>
         public string JdkPath { get; set; }
+
         /// <summary>
-        /// Python libraries search path
+        ///     Python libraries search path
         /// </summary>
         public string PySearchPath { get; set; }
+
         /// <summary>
-        /// Given Execution Properties for the compiler (Use <see cref="Fiddle.Compilers.Implementation.ExecutionProperties"/>)
+        ///     Given Execution Properties for the compiler (Use <see cref="Fiddle.Compilers.Implementation.ExecutionProperties" />
+        ///     )
         /// </summary>
         public IExecutionProperties ExecuteProperties { get; set; }
+
         /// <summary>
-        /// Given Compilation Properties for the compiler (Use <see cref="Fiddle.Compilers.Implementation.CompilerProperties"/>)
+        ///     Given Compilation Properties for the compiler (Use
+        ///     <see cref="Fiddle.Compilers.Implementation.CompilerProperties" />)
         /// </summary>
         public ICompilerProperties CompilerProperties { get; set; }
+
         /// <summary>
-        /// Global variables to be used in a language (e.g. C#) (e.g. for redirecting Console to a StreamWriter)
+        ///     Global variables to be used in a language (e.g. C#) (e.g. for redirecting Console to a StreamWriter)
         /// </summary>
         public IGlobals Globals { get; set; }
 
-        public Properties(Language language, string code, 
+        public Properties(Language language, string code,
             string[] imports = null,
             string jdkPath = null,
             string pyPath = null,
@@ -146,7 +154,7 @@ namespace Fiddle.Compilers {
         /// <exception cref="LanguageNotFoundException">When the given <see cref="Language" /> could not be found</exception>
         /// <returns>The execution result</returns>
         public static async Task<ICompileResult> Compile(Language language, string code) {
-            return await NewCompiler(new Properties { Language = language, Code = code }).Compile();
+            return await NewCompiler(new Properties {Language = language, Code = code}).Compile();
         }
 
         /// <summary>
@@ -157,7 +165,7 @@ namespace Fiddle.Compilers {
         /// <exception cref="LanguageNotFoundException">When the given <see cref="Language" /> could not be found</exception>
         /// <returns>The execution result</returns>
         public static async Task<IExecuteResult> Execute(Language language, string code) {
-            return await NewCompiler(new Properties{Language = language, Code = code}).Execute();
+            return await NewCompiler(new Properties {Language = language, Code = code}).Execute();
         }
 
         /// <summary>

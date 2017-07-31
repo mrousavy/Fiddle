@@ -4,7 +4,7 @@ namespace Fiddle.UI {
     /// <summary>
     ///     Interaction logic for RawText.xaml
     /// </summary>
-    public partial class RawText  {
+    public partial class RawText {
         public RawText(string text) {
             InitializeComponent();
             Text.Text = text;
@@ -19,7 +19,7 @@ namespace Fiddle.UI {
             string filename = Helper.SaveFile(Text.Text);
             if (string.IsNullOrWhiteSpace(filename))
                 return;
-            
+
             await this.AnimateAsync(OpacityProperty, 1, 0, 200);
             Close();
         }

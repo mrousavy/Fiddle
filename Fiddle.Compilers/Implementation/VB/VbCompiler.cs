@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using System;
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,12 +7,14 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.VisualBasic;
 
 #pragma warning disable 618
 
 namespace Fiddle.Compilers.Implementation.VB {
     public class VbCompiler : ICompiler {
-        public VbCompiler(string code, string[] imports = null) : this(code, new ExecutionProperties(), new CompilerProperties(), imports) { }
+        public VbCompiler(string code, string[] imports = null) : this(code, new ExecutionProperties(),
+            new CompilerProperties(), imports) { }
 
         public VbCompiler(string code, IExecutionProperties execProps, ICompilerProperties compProps,
             string[] imports = null) {
@@ -58,7 +59,7 @@ namespace Fiddle.Compilers.Implementation.VB {
                 });
                 compileThread.Start();
                 bool graceful =
-                    compileThread.Join((int)CompilerProperties
+                    compileThread.Join((int) CompilerProperties
                         .Timeout); //Wait until compile Thread finishes with given timeout
                 sw.Stop();
 
@@ -98,7 +99,7 @@ namespace Fiddle.Compilers.Implementation.VB {
                         ScriptAssembly.EntryPoint == null
                             ? ScriptAssembly.DefinedTypes.Last().DeclaredMethods.First().Invoke(null, null)
                             : ScriptAssembly.EntryPoint.Invoke(null, null),
-                    (int)ExecuteProperties.Timeout);
+                    (int) ExecuteProperties.Timeout);
 
                 if (result.Successful) {
                     IExecuteResult executeResult = new VbExecuteResult(

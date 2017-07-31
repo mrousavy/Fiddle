@@ -18,9 +18,9 @@
     <md:DialogHost Name="DialogHost">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
@@ -32,78 +32,82 @@
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center">
                 <CheckBox Content="Remember User Settings"
-                          Margin="5" Name="USettings"/>
+                          Margin="5" Name="USettings" />
                 <CheckBox Content="Remember Window Size"
-                          Margin="5" Name="WSize"/>
+                          Margin="5" Name="WSize" />
                 <CheckBox Content="Remember Window Position"
-                          Margin="5" Name="WPos"/>
+                          Margin="5" Name="WPos" />
                 <CheckBox Content="Remember Window State"
-                          Margin="5" Name="WState"/>
+                          Margin="5" Name="WState" />
                 <CheckBox Content="Remember Language"
-                          Margin="5" Name="Lang"/>
+                          Margin="5" Name="Lang" />
                 <CheckBox Content="Remember Results View Size"
-                          Margin="5" Name="RvSize"/>
+                          Margin="5" Name="RvSize" />
                 <CheckBox Content="Remember Source Code"
-                          Margin="5" Name="SCode"/>
+                          Margin="5" Name="SCode" />
                 <CheckBox Content="Remember Cursor Position"
-                          Margin="5" Name="CPos"/>
+                          Margin="5" Name="CPos" />
 
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="34"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="34" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Label VerticalAlignment="Bottom"
                            ToolTip="The Path to the Java 
-                           Development Kit (..Java/jdk../bin)"
-                           >JDK:</Label>
+                           Development Kit (..Java/jdk../bin)">
+                        JDK:
+                    </Label>
                     <TextBox Grid.Column="1"
                              VerticalAlignment="Top"
-                             Name="Jdk"/>
+                             Name="Jdk" />
                 </Grid>
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="34"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="34" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Label VerticalAlignment="Bottom" 
+                    <Label VerticalAlignment="Bottom"
                            ToolTip="The Path for IronPython to 
-                           search for Python libraries (..Python24/lib)"
-                           >Py:</Label>
+                           search for Python libraries (..Python24/lib)">
+                        Py:
+                    </Label>
                     <TextBox Grid.Column="1"
                              VerticalAlignment="Top"
-                             Name="PyPaths"/>
+                             Name="PyPaths" />
                 </Grid>
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="110"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="110" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <Label VerticalAlignment="Bottom"
                            ToolTip="The maximum amount of 
                            time a compilation can take 
-                           before being terminated (-1 = Infinite)"
-                           >Compile Timeout:</Label>
+                           before being terminated (-1 = Infinite)">
+                        Compile Timeout:
+                    </Label>
                     <TextBox Grid.Column="1" PreviewTextInput="TimeoutTextInput"
                              VerticalAlignment="Top" DataObject.Pasting="TextBoxPasting"
-                             Name="ComTimeout"/>
+                             Name="ComTimeout" />
                     <Label Grid.Column="2" Margin="-5,0,-10,0" VerticalAlignment="Bottom">ms</Label>
                 </Grid>
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="110"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="110" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <Label VerticalAlignment="Bottom"
                            ToolTip="The maximum amount of 
                            time an execution can take 
-                           before being terminated (-1 = Infinite)"
-                           >Execute Timeout:</Label>
+                           before being terminated (-1 = Infinite)">
+                        Execute Timeout:
+                    </Label>
                     <TextBox Grid.Column="1" PreviewTextInput="TimeoutTextInput"
                              VerticalAlignment="Top" DataObject.Pasting="TextBoxPasting"
-                             Name="ExTimeout"/>
+                             Name="ExTimeout" />
                     <Label Grid.Column="2" Margin="-5,0,-10,0" VerticalAlignment="Bottom">ms</Label>
                 </Grid>
             </StackPanel>

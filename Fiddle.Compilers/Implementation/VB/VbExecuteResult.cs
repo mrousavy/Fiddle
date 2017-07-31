@@ -19,10 +19,9 @@ namespace Fiddle.Compilers.Implementation.VB {
         public object ReturnValue { get; }
         public ICompileResult CompileResult { get; }
         public Exception Exception { get; }
-        public int ExceptionLineNr
-        {
-            get
-            {
+
+        public int ExceptionLineNr {
+            get {
                 if (Exception == null) return -1;
                 StackTrace trace = new StackTrace(Exception, true);
                 if (trace.FrameCount <= 0) return 0;

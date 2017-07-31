@@ -1,9 +1,4 @@
-﻿using Fiddle.Compilers;
-using ICSharpCode.AvalonEdit;
-using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.AvalonEdit.Highlighting.Xshd;
-using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,7 +11,12 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Xml;
+using Fiddle.Compilers;
 using Fiddle.Compilers.Implementation;
+using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Highlighting.Xshd;
+using Microsoft.Win32;
 
 namespace Fiddle.UI {
     public static class Helper {
@@ -65,10 +65,11 @@ namespace Fiddle.UI {
             }
         }
 
-        public static ICompiler NewCompiler(Language language, string sourceCode, Editor caller, string[] imports = null, string langVersion = null) {
+        public static ICompiler NewCompiler(Language language, string sourceCode, Editor caller,
+            string[] imports = null, string langVersion = null) {
             IExecutionProperties exProps = new ExecutionProperties(App.Preferences.ExecuteTimeout);
-            ICompilerProperties comProps= new CompilerProperties(App.Preferences.ExecuteTimeout, langVersion);
-            Compilers.Properties properties = new Compilers.Properties(language, sourceCode, 
+            ICompilerProperties comProps = new CompilerProperties(App.Preferences.ExecuteTimeout, langVersion);
+            Compilers.Properties properties = new Compilers.Properties(language, sourceCode,
                 imports,
                 App.Preferences.JdkPath,
                 App.Preferences.PyPath,
@@ -92,26 +93,24 @@ namespace Fiddle.UI {
         public static ICompiler LoadDragDrop(DragEventArgs args, Editor caller, ICompiler currentCompiler) {
             ICompiler compiler = currentCompiler;
 
-            if (args.Data.GetDataPresent(DataFormats.FileDrop)) {
+            if (args.Data.GetDataPresent(DataFormats.FileDrop))
                 if (args.Data.GetData(DataFormats.FileDrop) is string[] files && files.Length > 0) {
                     string file = files[0];
                     string content = File.ReadAllText(file);
-                    
+
                     Language lang = GetLanguageForFilename(file);
                     if (currentCompiler.Language != lang) {
                         compiler = NewCompiler(lang, content, caller);
                         string name = LanguageToFriendly(lang);
-                        foreach (ComboBoxItem value in caller.ComboBoxLanguage.Items) {
+                        foreach (ComboBoxItem value in caller.ComboBoxLanguage.Items)
                             if (value.Content.ToString() == name) {
                                 caller.ComboBoxLanguage.SelectedValue = value;
                                 App.Preferences.SelectedLanguage = caller.ComboBoxLanguage.SelectedIndex;
                             }
-                        }
                         caller.Title = $"Fiddle - {name}";
                     }
                     caller.TextBoxCode.Text = content;
                 }
-            }
             return compiler;
         }
 
@@ -181,11 +180,6 @@ namespace Fiddle.UI {
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool GetCursorPos(ref Win32Point pt);
 
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct Win32Point {
-            public int X;
-            public int Y;
-        }
         public static Point GetMousePosition() {
             Win32Point w32Mouse = new Win32Point();
             GetCursorPos(ref w32Mouse);
@@ -238,17 +232,15 @@ namespace Fiddle.UI {
                     ? $"{diagnostic.LineFrom}-{diagnostic.LineTo}"
                     : diagnostic.LineFrom.ToString();
 
-                items.Add(new Run($"{indent}#{counter++} Ln{lines}: ") { Foreground = Brushes.LightGray });
+                items.Add(new Run($"{indent}#{counter++} Ln{lines}: ") {Foreground = Brushes.LightGray});
                 if (diagnostic.Severity == Severity.Error) {
                     Uri url = BuildHelpLink(diagnostic.Message);
                     Run childInline = new Run(diagnostic.Message + nl) {Foreground = brush};
-                    Hyperlink link = new Hyperlink(childInline) { Foreground = brush, NavigateUri = url };
-                    link.Click += delegate {
-                        Process.Start(url.ToString());
-                    };
+                    Hyperlink link = new Hyperlink(childInline) {Foreground = brush, NavigateUri = url};
+                    link.Click += delegate { Process.Start(url.ToString()); };
                     items.Add(link);
                 } else {
-                    items.Add(new Run(diagnostic.Message + nl) { Foreground = brush });
+                    items.Add(new Run(diagnostic.Message + nl) {Foreground = brush});
                 }
             }
             return items;
@@ -268,22 +260,20 @@ namespace Fiddle.UI {
 
                 if (result.ReturnValue == null) {
                     //NO RETURN VALUE
-                    items.Add(new Run($"Return value: /{nl}") { Foreground = Brushes.Gray });
+                    items.Add(new Run($"Return value: /{nl}") {Foreground = Brushes.Gray});
                 } else {
                     //RETURN VALUE(S)
                     Type type = result.ReturnValue.GetType();
                     items.Add(new Run("Return value: "));
                     string typeName;
-                    if (type.IsGenericType) {
+                    if (type.IsGenericType)
                         typeName = $"{type.Name.Remove(type.Name.IndexOf('`'))}" +
                                    $"<{string.Join(", ", type.GenericTypeArguments.Select(a => a.Name))}>";
-                    } else {
-                        typeName = type.Name;
-                    }
-                    items.Add(new Run($"({typeName}) ") { Foreground = Brushes.CadetBlue });
+                    else typeName = type.Name;
+                    items.Add(new Run($"({typeName}) ") {Foreground = Brushes.CadetBlue});
                     if (type.IsArray) {
                         //MULTIPLE RETURN VALUES
-                        Array array = (Array)result.ReturnValue;
+                        Array array = (Array) result.ReturnValue;
                         string run = string.Join(", ", array.Cast<object>());
                         items.Add(new Run($"{run}{nl}") {
                             Foreground = Brushes.Orange,
@@ -291,17 +281,15 @@ namespace Fiddle.UI {
                         });
                     } else if (result.ReturnValue is IEnumerable && type.IsGenericType) {
                         //MULTIPLE RETURN VALUES
-                        IEnumerable enumerable = (IEnumerable)result.ReturnValue;
+                        IEnumerable enumerable = (IEnumerable) result.ReturnValue;
                         string run = string.Join(", ", enumerable.Cast<object>());
-                        items.Add(new Run($"{run}{nl}")
-                        {
+                        items.Add(new Run($"{run}{nl}") {
                             Foreground = Brushes.Orange,
                             FontFamily = new FontFamily("Consolas")
                         });
                     } else {
                         //SINGLE RETURN VALUE
-                        items.Add(new Run($"{result.ReturnValue}{nl}")
-                        {
+                        items.Add(new Run($"{result.ReturnValue}{nl}") {
                             Foreground = Brushes.Orange,
                             FontFamily = new FontFamily("Consolas")
                         });
@@ -309,7 +297,7 @@ namespace Fiddle.UI {
                 }
                 if (string.IsNullOrWhiteSpace(result.ConsoleOutput)) {
                     //NO CONSOLE OUTPUT
-                    items.Add(new Run($"Console output: /{nl}") { Foreground = Brushes.Gray });
+                    items.Add(new Run($"Console output: /{nl}") {Foreground = Brushes.Gray});
                 } else {
                     //CONSOLE OUTPUT
                     items.Add(new Run("Console output: "));
@@ -338,16 +326,16 @@ namespace Fiddle.UI {
 
                 if (result.Exception == null) {
                     //NO ERROR MESSAGE
-                    items.Add(new Run($"An unexpected error occured.{nl}") { Foreground = Brushes.Gray });
+                    items.Add(new Run($"An unexpected error occured.{nl}") {Foreground = Brushes.Gray});
                 } else {
                     //ERROR MESSAGE
-                    items.Add(new Run($"Ln{result.ExceptionLineNr}: {result.Exception.GetType().Name}: ") { Foreground = Brushes.OrangeRed });
+                    items.Add(new Run($"Ln{result.ExceptionLineNr}: {result.Exception.GetType().Name}: ") {
+                        Foreground = Brushes.OrangeRed
+                    });
                     Uri url = BuildHelpLink(result.Exception.Message);
-                    Run childInline = new Run($"\"{result.Exception.Message}\"{nl}") { Foreground = Brushes.OrangeRed };
-                    Hyperlink link = new Hyperlink(childInline) { Foreground = Brushes.OrangeRed, NavigateUri = url };
-                    link.Click += delegate {
-                        Process.Start(url.ToString());
-                    };
+                    Run childInline = new Run($"\"{result.Exception.Message}\"{nl}") {Foreground = Brushes.OrangeRed};
+                    Hyperlink link = new Hyperlink(childInline) {Foreground = Brushes.OrangeRed, NavigateUri = url};
+                    link.Click += delegate { Process.Start(url.ToString()); };
                     items.Add(link);
                 }
                 if (result.CompileResult.Diagnostics?.Any() == true) {
@@ -395,6 +383,12 @@ namespace Fiddle.UI {
                 }
                 return items;
             }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct Win32Point {
+            public int X;
+            public int Y;
         }
     }
 }
