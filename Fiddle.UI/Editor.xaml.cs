@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -438,7 +438,8 @@ namespace Fiddle.UI {
             LockUi();
             Settings settings = new Settings {Owner = this};
             settings.ShowDialog();
-            _compiler = Helper.NewCompiler(_compiler.Language, SourceCode, this);
+			if(_compiler != null)
+            	_compiler = Helper.NewCompiler(_compiler.Language, SourceCode, this);
             UnlockUi();
         }
 
