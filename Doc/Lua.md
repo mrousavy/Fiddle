@@ -16,6 +16,9 @@
 
 [Example code](https://github.com/mrousavy/Fiddle/blob/master/Fiddle.Compilers/Implementation/LUA/LuaDemo.lua) | [Projects](https://github.com/mrousavy/Fiddle/projects)
 
+To use **LUA**, the Fiddle directory (default: `C:\Program Files\Fiddle`) must contain the corresponding **LUA library** _(or both)_: `x64\lua52.dll` _and/or_ `x86\lua52.dll`. 
+If your installation does _not_ contain those libraries, you can extract them _manually_ from the [portable (`Fiddle.zip`) version](https://github.com/mrousavy/Fiddle/releases/latest).
+
 ## Globals
 You can use the following **Globals/Variables** inside your code:
 
