@@ -41,7 +41,7 @@ You can use the following **Globals/Variables** inside your code:
 
 * `App` (**object**, .NET `System.Windows.Application`, [msdn](https://msdn.microsoft.com/en-us/library/system.windows.application(v=vs.110).aspx)): Fiddle's calling `Application`/`App`, can be used to access all properties or functions derived from [`System.Windows.Application`](https://msdn.microsoft.com/en-us/library/system.windows.application(v=vs.110).aspx))
 
-* `RunUi(Action)` (**function**, `void Invoke(Action)`, [declaration](https://github.com/mrousavy/Fiddle/blob/master/Fiddle.UI/FiddleGlobals.cs#L42)): A function with an anonymous function or [`Action`](https://msdn.microsoft.com/en-us/library/018hxwa8(v=vs.110).aspx) as a parameter **to execute code on the UI Thread**. This is **required for getting/setting properties or calling functions from `Editor` or `App`** because those are **not thread safe**. Example:
+* `RunUi(Action)` (**function**, `void Invoke(Action)`, [declaration](https://github.com/mrousavy/Fiddle/blob/master/Fiddle.UI/FiddleGlobals.cs#L13)): A function with an anonymous function or [`Action`](https://msdn.microsoft.com/en-us/library/018hxwa8(v=vs.110).aspx) as a parameter **to execute code on the UI Thread**. This is **required for getting/setting properties or calling functions from `Editor` or `App`** because those are **not thread safe**. Example:
 
 ```cs
 RunUi(Sub() Editor.Hide());
