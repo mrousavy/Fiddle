@@ -448,6 +448,7 @@ namespace Fiddle.UI {
         private async void CloseDropPopup() {
             if (!_dropIsOpen) return;
             _dropIsOpen = false;
+            _dialogTimeout?.Dispose();
 
             EditorGrid.IsHitTestVisible = true;
             Task dim = EditorGrid.AnimateAsync(OpacityProperty, Opacity, 1, 100);
@@ -465,7 +466,6 @@ namespace Fiddle.UI {
         //Trigger file drag enter event
         private void OnWindowDragEnter(object sender, DragEventArgs e) {
             if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
-                e.Effects = DragDropEffects.Move;
                 _dialogTimeout?.Dispose();
                 _dialogTimeout = new Timer(TimeoutDialogClose, null, 2500, Timeout.Infinite);
                 OpenDropPopup();
