@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -90,15 +92,21 @@ namespace Fiddle.UI {
             }
         }
 
-        public static ICompiler LoadDragDrop(DragEventArgs args, Editor caller, ICompiler currentCompiler) {
+        public static async Task<ICompiler> LoadDragDrop(DragEventArgs args, Editor caller, ICompiler currentCompiler) {
             ICompiler compiler = currentCompiler;
 
             if (args.Data.GetDataPresent(DataFormats.FileDrop))
                 if (args.Data.GetData(DataFormats.FileDrop) is string[] files && files.Length > 0) {
                     string file = files[0];
-                    string content = File.ReadAllText(file);
+                    string content;
+                    FileInfo fileInfo = new FileInfo(file);
+                    using (FileStream stream = fileInfo.OpenRead()) {
+                        byte[] buffer = new byte[fileInfo.Length];
+                        await stream.ReadAsync(buffer, 0, (int)fileInfo.Length);
+                        content = Encoding.Default.GetString(buffer);
+                    }
 
-                    Language lang = GetLanguageForFilename(file);
+                    Language lang = GetLanguageForFilename(file) ?? currentCompiler.Language;
                     if (currentCompiler.Language != lang) {
                         compiler = NewCompiler(lang, content, caller);
                         string name = LanguageToFriendly(lang);
@@ -139,7 +147,7 @@ namespace Fiddle.UI {
             return dialog.FileName;
         }
 
-        private static Language GetLanguageForFilename(string filename) {
+        private static Language? GetLanguageForFilename(string filename) {
             if (filename.EndsWith(".cpp"))
                 return Language.Cpp;
             if (filename.EndsWith(".cs"))
@@ -153,7 +161,7 @@ namespace Fiddle.UI {
             if (filename.EndsWith(".lua"))
                 return Language.Lua;
 
-            return default(Language);
+            return null;
         }
 
         private static string GetFilterForLanguage(Language language) {

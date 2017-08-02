@@ -363,7 +363,6 @@ namespace Fiddle.UI {
             Failure,
             Wait
         }
-
         #endregion
 
         #region Events
@@ -480,21 +479,28 @@ namespace Fiddle.UI {
 
         //Trigger file drag drop event
         private async void OnDragDrop(object sender, DragEventArgs e) {
+            Cursor = Cursors.Wait;
             try {
+                if(_compiler == null) throw new Exception("Please select a language first!");
+                _compiler = await Helper.LoadDragDrop(e, this, _compiler);
                 CloseDropPopup();
-                _compiler = Helper.LoadDragDrop(e, this, _compiler);
             } catch (Exception ex) {
                 //some unknown error
                 await DialogHelper.ShowErrorDialog($"Could not load file! ({ex.Message})", EditorDialogHost);
             }
+            Cursor = Cursors.Arrow;
         }
 
         //Automatically close after Timer interval if DragLeave didn't fire
         private void TimeoutDialogClose(object state) {
             Dispatcher.Invoke(() => {
-                Point mpos = PointFromScreen(Helper.GetMousePosition());
-                if (mpos.X < 0 || mpos.X > Width || mpos.Y < 0 || mpos.Y > Height)
-                    CloseDropPopup();
+                try {
+                    Point mpos = PointFromScreen(Helper.GetMousePosition());
+                    if (mpos.X < 0 || mpos.X > Width || mpos.Y < 0 || mpos.Y > Height)
+                        CloseDropPopup();
+                } catch {
+                    //visual may not be there anymore, etc
+                }
             });
         }
         #endregion
