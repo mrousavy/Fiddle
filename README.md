@@ -49,9 +49,10 @@ These features apply to [all imported languages](#languages)
 * **Seamlessly switching** between languages
 
 ## Cache
-A directory will get created at `%appdata%\Fiddle` containing `Preferences.json` and when a crash was reported `error.txt`.
+A directory will be created at `%appdata%\Fiddle` containing `Preferences.json` (crash reports will be stored as "`error.txt`").
 
-`Preferences.json` can get edited with the Settings window in Fiddle or by manually changing it via any text editor. The settings window cannot modify the `imports[]` property, this is not fully implemented.
+`Preferences.json` can be edited with the Settings window in Fiddle or by manually changing it via any text editor. 
+However, the settings window cannot modify the `imports[]`, `DefaultCode` and window dimensions/cursor position properties, this is not fully implemented. For now you can use `Preferences.json` to manually edit these.
 
 ## Contributing
 1. Fork **Fiddle** and **clone the fork**.
