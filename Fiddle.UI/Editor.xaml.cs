@@ -483,6 +483,7 @@ namespace Fiddle.UI {
             try {
                 if(_compiler == null) throw new Exception("Please select a language first!");
                 _compiler = await Helper.LoadDragDrop(e, this, _compiler);
+                _filePath = (e.Data.GetData(DataFormats.FileDrop) as string[])?[0]; //set path for Ctrl S
                 CloseDropPopup();
             } catch (Exception ex) {
                 //some unknown error
