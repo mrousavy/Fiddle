@@ -25,6 +25,7 @@
 ## Screenshots
 <p align="center">
 	<img src="https://github.com/mrousavy/Fiddle/raw/master/Images/Fiddle_slideshow.gif" alt="Fiddle Demo Slideshow"/>
+	<a href="https://github.com/mrousavy/Fiddle/tree/master/Images">(See all screenshots)</a>
 </p>
 
 ## Why?
