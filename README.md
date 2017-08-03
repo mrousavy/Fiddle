@@ -27,10 +27,14 @@
 	<img src="https://github.com/mrousavy/Fiddle/raw/master/Images/Fiddle_slideshow.gif" alt="Fiddle Demo Slideshow"/>
 </p>
 
-## Cache
-A directory will get created at `%appdata%\Fiddle` containing `Preferences.json` and when a crash was reported `error.txt`.
+## Why?
+The purpose of **Fiddle** is to simplify the Task of **quickly creating small code snippets**, like file-rename-scripts.
 
-`Preferences.json` can get edited with the Settings window in Fiddle or by manually changing it via any text editor. The settings window cannot modify the `imports[]` property, this is not fully implemented.
+**Instead of:**
+Open Visual Studio **->** _(wait)_ **->** File **->** New **->** New Project **->** .NET **->** Console App **->** _(enter name)_ **->** Create **->** _(wait)_ **->** Open `Program.cs` **->** Write code **->** Build **->** (wait) **->** Start
+
+**Do:**
+Open Fiddle **->** Write code **->** Start
 
 ## Features
 These features apply to [all imported languages](#languages)
@@ -43,6 +47,11 @@ These features apply to [all imported languages](#languages)
 * **Saving code** to file
 * **Loading code** from file (via drag and drop)
 * **Seamlessly switching** between languages
+
+## Cache
+A directory will get created at `%appdata%\Fiddle` containing `Preferences.json` and when a crash was reported `error.txt`.
+
+`Preferences.json` can get edited with the Settings window in Fiddle or by manually changing it via any text editor. The settings window cannot modify the `imports[]` property, this is not fully implemented.
 
 ## Contributing
 1. Fork **Fiddle** and **clone the fork**.
