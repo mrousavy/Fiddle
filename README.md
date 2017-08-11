@@ -7,6 +7,7 @@
 	</p>
 	<p align="center">
 		<a href="https://github.com/mrousavy/Fiddle/releases/latest"><img src="https://img.shields.io/badge/download-fiddle-green.svg" alt="Download"/></a>
+		<a href="https://ci.appveyor.com/project/mrousavy/fiddle"><img src="https://ci.appveyor.com/api/projects/status/1g0s56o0v1hdlqxu?svg=true" alt="AppVeyor Build"/></a>
 	</p>
 </p>
 
