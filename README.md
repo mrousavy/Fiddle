@@ -12,12 +12,12 @@
 </p>
 
 ## Languages
-- [ ] **C++** 	_(TODO: everything)_
-- [x] **C#**
-- [x] **Java** 	_(TODO: Return values)_
-- [x] **LUA**
-- [x] **Python**
-- [x] **VB** 	_(TODO: Better Entry point)_
+- [ ] [**C++**](https://github.com/mrousavy/Fiddle/blob/master/Doc/Cpp.md) 	_(TODO: everything)_
+- [x] [**C#**](https://github.com/mrousavy/Fiddle/blob/master/Doc/CSharp.md)
+- [x] [**Java**](https://github.com/mrousavy/Fiddle/blob/master/Doc/Java.md) 	_(TODO: Return values)_
+- [x] [**LUA**](https://github.com/mrousavy/Fiddle/blob/master/Doc/Lua.md)
+- [x] [**Python**](https://github.com/mrousavy/Fiddle/blob/master/Doc/Python.md)
+- [x] [**VB**](https://github.com/mrousavy/Fiddle/blob/master/Doc/Vb.md) 	_(TODO: Better Entry point)_
 
 [Detailed documentation about implemented languages](https://github.com/mrousavy/Fiddle/tree/master/Doc)
 
@@ -75,6 +75,6 @@ However, the settings window cannot modify the `imports[]`, `DefaultCode` and wi
 		6. Add Language name to every other function that handles language names hardcoded in `Fiddle.UI\Helper.cs`
 		7. (Optionally) Add **file-extension** to `Fiddle.UI\Helper.GetFilterForLanguage(..)`
 		8. (Optionally) Add **Syntax highlighting definition** to `Fiddle.UI\Syntax\[LanguageName].xshd`
-		9. (Optionally) Add **Documentation** (using [this template](https://github.com/mrousavy/Fiddle/blob/master/Doc/CSharp.md)) to `Doc\[LanguageName].md` and linking it in `Doc\README.md`		
+		9. (Optionally) Add **Documentation** (using [this template](https://github.com/mrousavy/Fiddle/blob/master/Doc/Template.md), or [this example](https://github.com/mrousavy/Fiddle/blob/master/Doc/CSharp.md)) to `Doc\[LanguageName].md` and linking it in `Doc\README.md`		
 3. **Commit & Push**
 4. Create a new **pull request** _(on your fork)_
