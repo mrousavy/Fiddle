@@ -38,4 +38,4 @@ RunUi(
 ```
 
 ## Properties
-- `string pySearchPath`: Python path for searching for libraries (also accessible via [sys.path](https://docs.python.org/2/library/sys.html#sys.path).append())
+- `string pySearchPath`: Python path for searching for libraries (also accessible via [sys.path](https://docs.python.org/2/library/sys.html#sys.path).append()). If empty, no libraries are imported.
