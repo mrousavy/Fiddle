@@ -16,6 +16,21 @@
 
 [Example Code](https://github.com/mrousavy/Fiddle/blob/master/Fiddle.Compilers/Implementation/CSharp/CSharpDemo.cs) | [Projects](https://github.com/mrousavy/Fiddle/projects)
 
+## About
+
+With C# you can write **Scripts**, aswell as **full source code**. So:
+```cs
+return 1+1;
+```
+will compile just as fine as:
+```cs
+public class MainClass {
+    public static void main(string[] args) {
+    	Console.WriteLine(1+1);
+    }
+}
+```
+
 ## Globals
 You can use the following **Globals/Variables** inside your code:
 
@@ -38,4 +53,4 @@ RunUi(()=>{
 ```
 
 ## Properties
-- `string[] imports`: A list of assemblies to be referenced and imported by the script
+- `string[] imports`: A list of assemblies to be referenced and imported by the script. If empty, **Fiddle** will import **all found referenced assemblies of it's own executable** via reflection. _(If you are experiencing performance problems/long compile & execute times, you may want to **customize this list to only import assemblies you need**.)_
