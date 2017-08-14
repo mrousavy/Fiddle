@@ -19,9 +19,7 @@
 - [x] [**Python**](https://github.com/mrousavy/Fiddle/blob/master/Doc/Python.md)
 - [x] [**VB**](https://github.com/mrousavy/Fiddle/blob/master/Doc/Vb.md) 	_(TODO: Better Entry point)_
 
-[Detailed documentation about implemented languages](https://github.com/mrousavy/Fiddle/tree/master/Doc)
-
-[Other ToDo's](https://github.com/mrousavy/Fiddle/projects)
+[ToDo's](https://github.com/mrousavy/Fiddle/projects)
 
 ## Screenshots
 <p align="center">
