@@ -48,4 +48,4 @@ RunUi(Sub() Editor.Hide());
 ```
 
 ## Properties
-- `string[] imports`: A list of assemblies to be referenced and imported by the script
+- `string[] imports`: A list of assemblies to be referenced and imported by the script. If empty, **Fiddle** does **not automatically import** anything like in [C#](https://github.com/mrousavy/Fiddle/blob/master/Doc/CSharp.md), the **default imports for VB [CodeDom](https://docs.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/using-the-codedom)** will be used.
