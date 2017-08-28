@@ -16,6 +16,11 @@
 
 [Example code](https://github.com/mrousavy/Fiddle/blob/master/Fiddle.Compilers/Implementation/Python/PythonDemo.py) | [Projects](https://github.com/mrousavy/Fiddle/projects)
 
+## About
+You will need the [Python standard library](https://docs.python.org/2/library/index.html) to use most of Python's features. IronPython libraries are already included (e.g.: `clr`). 
+
+You can get the Python standard library by [downloading Python](https://www.python.org/downloads/). (IronPython also offers the StdLib [on NuGet](https://www.nuget.org/packages/IronPython.StdLib/) ([direct download](https://www.nuget.org/api/v2/package/IronPython.StdLib/2.7.7)) ([See: importing libraries](#properties))
+
 ## Globals
 You can use the following **Globals/Variables** inside your code:
 
