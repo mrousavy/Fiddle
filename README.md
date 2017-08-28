@@ -56,10 +56,15 @@ A directory will be created at `%appdata%\Fiddle` containing `Preferences.json` 
 However, the settings window cannot modify the `imports[]`, `DefaultCode` and window dimensions/cursor position properties, this is not fully implemented. For now you can use `Preferences.json` to manually edit these.
 
 ## Build from Source
-Prerequisites:
-1. [Visual Studio](https://www.visualstudio.com/) with .NET Desktop Plugin
++ **Visual Studio Way**
 
-(TODO)
+  1. Open `Fiddle.sln`
+  2. Set build target (**Debug**: development, **Release**: portable releases, **Publish**: InnoSetup installer)
+  3. Build Solution/Fiddle.UI (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd>)
+
++ **Command Line**
+  1. Run `nuget restore` command in `Fiddle` directory (Requires [NuGet installed](https://www.nuget.org/downloads) and [configured in Environment variables](https://stackoverflow.com/a/21067553))
+  2. Run `msbuild Fiddle.sln /t:Build /p:Configuration=Release` or `msbuild Fiddle.sln /t:Build /p:Configuration=Publish` for InnoSetup installer
 
 ## Contributing
 1. Fork **Fiddle** and **clone the fork**.
