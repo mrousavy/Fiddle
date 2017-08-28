@@ -112,13 +112,13 @@
                 </Grid>
             </StackPanel>
 
-            <Button Grid.Row="1" Grid.Column="2" Margin="10"
+            <Button Grid.Row="1" Grid.Column="0" Margin="10"
                     Background="#263238" Height="40" Width="40"
-                    Click="ButtonCancel" BorderBrush="#263238"
-                    Padding="-10" ToolTip="Cancel"
+                    Click="ButtonOpenPrefs" BorderBrush="#263238"
+                    Padding="-10" ToolTip="Open Preferences.json"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center">
-                <md:PackIcon Kind="Close" Foreground="IndianRed"
+                <md:PackIcon Kind="CodeBraces" Foreground="ForestGreen"
                              HorizontalAlignment="Right"
                              VerticalAlignment="Center"
                              Height="25" Width="25" />
@@ -126,10 +126,21 @@
             <Button Grid.Row="1" Grid.Column="1" Margin="10"
                     Background="#263238" Height="40" Width="40"
                     Click="ButtonSave" BorderBrush="#263238"
-                    Padding="-10" ToolTip="Save (Ctrl + S)"
+                    Padding="-10" ToolTip="Save"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center">
                 <md:PackIcon Kind="ContentSave" Foreground="DodgerBlue"
+                             HorizontalAlignment="Right"
+                             VerticalAlignment="Center"
+                             Height="25" Width="25" />
+            </Button>
+            <Button Grid.Row="1" Grid.Column="2" Margin="10"
+                    Background="#263238" Height="40" Width="40"
+                    Click="ButtonCancel" BorderBrush="#263238"
+                    Padding="-10" ToolTip="Cancel"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center">
+                <md:PackIcon Kind="Close" Foreground="IndianRed"
                              HorizontalAlignment="Right"
                              VerticalAlignment="Center"
                              Height="25" Width="25" />

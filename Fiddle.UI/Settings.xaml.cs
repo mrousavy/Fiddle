@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -35,7 +36,7 @@ namespace Fiddle.UI {
             }
         }
 
-        //Open Settings
+        //Cancel edit
         private void ButtonCancel(object sender, RoutedEventArgs e) {
             App.Preferences = PreferencesManager.Load();
             try {
@@ -43,6 +44,11 @@ namespace Fiddle.UI {
             } catch {
                 //window is not .ShowDialog
             }
+        }
+
+        //Open %appdata%\Fiddle\preferences.json
+        private void ButtonOpenPrefs(object sender, RoutedEventArgs e) {
+            Process.Start(PreferencesManager.PreferencesFile);
         }
 
 
