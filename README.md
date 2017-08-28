@@ -4,6 +4,8 @@
 	</h1>
 	<p align="center">
 		Fiddle is a lightweight tool to <strong>edit</strong>, <strong>compile</strong> and <strong>run</strong> simple <strong>scripts</strong>/<strong>snippets</strong> in any of the <a href="#languages">supported languages</a>.
+		<br/>
+		⚠️ Fiddle requires .NET Framework v4.6 or above (<a href="https://www.microsoft.com/net/download/framework">download</a>) ⚠️
 	</p>
 	<p align="center">
 		<a href="https://ci.appveyor.com/project/mrousavy/fiddle"><img src="https://ci.appveyor.com/api/projects/status/1g0s56o0v1hdlqxu?svg=true" alt="AppVeyor Build"/></a>
