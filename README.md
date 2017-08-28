@@ -57,14 +57,13 @@ However, the settings window cannot modify the `imports[]`, `DefaultCode` and wi
 
 ## Build from Source
 + **Visual Studio Way**
-
-  1. Open `Fiddle.sln`
-  2. Set build target (**Debug**: development, **Release**: portable releases, **Publish**: InnoSetup installer)
-  3. Build Solution/Fiddle.UI (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd>)
+    1. Open `Fiddle.sln`
+    2. Set build target (**Debug**: development, **Release**: portable releases, **Publish**: InnoSetup installer)
+    3. Build Solution/Fiddle.UI (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd>)
 
 + **Command Line**
-  1. Run `nuget restore` command in `Fiddle` directory (Requires [NuGet installed](https://www.nuget.org/downloads) and [configured in Environment variables](https://stackoverflow.com/a/21067553))
-  2. Run `msbuild Fiddle.sln /t:Build /p:Configuration=Release` or `msbuild Fiddle.sln /t:Build /p:Configuration=Publish` for InnoSetup installer
+    1. Run `nuget restore` command in `Fiddle` directory (Requires [NuGet installed](https://www.nuget.org/downloads) and [configured in Environment variables](https://stackoverflow.com/a/21067553))
+    2. Run `msbuild Fiddle.sln /t:Build /p:Configuration=Release` or `msbuild Fiddle.sln /t:Build /p:Configuration=Publish` for InnoSetup installer (Requires [MsBuild installed](https://www.microsoft.com/en-us/download/details.aspx?id=48159) and [configured in Environment variables](https://stackoverflow.com/a/12608705))
 
 ## Contributing
 1. Fork **Fiddle** and **clone the fork**.
