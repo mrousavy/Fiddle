@@ -14,7 +14,11 @@
 - [x] Diagnostics
 - [x] Errors
 
-Keep in mind that every VB fiddle code has to be written like the following:
+[Example code](https://github.com/mrousavy/Fiddle/blob/master/Fiddle.Compilers/Implementation/VB/VbDemo.vb) | [Projects](https://github.com/mrousavy/Fiddle/projects)
+
+## About
+
+Every VB fiddle code has to be written like the following:
 
 ```vb
 Public Module [MName]
@@ -26,7 +30,6 @@ End Module
 
 Where `[MName]` is any Module name (eg: `Main`), and `[Function or Sub]` can be either a returning function ([`Function`](https://docs.microsoft.com/en-us/dotnet/visual-basic/programming-guide/language-features/procedures/function-procedures)) or a void function ([`Sub`](https://docs.microsoft.com/en-us/dotnet/visual-basic/programming-guide/language-features/procedures/sub-procedures)). The **first found method will be the entry point.**
 
-[Example code](https://github.com/mrousavy/Fiddle/blob/master/Fiddle.Compilers/Implementation/VB/VbDemo.vb) | [Projects](https://github.com/mrousavy/Fiddle/projects)
 
 ## Globals
 You can use the following **Globals/Variables** inside your code:
