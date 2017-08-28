@@ -55,6 +55,12 @@ A directory will be created at `%appdata%\Fiddle` containing `Preferences.json` 
 `Preferences.json` can be edited with the Settings window in Fiddle or by manually changing it via any text editor. 
 However, the settings window cannot modify the `imports[]`, `DefaultCode` and window dimensions/cursor position properties, this is not fully implemented. For now you can use `Preferences.json` to manually edit these.
 
+## Build from Source
+Prerequisites:
+1. [Visual Studio](https://www.visualstudio.com/) with .NET Desktop Plugin
+
+(TODO)
+
 ## Contributing
 1. Fork **Fiddle** and **clone the fork**.
 2. Make changes
