@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
+using Fiddle.Compilers;
 using Newtonsoft.Json;
 
 namespace Fiddle.UI {
@@ -36,7 +37,7 @@ namespace Fiddle.UI {
                                                    CacheType.Language | CacheType.ResultsViewSize;
 
         //All settings apply on startup and save on close:
-        public int SelectedLanguage { get; set; } = -1; //The selected language in the editor
+        public Language SelectedLanguage { get; set; } = Language.CSharp; //The selected language in the editor
 
         public double WindowWidth { get; set; } = 1000; //The editor's window width
         public double WindowHeight { get; set; } = 700; //The editor's window height
