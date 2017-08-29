@@ -15,56 +15,14 @@ using System.Windows.Media;
 using System.Xml;
 using Fiddle.Compilers;
 using Fiddle.Compilers.Implementation;
-using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using Microsoft.Win32;
 
 namespace Fiddle.UI {
     public static class Helper {
-        public static ICompiler ChangeLanguage(string language, string sourceCode, TextEditor editor, Editor caller) {
-            switch (language) {
-                case "C#":
-                    editor.SyntaxHighlighting = LoadXshd("CSharp.xshd");
-                    return NewCompiler(Language.CSharp, sourceCode, caller);
-                case "C++":
-                    editor.SyntaxHighlighting = LoadXshd("Cpp.xshd");
-                    return NewCompiler(Language.Cpp, sourceCode, caller);
-                case "VB":
-                    editor.SyntaxHighlighting = LoadXshd("VB.xshd");
-                    return NewCompiler(Language.Vb, sourceCode, caller);
-                case "Python":
-                    editor.SyntaxHighlighting = LoadXshd("Python.xshd");
-                    return NewCompiler(Language.Python, sourceCode, caller);
-                case "Java":
-                    editor.SyntaxHighlighting = LoadXshd("Java.xshd");
-                    return NewCompiler(Language.Java, sourceCode, caller);
-                case "LUA":
-                    editor.SyntaxHighlighting = LoadXshd("LUA.xshd");
-                    return NewCompiler(Language.Lua, sourceCode, caller);
-                default:
-                    MessageBox.Show("Language not found!");
-                    return null;
-            }
-        }
-
         public static string LanguageToFriendly(Language language) {
-            switch (language) {
-                case Language.CSharp:
-                    return "C#";
-                case Language.Cpp:
-                    return "C++";
-                case Language.Vb:
-                    return "VB";
-                case Language.Python:
-                    return "Python";
-                case Language.Java:
-                    return "Java";
-                case Language.Lua:
-                    return "Lua";
-                default:
-                    return "";
-            }
+            return language.GetDescription();
         }
 
         public static ICompiler NewCompiler(Language language, string sourceCode, Editor caller,
@@ -80,7 +38,7 @@ namespace Fiddle.UI {
             return Host.NewCompiler(properties);
         }
 
-        private static IHighlightingDefinition LoadXshd(string resourceName) {
+        public static IHighlightingDefinition LoadXshd(string resourceName) {
             Type type = typeof(Helper);
             string fullName = $"{type.Namespace}.Syntax.{resourceName}";
             using (Stream stream = type.Assembly.GetManifestResourceStream(fullName)) {
@@ -91,6 +49,8 @@ namespace Fiddle.UI {
                 }
             }
         }
+
+        public static IHighlightingDefinition LoadXshd(Language language) => LoadXshd(language.ToString());
 
         public static async Task<ICompiler> LoadDragDrop(DragEventArgs args, Editor caller, ICompiler currentCompiler) {
             ICompiler compiler = currentCompiler;
@@ -113,7 +73,7 @@ namespace Fiddle.UI {
                         foreach (ComboBoxItem value in caller.ComboBoxLanguage.Items)
                             if (value.Content.ToString() == name) {
                                 caller.ComboBoxLanguage.SelectedValue = value;
-                                App.Preferences.SelectedLanguage = caller.ComboBoxLanguage.SelectedIndex;
+                                App.Preferences.SelectedLanguage = caller.SelectedLanguage;
                             }
                         caller.Title = $"Fiddle - {name}";
                     }
