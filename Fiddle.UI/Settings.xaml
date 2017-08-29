@@ -32,21 +32,21 @@
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center">
                 <CheckBox Content="Remember User Settings"
-                          Margin="5" Name="USettings" />
+                          Margin="5" IsChecked="{Binding USettings}" />
                 <CheckBox Content="Remember Window Size"
-                          Margin="5" Name="WSize" />
+                          Margin="5" IsChecked="{Binding WSize}" />
                 <CheckBox Content="Remember Window Position"
-                          Margin="5" Name="WPos" />
+                          Margin="5" IsChecked="{Binding WPos}" />
                 <CheckBox Content="Remember Window State"
-                          Margin="5" Name="WState" />
+                          Margin="5" IsChecked="{Binding WState}" />
                 <CheckBox Content="Remember Language"
-                          Margin="5" Name="Lang" />
+                          Margin="5" IsChecked="{Binding Lang}" />
                 <CheckBox Content="Remember Results View Size"
-                          Margin="5" Name="RvSize" />
+                          Margin="5" IsChecked="{Binding RvSize}" />
                 <CheckBox Content="Remember Source Code"
-                          Margin="5" Name="SCode" />
+                          Margin="5" IsChecked="{Binding SCode}" />
                 <CheckBox Content="Remember Cursor Position"
-                          Margin="5" Name="CPos" />
+                          Margin="5" IsChecked="{Binding CPos}" />
 
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -60,7 +60,7 @@
                     </Label>
                     <TextBox Grid.Column="1"
                              VerticalAlignment="Top"
-                             Name="Jdk" />
+                             Text="{Binding JdkPath}"/>
                 </Grid>
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -74,7 +74,7 @@
                     </Label>
                     <TextBox Grid.Column="1"
                              VerticalAlignment="Top"
-                             Name="PyPaths" />
+                             Text="{Binding PyPath}" />
                 </Grid>
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -90,7 +90,7 @@
                     </Label>
                     <TextBox Grid.Column="1" PreviewTextInput="TimeoutTextInput"
                              VerticalAlignment="Top" DataObject.Pasting="TextBoxPasting"
-                             Name="ComTimeout" />
+                             Text="{Binding CTimeout}" />
                     <Label Grid.Column="2" Margin="-5,0,-10,0" VerticalAlignment="Bottom">ms</Label>
                 </Grid>
                 <Grid>
@@ -107,7 +107,7 @@
                     </Label>
                     <TextBox Grid.Column="1" PreviewTextInput="TimeoutTextInput"
                              VerticalAlignment="Top" DataObject.Pasting="TextBoxPasting"
-                             Name="ExTimeout" />
+                             Text="{Binding ETimeout}" />
                     <Label Grid.Column="2" Margin="-5,0,-10,0" VerticalAlignment="Bottom">ms</Label>
                 </Grid>
             </StackPanel>
