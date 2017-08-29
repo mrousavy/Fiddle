@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -44,70 +45,54 @@ namespace Fiddle.Compilers.Implementation.CSharp {
         public async Task<ICompileResult> Compile() {
             if (Script.Code != SourceCode)
                 Create();
-
-            TaskCompletionSource<ICompileResult> tcs = new TaskCompletionSource<ICompileResult>();
-
-            //bad hack for creating an "async" method:
-            new Thread(() => {
-                //Init
-                IEnumerable<Diagnostic> resultDiagnostics = null;
-
-                //Actual compilation
-                Stopwatch sw = Stopwatch.StartNew();
-                Thread compileThread = new Thread(() => {
+            
+            var runResult = await ExecuteThreaded<ImmutableArray<Diagnostic>>.Execute(
+                () => {
+                    //Actual compilation
                     Compilation compilation = Script.GetCompilation();
-                    resultDiagnostics = compilation.GetDiagnostics();
-                });
-                compileThread.Start();
-                bool graceful =
-                    compileThread.Join((int) CompilerProperties
-                        .Timeout); //Wait until compile Thread finishes with given timeout
-                sw.Stop();
+                    return compilation.GetDiagnostics();
+                }, (int)CompilerProperties.Timeout
+            );
 
-                if (!graceful)
-                    throw new CompileException("The compilation timed out!");
+            if (!runResult.Successful)
+                throw new CompileException("The compilation timed out!");
+            if (runResult.ReturnValue == null)
+                throw new CompileException("The compiler Thread was not returning any diagnostics!");
 
-                if (resultDiagnostics == null)
-                    throw new CompileException("The compiler Thread was not returning any diagnostics!");
+            ImmutableArray<Diagnostic> resultDiagnostics = runResult.ReturnValue;
 
-                //Pre-Enumerate so it's not enumerating multiple times
-                IEnumerable<Diagnostic> diagnosticsEnum =
-                    resultDiagnostics as Diagnostic[] ?? resultDiagnostics.ToArray();
-                IEnumerable<CSharpDiagnostic> diagnostics = diagnosticsEnum
-                    .Select(d => new CSharpDiagnostic(
-                        d.GetMessage(),
-                        d.Location.GetLineSpan().StartLinePosition.Line + 1, //+1: it's 1-based
-                        d.Location.GetLineSpan().EndLinePosition.Line + 1, //+1: it's 1-based
-                        d.Location.GetLineSpan().StartLinePosition.Character + 1, //+1: it's 1-based
-                        d.Location.GetLineSpan().EndLinePosition.Character + 1, //+1: it's 1-based
-                        Host.ToSeverity(d.Severity)));
+            //Pre-Enumerate so it's not enumerating multiple times
+            IEnumerable<CSharpDiagnostic> diagnostics = resultDiagnostics
+                .Select(d => new CSharpDiagnostic(
+                    d.GetMessage(),
+                    d.Location.GetLineSpan().StartLinePosition.Line + 1, //+1: it's 1-based
+                    d.Location.GetLineSpan().EndLinePosition.Line + 1, //+1: it's 1-based
+                    d.Location.GetLineSpan().StartLinePosition.Character + 1, //+1: it's 1-based
+                    d.Location.GetLineSpan().EndLinePosition.Character + 1, //+1: it's 1-based
+                    Host.ToSeverity(d.Severity)));
 
-                IEnumerable<CSharpDiagnostic> warnings = diagnosticsEnum
-                    .Where(d => d.Severity == DiagnosticSeverity.Warning)
-                    .Select(d => new CSharpDiagnostic(
-                        d.GetMessage(),
-                        d.Location.GetLineSpan().StartLinePosition.Line + 1, //+1: it's 1-based
-                        d.Location.GetLineSpan().EndLinePosition.Line + 1, //+1: it's 1-based
-                        d.Location.GetLineSpan().StartLinePosition.Character + 1, //+1: it's 1-based
-                        d.Location.GetLineSpan().EndLinePosition.Character + 1, //+1: it's 1-based
-                        Host.ToSeverity(d.Severity)));
-                IEnumerable<Exception> errors = diagnosticsEnum
-                    .Where(d => d.Severity == DiagnosticSeverity.Error)
-                    .Select(d => new Exception(d.GetMessage()));
+            IEnumerable<CSharpDiagnostic> warnings = resultDiagnostics
+                .Where(d => d.Severity == DiagnosticSeverity.Warning)
+                .Select(d => new CSharpDiagnostic(
+                    d.GetMessage(),
+                    d.Location.GetLineSpan().StartLinePosition.Line + 1, //+1: it's 1-based
+                    d.Location.GetLineSpan().EndLinePosition.Line + 1, //+1: it's 1-based
+                    d.Location.GetLineSpan().StartLinePosition.Character + 1, //+1: it's 1-based
+                    d.Location.GetLineSpan().EndLinePosition.Character + 1, //+1: it's 1-based
+                    Host.ToSeverity(d.Severity)));
+            IEnumerable<Exception> errors = resultDiagnostics
+                .Where(d => d.Severity == DiagnosticSeverity.Error)
+                .Select(d => new Exception(d.GetMessage()));
 
-                //Build compile result object
-                tcs.SetResult(new CSharpCompileResult(
-                    sw.ElapsedMilliseconds,
-                    SourceCode,
-                    Script,
-                    diagnostics,
-                    warnings,
-                    errors));
-            }).Start();
-
-            ICompileResult compileResult = await tcs.Task;
-            CompileResult = compileResult;
-            return compileResult;
+            //Build compile result object
+            CompileResult = new CSharpCompileResult(
+                runResult.ElapsedMilliseconds,
+                SourceCode,
+                Script,
+                diagnostics,
+                warnings,
+                errors);
+            return CompileResult;
         }
 
         public async Task<IExecuteResult> Execute() {
