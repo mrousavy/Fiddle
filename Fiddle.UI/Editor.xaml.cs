@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,7 +12,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using Fiddle.Compilers;
-using ICSharpCode.AvalonEdit.AddIn;
+using Fiddle.UI.Annotations;
 using ICSharpCode.SharpDevelop.Editor;
 using MaterialDesignThemes.Wpf;
 
@@ -20,7 +20,8 @@ namespace Fiddle.UI {
     /// <summary>
     ///     Interaction logic for Editor.xaml
     /// </summary>
-    public partial class Editor {
+    public partial class Editor : INotifyPropertyChanged {
+        public event PropertyChangedEventHandler PropertyChanged; //MVVM Prop changed event
         public static RoutedCommand CommandSave = new RoutedCommand(); //Ctrl + S
         public static RoutedCommand CommandCompile = new RoutedCommand(); //F6
         public static RoutedCommand CommandExecute = new RoutedCommand(); //F5
@@ -30,10 +31,30 @@ namespace Fiddle.UI {
         private string _filePath; //path to file - Ctrl + S will save without SaveFileDialog if not null
         private bool _needsUpdate; //need to reset textbox underlines & statusmessage?
         private ITextMarkerService _textMarkerService; //underlines
+        private IEnumerable<Language> _languages;
+        private Language _selectedLang;
+
+        public IEnumerable<Language> Languages {
+            get => _languages;
+            set {
+                _languages = value;
+                OnPropertyChanged();
+            }
+        }
+        public Language SelectedLanguage {
+            get => _selectedLang;
+            set {
+                _selectedLang = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string SourceCode => TextBoxCode.Text;
 
         //constructor
         public Editor() {
             InitializeComponent();
+            DataContext = this;
             LoadComboBox();
             LoadTextBox();
             LoadPreferences();
@@ -41,104 +62,6 @@ namespace Fiddle.UI {
             LoadHotkeys();
             TextBoxCode.Focus();
         }
-
-        private string SourceCode => TextBoxCode.Text;
-
-
-        #region Prefs & Inits
-
-        //Initialize all user-states from preferences
-        private void LoadPreferences() {
-            //Load last "state"
-            if (App.Preferences.CacheUserSettings) {
-                CacheType type = App.Preferences.CacheType;
-                if (type == 0)
-                    return;
-                if (type.HasFlag(CacheType.WindowSize)) {
-                    Width = App.Preferences.WindowWidth;
-                    Height = App.Preferences.WindowHeight;
-                }
-                if (type.HasFlag(CacheType.WindowPos)) {
-                    Left = App.Preferences.WindowLeft;
-                    Top = App.Preferences.WindowTop;
-                }
-                if (type.HasFlag(CacheType.WindowState)) WindowState = App.Preferences.WindowState;
-                if (type.HasFlag(CacheType.ResultsViewSize))
-                    GridCodeResults.ColumnDefinitions[2].Width = new GridLength(App.Preferences.ResultsViewSize);
-                if (type.HasFlag(CacheType.SourceCode)) TextBoxCode.Text = App.Preferences.SourceCode;
-                if (type.HasFlag(CacheType.CursorPos)) {
-                    TextBoxCode.TextArea.Caret.Offset = App.Preferences.CursorOffset;
-                    TextBoxCode.TextArea.Caret.BringCaretToView();
-                }
-            }
-        }
-
-        //Window closes event (save preferences)
-        private void Window_Closing(object sender, CancelEventArgs e) {
-            SetStatus(StatusType.Wait, "Closing..");
-            if (App.Preferences.CacheUserSettings) {
-                CacheType type = App.Preferences.CacheType;
-                if (type == 0)
-                    return;
-                if (type.HasFlag(CacheType.WindowSize)) {
-                    App.Preferences.WindowWidth = Width;
-                    App.Preferences.WindowHeight = Height;
-                }
-                if (type.HasFlag(CacheType.WindowPos)) {
-                    App.Preferences.WindowLeft = Left;
-                    App.Preferences.WindowTop = Top;
-                }
-                if (type.HasFlag(CacheType.WindowState)) App.Preferences.WindowState = WindowState;
-                if (type.HasFlag(CacheType.ResultsViewSize))
-                    App.Preferences.ResultsViewSize = GridCodeResults.ColumnDefinitions[2].Width.Value;
-                if (type.HasFlag(CacheType.SourceCode)) App.Preferences.SourceCode = SourceCode;
-                if (type.HasFlag(CacheType.CursorPos)) App.Preferences.CursorOffset = TextBoxCode.TextArea.Caret.Offset;
-            }
-        }
-
-        //load the drop down menu (select saved language)
-        private void LoadComboBox() {
-            if (App.Preferences.CacheType.HasFlag(CacheType.Language) && App.Preferences.SelectedLanguage != -1)
-                ComboBoxLanguage.SelectedIndex = App.Preferences.SelectedLanguage;
-        }
-
-        //load the textbox and disable drag'n'drop for selected text
-        private void LoadTextBox() {
-            DataObject.AddCopyingHandler(TextBoxCode, (s, e) => {
-                if (e.IsDragDrop) e.CancelCommand();
-            });
-            TextBoxCode.PreviewMouseLeftButtonDown += (s, e) => {
-                if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
-                    TextBoxCode.Select(0, 0);
-            };
-        }
-
-        //Initialize the custom text marker for underlining
-        private void LoadTextMarkerService() {
-            TextMarkerService textMarkerService = new TextMarkerService(TextBoxCode.Document);
-            TextBoxCode.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
-            TextBoxCode.TextArea.TextView.LineTransformers.Add(textMarkerService);
-            IServiceContainer services =
-                (IServiceContainer) TextBoxCode.Document.ServiceProvider.GetService(typeof(IServiceContainer));
-            services?.AddService(typeof(ITextMarkerService), textMarkerService);
-            _textMarkerService = textMarkerService;
-        }
-
-        //Initialize all hotkeys/commands
-        private static void LoadHotkeys() {
-            CommandSave.InputGestures.Add(new KeyGesture(Key.S, ModifierKeys.Control));
-            CommandCompile.InputGestures.Add(new KeyGesture(Key.F6));
-            CommandExecute.InputGestures.Add(new KeyGesture(Key.F5));
-        }
-
-        //Window loaded event
-        private void Window_Loaded(object sender, RoutedEventArgs e) {
-            ResetStatus();
-            PopupCardScaleTransform.CenterX = PopupCard.ActualWidth / 2;
-            PopupCardScaleTransform.CenterY = PopupCard.ActualHeight / 2;
-        }
-
-        #endregion
 
         #region Code
 
@@ -246,23 +169,24 @@ namespace Fiddle.UI {
         private async void ComboBoxLanguageSelected(object sender, SelectionChangedEventArgs e) {
             LockUi();
             ResetUnderline();
-            string value = ((ComboBoxItem) ComboBoxLanguage.SelectedValue).Content as string;
+            
             try {
-                //Try to load the new compiler
                 _compiler?.Dispose();
-                _compiler = Helper.ChangeLanguage(value, SourceCode, TextBoxCode, this);
+                _compiler = Helper.NewCompiler(SelectedLanguage, SourceCode, this);
                 if (App.Preferences.CacheType.HasFlag(CacheType.Language)) //only save if cache type saves language
-                    App.Preferences.SelectedLanguage = ComboBoxLanguage.SelectedIndex;
-                Title = $"Fiddle - {value}";
+                    App.Preferences.SelectedLanguage = SelectedLanguage;
+                TextBoxCode.SyntaxHighlighting = Helper.LoadXshd(SelectedLanguage);
+
+                Title = $"Fiddle - {SelectedLanguage.GetDescription()}";
                 _filePath = null;
             } catch (Exception ex) {
-                await DialogHelper.ShowErrorDialog($"Could not load {value} compiler! ({ex.Message})",
+                await DialogHelper.ShowErrorDialog($"Could not load {SelectedLanguage} compiler! ({ex.Message})",
                     EditorDialogHost);
                 //Revert changes
-                ComboBoxLanguage.SelectedIndex = App.Preferences.SelectedLanguage;
-                value = ((ComboBoxItem) ComboBoxLanguage.SelectedValue).Content as string;
+                SelectedLanguage = App.Preferences.SelectedLanguage;
                 _compiler?.Dispose();
-                _compiler = Helper.ChangeLanguage(value, SourceCode, TextBoxCode, this);
+                _compiler = Helper.NewCompiler(SelectedLanguage, SourceCode, this);
+                TextBoxCode.SyntaxHighlighting = Helper.LoadXshd(SelectedLanguage);
             }
             UnlockUi();
         }
@@ -376,10 +300,10 @@ namespace Fiddle.UI {
         //Open Settings
         private void ButtonSettings(object sender, RoutedEventArgs e) {
             LockUi();
-            Settings settings = new Settings {Owner = this};
+            Settings settings = new Settings { Owner = this };
             settings.ShowDialog();
-			if(_compiler != null)
-            	_compiler = Helper.NewCompiler(_compiler.Language, SourceCode, this);
+            if (_compiler != null)
+                _compiler = Helper.NewCompiler(_compiler.Language, SourceCode, this);
             UnlockUi();
         }
 
@@ -395,7 +319,7 @@ namespace Fiddle.UI {
 
         //Show results view raw button click
         private void ButtonShowRaw(object sender, RoutedEventArgs e) {
-            RawText window = new RawText(TextBlockResults.Text) {Owner = this};
+            RawText window = new RawText(TextBlockResults.Text) { Owner = this };
             window.ShowDialog();
         }
 
@@ -412,6 +336,37 @@ namespace Fiddle.UI {
             if (!string.IsNullOrWhiteSpace(TextBlockResults.Text)) {
                 await RawBtn.AnimateAsync(OpacityProperty, 1, 0, 200);
                 RawBtn.Visibility = Visibility.Collapsed;
+            }
+        }
+
+
+        //Window loaded event
+        private void Window_Loaded(object sender, RoutedEventArgs e) {
+            ResetStatus();
+            PopupCardScaleTransform.CenterX = PopupCard.ActualWidth / 2;
+            PopupCardScaleTransform.CenterY = PopupCard.ActualHeight / 2;
+        }
+
+        //Window closes event (save preferences)
+        private void Window_Closing(object sender, CancelEventArgs e) {
+            SetStatus(StatusType.Wait, "Closing..");
+            if (App.Preferences.CacheUserSettings) {
+                CacheType type = App.Preferences.CacheType;
+                if (type == 0)
+                    return;
+                if (type.HasFlag(CacheType.WindowSize)) {
+                    App.Preferences.WindowWidth = Width;
+                    App.Preferences.WindowHeight = Height;
+                }
+                if (type.HasFlag(CacheType.WindowPos)) {
+                    App.Preferences.WindowLeft = Left;
+                    App.Preferences.WindowTop = Top;
+                }
+                if (type.HasFlag(CacheType.WindowState)) App.Preferences.WindowState = WindowState;
+                if (type.HasFlag(CacheType.ResultsViewSize))
+                    App.Preferences.ResultsViewSize = GridCodeResults.ColumnDefinitions[2].Width.Value;
+                if (type.HasFlag(CacheType.SourceCode)) App.Preferences.SourceCode = SourceCode;
+                if (type.HasFlag(CacheType.CursorPos)) App.Preferences.CursorOffset = TextBoxCode.TextArea.Caret.Offset;
             }
         }
 
@@ -481,7 +436,7 @@ namespace Fiddle.UI {
         private async void OnDragDrop(object sender, DragEventArgs e) {
             Cursor = Cursors.Wait;
             try {
-                if(_compiler == null) throw new Exception("Please select a language first!");
+                if (_compiler == null) throw new Exception("Please select a language first!");
                 _compiler = await Helper.LoadDragDrop(e, this, _compiler);
                 _filePath = (e.Data.GetData(DataFormats.FileDrop) as string[])?[0]; //set path for Ctrl S
                 CloseDropPopup();
@@ -503,6 +458,11 @@ namespace Fiddle.UI {
                     //visual may not be there anymore, etc
                 }
             });
+        }
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
     }

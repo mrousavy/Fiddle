@@ -7,6 +7,7 @@
         Title="Fiddle"
         xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:Fiddle.UI"
+        xmlns:converter="clr-namespace:Fiddle.UI.Converter"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
@@ -22,6 +23,10 @@
         DragEnter="OnWindowDragEnter"
         DragLeave="OnWindowDragLeave"
         Drop="OnDragDrop">
+    <Window.Resources>
+        <converter:LanguageToFriendlyConverter x:Key="LangToFriendlyConverter"/>
+        <converter:FriendlyToLanguageConverter x:Key="FriendlyToLangConverter"/>
+    </Window.Resources>
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static local:Editor.CommandSave}" Executed="CtrlS" />
         <CommandBinding Command="{x:Static local:Editor.CommandCompile}" Executed="F6" />
@@ -47,13 +52,9 @@
                 <!--Language Selection-->
                 <ComboBox Grid.Row="0" Grid.Column="0" Margin="15 10 10 10"
                           md:HintAssist.Hint="Language" Name="ComboBoxLanguage"
+                          ItemsSource="{Binding Source={StaticResource LanguagesSource}, Converter={StaticResource LangToFriendlyConverter}}"
+                          SelectedItem="{Binding SelectedLanguage, Converter={StaticResource FriendlyToLangConverter}}"
                           SelectionChanged="ComboBoxLanguageSelected">
-                    <ComboBoxItem>C#</ComboBoxItem>
-                    <ComboBoxItem>VB</ComboBoxItem>
-                    <ComboBoxItem>C++</ComboBoxItem>
-                    <ComboBoxItem>Python</ComboBoxItem>
-                    <ComboBoxItem>Java</ComboBoxItem>
-                    <ComboBoxItem>LUA</ComboBoxItem>
                 </ComboBox>
 
                 <!--Compile Button-->
