@@ -26,7 +26,8 @@ namespace Fiddle.Compilers.Implementation.Java {
         }
 
         private string JdkPath { get; set; }
-        private string JrePath { get; set; }
+        private string JavacPath => Path.Combine(JdkPath, "bin", "javac.exe");
+        private string JavaPath => Path.Combine(JdkPath, "bin", "java.exe");
         private string ClassName { get; set; }
         public IExecutionProperties ExecuteProperties { get; set; }
 
@@ -50,7 +51,7 @@ namespace Fiddle.Compilers.Implementation.Java {
             string output = null;
             Exception error = null;
             try {
-                output = await JdkHelper.CompileJava(JdkPath, tmp, CompilerProperties);
+                output = await JdkHelper.CompileJava(JavacPath, tmp, CompilerProperties);
             } catch (Exception ex) {
                 error = ex;
             }
@@ -60,14 +61,12 @@ namespace Fiddle.Compilers.Implementation.Java {
             IEnumerable<IDiagnostic> diagnostics = null;
             IEnumerable<Exception> errors = null;
 
-            if (output != null)
+            if (!string.IsNullOrWhiteSpace(output))
                 diagnostics = new List<IDiagnostic> {
                     new JavaDiagnostic(output, -1, -1, -1, -1, Severity.Info)
                 };
             if (error != null)
-                errors = new List<Exception> {
-                    error
-                };
+                errors = new List<Exception> { error };
 
             JavaCompileResult result =
                 new JavaCompileResult(sw.ElapsedMilliseconds, SourceCode, diagnostics, null, errors);
@@ -88,7 +87,7 @@ namespace Fiddle.Compilers.Implementation.Java {
                 string output = null;
                 Exception error = null;
                 try {
-                    output = JreHelper.ExecuteJava(JrePath, ClassName, ExecuteProperties);
+                    output = JreHelper.ExecuteJava(JavaPath, ClassName, ExecuteProperties);
                 } catch (Exception ex) {
                     error = ex;
                 }
@@ -120,23 +119,20 @@ namespace Fiddle.Compilers.Implementation.Java {
                 string[] path = environmentVariable.Split(';');
                 string jdk = path.FirstOrDefault(p => p.Contains("jdk"));
                 if (!string.IsNullOrWhiteSpace(jdk)) {
-                    JdkPath = Path.Combine(jdk, "bin", "javac.exe");
-                    JrePath = Path.Combine(jdk, "bin", "java.exe");
+                    JdkPath = jdk;
                     return;
                 }
             }
             string javaPath86 = Path.Combine(programFilesX86, "Java");
-            Tuple<string, string> exesx86 = JdkHelper.SearchJavaExecutables(javaPath86);
-            if (exesx86 != null) {
-                JdkPath = exesx86.Item1;
-                JrePath = exesx86.Item2;
+            string java = JdkHelper.SearchJavaPath(javaPath86);
+            if (java != null) {
+                JdkPath = java;
                 return;
             }
             string javaPath = Path.Combine(programFiles, "Java");
-            Tuple<string, string> exes = JdkHelper.SearchJavaExecutables(javaPath);
-            if (exes != null) {
-                JdkPath = exes.Item1;
-                JrePath = exes.Item2;
+            java = JdkHelper.SearchJavaPath(javaPath);
+            if (java != null) {
+                JdkPath = java;
                 return;
             }
 

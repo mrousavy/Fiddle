@@ -24,6 +24,8 @@ namespace Fiddle.Compilers.Implementation.Java {
                 Arguments = commandLineOptions + " " + javaFilePathName
             };
             using (Process javacProcess = Process.Start(startInfo)) {
+                if(javacProcess == null)
+                    throw new CompileException("javac.exe could not start!");
                 bool graceful = javacProcess.WaitForExit((int) properties.Timeout);
 
                 if (graceful) {
@@ -37,11 +39,11 @@ namespace Fiddle.Compilers.Implementation.Java {
         }
 
         /// <summary>
-        ///     Search for the JDK Directory and javac in the specified path
+        ///     Search for the JDK Directory in the specified path
         /// </summary>
         /// <param name="javaPath">Path to the Java dir (C:\Program Files\Java)</param>
-        /// <returns>The found javac path or null if not found</returns>
-        public static Tuple<string, string> SearchJavaExecutables(string javaPath) {
+        /// <returns>The found jdk path or null if not found</returns>
+        public static string SearchJavaPath(string javaPath) {
             DirectoryInfo javaInfo = new DirectoryInfo(javaPath);
             if (javaInfo.Exists)
                 foreach (DirectoryInfo info in javaInfo.EnumerateDirectories())
@@ -51,7 +53,7 @@ namespace Fiddle.Compilers.Implementation.Java {
                         string javaBinJava = Path.Combine(info.FullName, "bin", "java.exe");
                         FileInfo java = new FileInfo(javaBinJava);
                         if (javac.Exists && java.Exists)
-                            return new Tuple<string, string>(javac.FullName, java.FullName);
+                            return info.FullName;
                     }
 
             return null;
