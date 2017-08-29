@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
@@ -45,14 +43,15 @@ namespace Fiddle.Compilers.Implementation.CSharp {
         public async Task<ICompileResult> Compile() {
             if (Script.Code != SourceCode)
                 Create();
-            
-            var runResult = await ExecuteThreaded<ImmutableArray<Diagnostic>>.Execute(
-                () => {
-                    //Actual compilation
-                    Compilation compilation = Script.GetCompilation();
-                    return compilation.GetDiagnostics();
-                }, (int)CompilerProperties.Timeout
-            );
+
+            ExecuteThreaded<ImmutableArray<Diagnostic>>.ThreadRunResult runResult =
+                await ExecuteThreaded<ImmutableArray<Diagnostic>>.Execute(
+                    () => {
+                        //Actual compilation
+                        Compilation compilation = Script.GetCompilation();
+                        return compilation.GetDiagnostics();
+                    }, (int) CompilerProperties.Timeout
+                );
 
             if (!runResult.Successful)
                 throw new CompileException("The compilation timed out!");
@@ -121,7 +120,7 @@ namespace Fiddle.Compilers.Implementation.CSharp {
                     builder.ToString(),
                     state.ReturnValue,
                     CompileResult,
-                    state.Exception) 
+                    state.Exception)
                 : new CSharpExecuteResult(
                     elapsed,
                     null,

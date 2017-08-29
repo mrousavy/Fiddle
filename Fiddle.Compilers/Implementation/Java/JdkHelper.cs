@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -24,7 +23,7 @@ namespace Fiddle.Compilers.Implementation.Java {
                 Arguments = commandLineOptions + " " + javaFilePathName
             };
             using (Process javacProcess = Process.Start(startInfo)) {
-                if(javacProcess == null)
+                if (javacProcess == null)
                     throw new CompileException("javac.exe could not start!");
                 bool graceful = javacProcess.WaitForExit((int) properties.Timeout);
 

@@ -45,9 +45,9 @@ namespace Fiddle.Compilers.Implementation.Java {
 
             string tmp = Path.Combine(Path.GetTempPath(), $"{ClassName}.java");
             File.WriteAllText(tmp, SourceCode);
-            
-            var runResult = await ExecuteThreaded<string>.Execute(
-                () => JdkHelper.CompileJava(JavacPath, tmp, CompilerProperties), (int)CompilerProperties.Timeout
+
+            ExecuteThreaded<string>.ThreadRunResult runResult = await ExecuteThreaded<string>.Execute(
+                () => JdkHelper.CompileJava(JavacPath, tmp, CompilerProperties), (int) CompilerProperties.Timeout
             );
             string output = runResult.ReturnValue;
             Exception error = runResult.Exception;
@@ -61,7 +61,7 @@ namespace Fiddle.Compilers.Implementation.Java {
                     new JavaDiagnostic(output, -1, -1, -1, -1, Severity.Info)
                 };
             if (error != null)
-                errors = new List<Exception> { error };
+                errors = new List<Exception> {error};
 
             JavaCompileResult result =
                 new JavaCompileResult(time, SourceCode, diagnostics, null, errors);
@@ -77,8 +77,8 @@ namespace Fiddle.Compilers.Implementation.Java {
                 ExecuteResult = result;
                 return result;
             } else {
-                var runResult = await ExecuteThreaded<string>.Execute(
-                    () => JreHelper.ExecuteJava(JavaPath, ClassName, ExecuteProperties), (int)ExecuteProperties.Timeout
+                ExecuteThreaded<string>.ThreadRunResult runResult = await ExecuteThreaded<string>.Execute(
+                    () => JreHelper.ExecuteJava(JavaPath, ClassName, ExecuteProperties), (int) ExecuteProperties.Timeout
                 );
                 string output = runResult.ReturnValue;
                 int time = runResult.ElapsedMilliseconds;
