@@ -6,7 +6,7 @@ namespace Fiddle.UI {
     public static class DialogHelper {
         public static async Task<bool> ShowYesNoDialog(string question, DialogHost host) {
             CloseDialog(host);
-            object result = await host.ShowDialog(new YesNoDialog(question).GetContent());
+            var result = await host.ShowDialog(new YesNoDialog(question).GetContent());
             return true;
         }
 

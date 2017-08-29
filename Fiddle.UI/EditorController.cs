@@ -30,10 +30,10 @@ namespace Fiddle.UI {
 
         //Initialize the custom text marker for underlining
         private void LoadTextMarkerService() {
-            TextMarkerService textMarkerService = new TextMarkerService(TextBoxCode.Document);
+            var textMarkerService = new TextMarkerService(TextBoxCode.Document);
             TextBoxCode.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
             TextBoxCode.TextArea.TextView.LineTransformers.Add(textMarkerService);
-            IServiceContainer services =
+            var services =
                 (IServiceContainer) TextBoxCode.Document.ServiceProvider.GetService(typeof(IServiceContainer));
             services?.AddService(typeof(ITextMarkerService), textMarkerService);
             _textMarkerService = textMarkerService;
@@ -50,7 +50,7 @@ namespace Fiddle.UI {
         private void LoadPreferences() {
             //Load last "state"
             if (App.Preferences.CacheUserSettings) {
-                CacheType type = App.Preferences.CacheType;
+                var type = App.Preferences.CacheType;
                 if (type == 0)
                     return;
                 if (type.HasFlag(CacheType.WindowSize)) {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
@@ -8,11 +7,11 @@ using System.Windows.Media.Animation;
 namespace Fiddle.UI {
     public static class Extensions {
         public static string GetDescription(this Enum @enum) {
-            FieldInfo info = @enum.GetType().GetField(@enum.ToString());
+            var info = @enum.GetType().GetField(@enum.ToString());
             object[] attributes = info.GetCustomAttributes(false);
             if (attributes.Length < 1)
                 return @enum.ToString();
-            DescriptionAttribute description = attributes[0] as DescriptionAttribute;
+            var description = attributes[0] as DescriptionAttribute;
             return description?.Description ?? @enum.ToString();
         }
 
@@ -33,7 +32,7 @@ namespace Fiddle.UI {
 
             try {
                 await element.Dispatcher.BeginInvoke(new Action(() => {
-                    DoubleAnimation animation = new DoubleAnimation(from, to, TimeSpan.FromMilliseconds(duration)) {
+                    var animation = new DoubleAnimation(from, to, TimeSpan.FromMilliseconds(duration)) {
                         BeginTime = TimeSpan.FromMilliseconds(beginTime)
                     };
                     animation.Completed += delegate { tcs.SetResult(true); };
@@ -85,7 +84,7 @@ namespace Fiddle.UI {
 
             try {
                 await element.Dispatcher.BeginInvoke(new Action(() => {
-                    DoubleAnimation animation = new DoubleAnimation(from, to, TimeSpan.FromMilliseconds(duration)) {
+                    var animation = new DoubleAnimation(from, to, TimeSpan.FromMilliseconds(duration)) {
                         BeginTime = TimeSpan.FromMilliseconds(beginTime)
                     };
                     animation.Completed += delegate { tcs.SetResult(true); };
@@ -114,7 +113,7 @@ namespace Fiddle.UI {
 
             try {
                 await element.Dispatcher.BeginInvoke(new Action(() => {
-                    DoubleAnimation animation = new DoubleAnimation(from, to, TimeSpan.FromMilliseconds(duration)) {
+                    var animation = new DoubleAnimation(from, to, TimeSpan.FromMilliseconds(duration)) {
                         BeginTime = TimeSpan.FromMilliseconds(beginTime)
                     };
                     animation.Completed += delegate { tcs.SetResult(true); };

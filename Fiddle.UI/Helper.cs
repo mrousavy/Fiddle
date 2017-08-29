@@ -29,7 +29,7 @@ namespace Fiddle.UI {
             string langVersion = null) {
             IExecutionProperties exProps = new ExecutionProperties(App.Preferences.ExecuteTimeout);
             ICompilerProperties comProps = new CompilerProperties(App.Preferences.ExecuteTimeout, langVersion);
-            Compilers.Properties properties = new Compilers.Properties(language, sourceCode,
+            var properties = new Compilers.Properties(language, sourceCode,
                 App.Preferences.NetImports,
                 App.Preferences.JdkPath,
                 App.Preferences.PyPath,
@@ -39,12 +39,12 @@ namespace Fiddle.UI {
         }
 
         public static IHighlightingDefinition LoadXshd(string resourceName) {
-            Type type = typeof(Helper);
+            var type = typeof(Helper);
             string fullName = $"{type.Namespace}.Syntax.{resourceName}";
-            using (Stream stream = type.Assembly.GetManifestResourceStream(fullName)) {
+            using (var stream = type.Assembly.GetManifestResourceStream(fullName)) {
                 if (stream == null)
                     return null;
-                using (XmlTextReader reader = new XmlTextReader(stream)) {
+                using (var reader = new XmlTextReader(stream)) {
                     return HighlightingLoader.Load(reader, HighlightingManager.Instance);
                 }
             }
@@ -55,20 +55,20 @@ namespace Fiddle.UI {
         }
 
         public static async Task<ICompiler> LoadDragDrop(DragEventArgs args, Editor caller, ICompiler currentCompiler) {
-            ICompiler compiler = currentCompiler;
+            var compiler = currentCompiler;
 
             if (args.Data.GetDataPresent(DataFormats.FileDrop))
                 if (args.Data.GetData(DataFormats.FileDrop) is string[] files && files.Length > 0) {
                     string file = files[0];
                     string content;
-                    FileInfo fileInfo = new FileInfo(file);
-                    using (FileStream stream = fileInfo.OpenRead()) {
+                    var fileInfo = new FileInfo(file);
+                    using (var stream = fileInfo.OpenRead()) {
                         byte[] buffer = new byte[fileInfo.Length];
                         await stream.ReadAsync(buffer, 0, (int) fileInfo.Length);
                         content = Encoding.Default.GetString(buffer);
                     }
 
-                    Language lang = GetLanguageForFilename(file) ?? currentCompiler.Language;
+                    var lang = GetLanguageForFilename(file) ?? currentCompiler.Language;
                     if (currentCompiler.Language != lang) {
                         compiler = NewCompiler(lang, content, caller);
                         string name = LanguageToFriendly(lang);
@@ -86,7 +86,7 @@ namespace Fiddle.UI {
 
 
         public static string SaveFile(string content) {
-            SaveFileDialog dialog = new SaveFileDialog {
+            var dialog = new SaveFileDialog {
                 Filter = "Text Files (*.txt)|*.txt|All files (*.*)|*.*",
                 FilterIndex = 1,
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
@@ -98,7 +98,7 @@ namespace Fiddle.UI {
         }
 
         public static string SaveFile(string code, Language language) {
-            SaveFileDialog dialog = new SaveFileDialog {
+            var dialog = new SaveFileDialog {
                 Filter = GetFilterForLanguage(language),
                 FilterIndex = 1,
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
@@ -151,7 +151,7 @@ namespace Fiddle.UI {
         internal static extern bool GetCursorPos(ref Win32Point pt);
 
         public static Point GetMousePosition() {
-            Win32Point w32Mouse = new Win32Point();
+            var w32Mouse = new Win32Point();
             GetCursorPos(ref w32Mouse);
             return new Point(w32Mouse.X, w32Mouse.Y);
         }
@@ -167,7 +167,7 @@ namespace Fiddle.UI {
             int countErrors = 0;
 
             IEnumerable<Exception> exceptions = errorsList as Exception[] ?? errorsList.ToArray(); //kill multiple enums
-            foreach (Exception ex in exceptions) {
+            foreach (var ex in exceptions) {
                 errors += $"#{++countErrors}: {ex.Message}{Environment.NewLine}";
 
                 if (countErrors <= maxErrors) continue;
@@ -185,7 +185,7 @@ namespace Fiddle.UI {
             IList<Inline> items = new List<Inline>();
             int counter = 1;
             string nl = Environment.NewLine;
-            foreach (IDiagnostic diagnostic in diagnostics) {
+            foreach (var diagnostic in diagnostics) {
                 Brush brush;
                 switch (diagnostic.Severity) {
                     case Severity.Error:
@@ -204,9 +204,9 @@ namespace Fiddle.UI {
 
                 items.Add(new Run($"{indent}#{counter++} Ln{lines}: ") {Foreground = Brushes.LightGray});
                 if (diagnostic.Severity == Severity.Error) {
-                    Uri url = BuildHelpLink(diagnostic.Message);
-                    Run childInline = new Run(diagnostic.Message + nl) {Foreground = brush};
-                    Hyperlink link = new Hyperlink(childInline) {Foreground = brush, NavigateUri = url};
+                    var url = BuildHelpLink(diagnostic.Message);
+                    var childInline = new Run(diagnostic.Message + nl) {Foreground = brush};
+                    var link = new Hyperlink(childInline) {Foreground = brush, NavigateUri = url};
                     link.Click += delegate { Process.Start(url.ToString()); };
                     items.Add(link);
                 } else {
@@ -233,7 +233,7 @@ namespace Fiddle.UI {
                     items.Add(new Run($"Return value: /{nl}") {Foreground = Brushes.Gray});
                 } else {
                     //RETURN VALUE(S)
-                    Type type = result.ReturnValue.GetType();
+                    var type = result.ReturnValue.GetType();
                     items.Add(new Run("Return value: "));
                     string typeName;
                     if (type.IsGenericType)
@@ -243,7 +243,7 @@ namespace Fiddle.UI {
                     items.Add(new Run($"({typeName}) ") {Foreground = Brushes.CadetBlue});
                     if (type.IsArray) {
                         //MULTIPLE RETURN VALUES
-                        Array array = (Array) result.ReturnValue;
+                        var array = (Array) result.ReturnValue;
                         string run = string.Join(", ", array.Cast<object>());
                         items.Add(new Run($"{run}{nl}") {
                             Foreground = Brushes.Orange,
@@ -251,7 +251,7 @@ namespace Fiddle.UI {
                         });
                     } else if (result.ReturnValue is IEnumerable && type.IsGenericType) {
                         //MULTIPLE RETURN VALUES
-                        IEnumerable enumerable = (IEnumerable) result.ReturnValue;
+                        var enumerable = (IEnumerable) result.ReturnValue;
                         string run = string.Join(", ", enumerable.Cast<object>());
                         items.Add(new Run($"{run}{nl}") {
                             Foreground = Brushes.Orange,
@@ -302,9 +302,9 @@ namespace Fiddle.UI {
                     items.Add(new Run($"Ln{result.ExceptionLineNr}: {result.Exception.GetType().Name}: ") {
                         Foreground = Brushes.OrangeRed
                     });
-                    Uri url = BuildHelpLink(result.Exception.Message);
-                    Run childInline = new Run($"\"{result.Exception.Message}\"{nl}") {Foreground = Brushes.OrangeRed};
-                    Hyperlink link = new Hyperlink(childInline) {Foreground = Brushes.OrangeRed, NavigateUri = url};
+                    var url = BuildHelpLink(result.Exception.Message);
+                    var childInline = new Run($"\"{result.Exception.Message}\"{nl}") {Foreground = Brushes.OrangeRed};
+                    var link = new Hyperlink(childInline) {Foreground = Brushes.OrangeRed, NavigateUri = url};
                     link.Click += delegate { Process.Start(url.ToString()); };
                     items.Add(link);
                 }

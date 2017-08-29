@@ -27,10 +27,10 @@ namespace Fiddle.UI {
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Fiddle", "error.txt");
                 string content = BuildBody(e.Exception);
                 File.WriteAllText(path, content);
-                MessageBoxResult result = MessageBox.Show($"An unknown error occured in Fiddle.{nl}{nl}" +
-                                                          $"An error report has been saved to \"{path}\".{nl}" +
-                                                          $"You can help by submitting the report.{nl}" +
-                                                          "Do you want to go there now?",
+                var result = MessageBox.Show($"An unknown error occured in Fiddle.{nl}{nl}" +
+                                             $"An error report has been saved to \"{path}\".{nl}" +
+                                             $"You can help by submitting the report.{nl}" +
+                                             "Do you want to go there now?",
                     "Fiddle - Unexpected Error",
                     MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.Yes) {

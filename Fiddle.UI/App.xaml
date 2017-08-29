@@ -16,12 +16,12 @@
                 <ResourceDictionary
                     Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            
+
             <ObjectDataProvider MethodName="GetValues"
                                 ObjectType="{x:Type sys:Enum}"
                                 x:Key="LanguagesSource">
                 <ObjectDataProvider.MethodParameters>
-                    <x:Type TypeName="compiler:Language"/>
+                    <x:Type TypeName="compiler:Language" />
                 </ObjectDataProvider.MethodParameters>
             </ObjectDataProvider>
         </ResourceDictionary>

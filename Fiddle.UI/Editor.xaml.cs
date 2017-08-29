@@ -79,7 +79,7 @@ namespace Fiddle.UI {
             LockUi();
             try {
                 _compiler.SourceCode = SourceCode;
-                ICompileResult result = await _compiler.Compile();
+                var result = await _compiler.Compile();
 
                 SetResultView(result);
                 if (result.Success) {
@@ -114,7 +114,7 @@ namespace Fiddle.UI {
             LockUi();
             try {
                 _compiler.SourceCode = SourceCode;
-                IExecuteResult result = await _compiler.Execute();
+                var result = await _compiler.Execute();
 
                 SetResultView(result);
                 if (result.Success)
@@ -137,7 +137,7 @@ namespace Fiddle.UI {
             if (_compiler?.CompileResult?.Diagnostics == null || !_compiler.CompileResult.Diagnostics.Any())
                 return;
 
-            foreach (IDiagnostic diagnostic in _compiler.CompileResult.Diagnostics)
+            foreach (var diagnostic in _compiler.CompileResult.Diagnostics)
                 try {
                     if (diagnostic.LineFrom < 1 || diagnostic.LineTo < 1 || diagnostic.CharFrom < 1 ||
                         diagnostic.CharTo < 1)
@@ -149,7 +149,7 @@ namespace Fiddle.UI {
                     int endOffset = TextBoxCode.Document.Lines[diagnostic.LineTo - 1].Offset + diagnostic.CharTo - 1;
                     int length = endOffset - startOffset;
 
-                    ITextMarker marker = _textMarkerService.Create(startOffset, length);
+                    var marker = _textMarkerService.Create(startOffset, length);
                     marker.MarkerTypes = TextMarkerTypes.SquigglyUnderline;
                     marker.MarkerColor = diagnostic.Severity == Severity.Error ? Colors.Red : Colors.Yellow;
                 } catch {
@@ -302,7 +302,7 @@ namespace Fiddle.UI {
         //Open Settings
         private void ButtonSettings(object sender, RoutedEventArgs e) {
             LockUi();
-            Settings settings = new Settings {Owner = this};
+            var settings = new Settings {Owner = this};
             settings.ShowDialog();
             if (_compiler != null)
                 _compiler = Helper.NewCompiler(_compiler.Language, SourceCode, this);
@@ -321,7 +321,7 @@ namespace Fiddle.UI {
 
         //Show results view raw button click
         private void ButtonShowRaw(object sender, RoutedEventArgs e) {
-            RawText window = new RawText(TextBlockResults.Text) {Owner = this};
+            var window = new RawText(TextBlockResults.Text) {Owner = this};
             window.ShowDialog();
         }
 
@@ -353,7 +353,7 @@ namespace Fiddle.UI {
         private void Window_Closing(object sender, CancelEventArgs e) {
             SetStatus(StatusType.Wait, "Closing..");
             if (App.Preferences.CacheUserSettings) {
-                CacheType type = App.Preferences.CacheType;
+                var type = App.Preferences.CacheType;
                 if (type == 0)
                     return;
                 if (type.HasFlag(CacheType.WindowSize)) {
@@ -393,9 +393,9 @@ namespace Fiddle.UI {
             _dropIsOpen = true;
 
             EditorGrid.IsHitTestVisible = false;
-            Task brighten = EditorGrid.AnimateAsync(OpacityProperty, Opacity, 0.4, 100);
-            Task popupx = PopupCardScaleTransform.AnimateAsync(ScaleTransform.ScaleXProperty, 0, 1, 150);
-            Task popupy = PopupCardScaleTransform.AnimateAsync(ScaleTransform.ScaleYProperty, 0, 1, 150);
+            var brighten = EditorGrid.AnimateAsync(OpacityProperty, Opacity, 0.4, 100);
+            var popupx = PopupCardScaleTransform.AnimateAsync(ScaleTransform.ScaleXProperty, 0, 1, 150);
+            var popupy = PopupCardScaleTransform.AnimateAsync(ScaleTransform.ScaleYProperty, 0, 1, 150);
 
             await Task.WhenAll(brighten, popupx, popupy);
             PopupCard.BringIntoView();
@@ -408,11 +408,11 @@ namespace Fiddle.UI {
             _dialogTimeout?.Dispose();
 
             EditorGrid.IsHitTestVisible = true;
-            Task dim = EditorGrid.AnimateAsync(OpacityProperty, Opacity, 1, 100);
-            Task popupx =
+            var dim = EditorGrid.AnimateAsync(OpacityProperty, Opacity, 1, 100);
+            var popupx =
                 PopupCardScaleTransform.AnimateAsync(ScaleTransform.ScaleXProperty, PopupCardScaleTransform.ScaleX, 0,
                     150);
-            Task popupy =
+            var popupy =
                 PopupCardScaleTransform.AnimateAsync(ScaleTransform.ScaleYProperty, PopupCardScaleTransform.ScaleY, 0,
                     150);
 
@@ -453,7 +453,7 @@ namespace Fiddle.UI {
         private void TimeoutDialogClose(object state) {
             Dispatcher.Invoke(() => {
                 try {
-                    Point mpos = PointFromScreen(Helper.GetMousePosition());
+                    var mpos = PointFromScreen(Helper.GetMousePosition());
                     if (mpos.X < 0 || mpos.X > Width || mpos.Y < 0 || mpos.Y > Height)
                         CloseDropPopup();
                 } catch {

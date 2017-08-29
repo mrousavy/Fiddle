@@ -7,7 +7,7 @@ using Fiddle.Compilers;
 namespace Fiddle.UI.Converter {
     public class FriendlyToLanguageConverter : IValueConverter {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-            Language language = (Language?) value ?? Language.CSharp;
+            var language = (Language?) value ?? Language.CSharp;
             return language.GetDescription();
         }
 

@@ -30,7 +30,7 @@ namespace ICSharpCode.AvalonEdit.AddIn {
                 return;
             int lineStart = line.Offset;
             int lineEnd = lineStart + line.Length;
-            foreach (TextMarker marker in _markers.FindOverlappingSegments(lineStart, line.Length)) {
+            foreach (var marker in _markers.FindOverlappingSegments(lineStart, line.Length)) {
                 Brush foregroundBrush = null;
                 if (marker.ForegroundColor != null) {
                     foregroundBrush = new SolidColorBrush(marker.ForegroundColor.Value);
@@ -41,7 +41,7 @@ namespace ICSharpCode.AvalonEdit.AddIn {
                     Math.Min(marker.EndOffset, lineEnd),
                     element => {
                         if (foregroundBrush != null) element.TextRunProperties.SetForegroundBrush(foregroundBrush);
-                        Typeface tf = element.TextRunProperties.Typeface;
+                        var tf = element.TextRunProperties.Typeface;
                         element.TextRunProperties.SetTypeface(new Typeface(
                             tf.FontFamily,
                             marker.FontStyle ?? tf.Style,
@@ -69,7 +69,7 @@ namespace ICSharpCode.AvalonEdit.AddIn {
                 throw new ArgumentOutOfRangeException(nameof(length), length,
                     "length must not be negative and startOffset+length must not be after the end of the document");
 
-            TextMarker m = new TextMarker(this, startOffset, length);
+            var m = new TextMarker(this, startOffset, length);
             _markers.Add(m);
             // no need to mark segment for redraw: the text marker is invisible until a property is set
             return m;
@@ -85,7 +85,7 @@ namespace ICSharpCode.AvalonEdit.AddIn {
             if (predicate == null)
                 throw new ArgumentNullException(nameof(predicate));
             if (_markers == null) return;
-            foreach (TextMarker m in _markers.ToArray())
+            foreach (var m in _markers.ToArray())
                 if (predicate(m))
                     Remove(m);
         }
@@ -93,7 +93,7 @@ namespace ICSharpCode.AvalonEdit.AddIn {
         public void Remove(ITextMarker marker) {
             if (marker == null)
                 throw new ArgumentNullException(nameof(marker));
-            TextMarker m = marker as TextMarker;
+            var m = marker as TextMarker;
             if (_markers == null || !_markers.Remove(m)) return;
             Redraw(m);
             m?.OnDeleted();
@@ -103,7 +103,7 @@ namespace ICSharpCode.AvalonEdit.AddIn {
         ///     Redraws the specified text segment.
         /// </summary>
         internal void Redraw(ISegment segment) {
-            foreach (TextView view in _textViews) view.Redraw(segment);
+            foreach (var view in _textViews) view.Redraw(segment);
             RedrawRequested?.Invoke(this, EventArgs.Empty);
         }
 
@@ -127,28 +127,28 @@ namespace ICSharpCode.AvalonEdit.AddIn {
                 return;
             int viewStart = visualLines.First().FirstDocumentLine.Offset;
             int viewEnd = visualLines.Last().LastDocumentLine.EndOffset;
-            foreach (TextMarker marker in _markers.FindOverlappingSegments(viewStart, viewEnd - viewStart)) {
+            foreach (var marker in _markers.FindOverlappingSegments(viewStart, viewEnd - viewStart)) {
                 if (marker.BackgroundColor != null) {
-                    BackgroundGeometryBuilder geoBuilder = new BackgroundGeometryBuilder {
+                    var geoBuilder = new BackgroundGeometryBuilder {
                         AlignToWholePixels = true,
                         CornerRadius = 3
                     };
                     geoBuilder.AddSegment(textView, marker);
-                    Geometry geometry = geoBuilder.CreateGeometry();
+                    var geometry = geoBuilder.CreateGeometry();
                     if (geometry != null) {
-                        Color color = marker.BackgroundColor.Value;
-                        SolidColorBrush brush = new SolidColorBrush(color);
+                        var color = marker.BackgroundColor.Value;
+                        var brush = new SolidColorBrush(color);
                         brush.Freeze();
                         drawingContext.DrawGeometry(brush, null, geometry);
                     }
                 }
-                TextMarkerTypes underlineMarkerTypes = TextMarkerTypes.SquigglyUnderline |
-                                                       TextMarkerTypes.NormalUnderline |
-                                                       TextMarkerTypes.DottedUnderline;
+                var underlineMarkerTypes = TextMarkerTypes.SquigglyUnderline |
+                                           TextMarkerTypes.NormalUnderline |
+                                           TextMarkerTypes.DottedUnderline;
                 if ((marker.MarkerTypes & underlineMarkerTypes) != 0)
-                    foreach (Rect r in BackgroundGeometryBuilder.GetRectsForSegment(textView, marker)) {
-                        Point startPoint = r.BottomLeft;
-                        Point endPoint = r.BottomRight;
+                    foreach (var r in BackgroundGeometryBuilder.GetRectsForSegment(textView, marker)) {
+                        var startPoint = r.BottomLeft;
+                        var endPoint = r.BottomRight;
 
                         Brush usedBrush = new SolidColorBrush(marker.MarkerColor);
                         usedBrush.Freeze();
@@ -157,9 +157,9 @@ namespace ICSharpCode.AvalonEdit.AddIn {
 
                             int count = Math.Max((int) ((endPoint.X - startPoint.X) / offset) + 1, 4);
 
-                            StreamGeometry geometry = new StreamGeometry();
+                            var geometry = new StreamGeometry();
 
-                            using (StreamGeometryContext ctx = geometry.Open()) {
+                            using (var ctx = geometry.Open()) {
                                 ctx.BeginFigure(startPoint, false, false);
                                 ctx.PolyLineTo(CreatePoints(startPoint, endPoint, offset, count).ToArray(), true,
                                     false);
@@ -167,18 +167,18 @@ namespace ICSharpCode.AvalonEdit.AddIn {
 
                             geometry.Freeze();
 
-                            Pen usedPen = new Pen(usedBrush, 1);
+                            var usedPen = new Pen(usedBrush, 1);
                             usedPen.Freeze();
                             drawingContext.DrawGeometry(Brushes.Transparent, usedPen, geometry);
                         }
                         if ((marker.MarkerTypes & TextMarkerTypes.NormalUnderline) != 0) {
-                            Pen usedPen = new Pen(usedBrush, 1);
+                            var usedPen = new Pen(usedBrush, 1);
                             usedPen.Freeze();
                             drawingContext.DrawLine(usedPen, startPoint, endPoint);
                         }
                         if ((marker.MarkerTypes & TextMarkerTypes.DottedUnderline) == 0) continue;
                         {
-                            Pen usedPen = new Pen(usedBrush, 1) {DashStyle = DashStyles.Dot};
+                            var usedPen = new Pen(usedBrush, 1) {DashStyle = DashStyles.Dot};
                             usedPen.Freeze();
                             drawingContext.DrawLine(usedPen, startPoint, endPoint);
                         }
