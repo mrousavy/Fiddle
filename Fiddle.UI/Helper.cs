@@ -26,11 +26,12 @@ namespace Fiddle.UI {
         }
 
         public static ICompiler NewCompiler(Language language, string sourceCode, Editor caller,
-            string[] imports = null, string langVersion = null) {
+            string langVersion = null) {
+
             IExecutionProperties exProps = new ExecutionProperties(App.Preferences.ExecuteTimeout);
             ICompilerProperties comProps = new CompilerProperties(App.Preferences.ExecuteTimeout, langVersion);
             Compilers.Properties properties = new Compilers.Properties(language, sourceCode,
-                imports,
+                App.Preferences.NetImports,
                 App.Preferences.JdkPath,
                 App.Preferences.PyPath,
                 exProps, comProps,
@@ -50,7 +51,7 @@ namespace Fiddle.UI {
             }
         }
 
-        public static IHighlightingDefinition LoadXshd(Language language) => LoadXshd(language.ToString());
+        public static IHighlightingDefinition LoadXshd(Language language) => LoadXshd($"{language}.xshd");
 
         public static async Task<ICompiler> LoadDragDrop(DragEventArgs args, Editor caller, ICompiler currentCompiler) {
             ICompiler compiler = currentCompiler;

@@ -47,6 +47,8 @@ namespace Fiddle.UI {
         public string JdkPath { get; set; } = ""; //The path to Java Development Kit
         public string PyPath { get; set; } = ""; //Python Libraries Search Path
 
+        public string[] NetImports { get; set; } = new string[0]; //C#/VB .NET Referenced/Imported Assemblies/Namespaces
+
         public WindowState WindowState { get; set; } =
             WindowState.Normal; //The editor's window state (minimized, normal, maximized)
 

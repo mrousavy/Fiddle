@@ -21,7 +21,7 @@ namespace Fiddle.Compilers.Implementation.CSharp {
             SourceCode = code;
             ExecuteProperties = execProps;
             CompilerProperties = compProps;
-            if (imports == null)
+            if (imports == null || !imports.Any())
                 LoadReferences();
             else
                 Imports = imports;
