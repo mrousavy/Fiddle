@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
@@ -139,5 +141,14 @@ namespace Fiddle.UI {
         }
 
         #endregion
+
+        public static string GetDescription(this Enum @enum) {
+            FieldInfo info = @enum.GetType().GetField(@enum.ToString());
+            object[] attributes = info.GetCustomAttributes(false);
+            if (attributes.Length < 1)
+                return @enum.ToString();
+            DescriptionAttribute description = attributes[0] as DescriptionAttribute;
+            return description?.Description ?? @enum.ToString();
+        }
     }
 }
