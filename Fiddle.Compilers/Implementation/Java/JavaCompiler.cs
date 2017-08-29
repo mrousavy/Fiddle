@@ -46,11 +46,11 @@ namespace Fiddle.Compilers.Implementation.Java {
             string tmp = Path.Combine(Path.GetTempPath(), $"{ClassName}.java");
             File.WriteAllText(tmp, SourceCode);
 
-            ExecuteThreaded<string>.ThreadRunResult runResult = await ExecuteThreaded<string>.Execute(
+            var runResult = await ExecuteThreaded<string>.Execute(
                 () => JdkHelper.CompileJava(JavacPath, tmp, CompilerProperties), (int) CompilerProperties.Timeout
             );
             string output = runResult.ReturnValue;
-            Exception error = runResult.Exception;
+            var error = runResult.Exception;
             int time = runResult.ElapsedMilliseconds;
 
             IEnumerable<IDiagnostic> diagnostics = null;
@@ -63,7 +63,7 @@ namespace Fiddle.Compilers.Implementation.Java {
             if (error != null)
                 errors = new List<Exception> {error};
 
-            JavaCompileResult result =
+            var result =
                 new JavaCompileResult(time, SourceCode, diagnostics, null, errors);
             CompileResult = result;
             return result;
@@ -72,19 +72,19 @@ namespace Fiddle.Compilers.Implementation.Java {
         public async Task<IExecuteResult> Execute() {
             if (CompileResult == null || CompileResult.SourceCode != SourceCode) await Compile();
             if (!CompileResult.Success) {
-                JavaExecuteResult result = new JavaExecuteResult(0, "", null, CompileResult,
+                var result = new JavaExecuteResult(0, "", null, CompileResult,
                     new CompileException("Could not compile, javac responded with some errors!"));
                 ExecuteResult = result;
                 return result;
             } else {
-                ExecuteThreaded<string>.ThreadRunResult runResult = await ExecuteThreaded<string>.Execute(
+                var runResult = await ExecuteThreaded<string>.Execute(
                     () => JreHelper.ExecuteJava(JavaPath, ClassName, ExecuteProperties), (int) ExecuteProperties.Timeout
                 );
                 string output = runResult.ReturnValue;
                 int time = runResult.ElapsedMilliseconds;
-                Exception error = runResult.Exception;
+                var error = runResult.Exception;
 
-                JavaExecuteResult result =
+                var result =
                     new JavaExecuteResult(time, output, null, CompileResult, error);
                 ExecuteResult = result;
                 return result;
@@ -135,8 +135,8 @@ namespace Fiddle.Compilers.Implementation.Java {
         }
 
         private void ToValidClass() {
-            Regex findClass = new Regex("class ([A-Za-z]+)");
-            Match match = findClass.Match(SourceCode);
+            var findClass = new Regex("class ([A-Za-z]+)");
+            var match = findClass.Match(SourceCode);
             if (match.Success) {
                 string matchString = SourceCode.Substring(match.Index, match.Length);
                 ClassName = matchString.Split(' ')[1]; //split "class Test" -> ["class", "Test"] and pick [1]: "Test"

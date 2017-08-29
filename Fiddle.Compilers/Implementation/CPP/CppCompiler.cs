@@ -24,14 +24,14 @@ namespace Fiddle.Compilers.Implementation.CPP {
         public Language Language { get; } = Language.Cpp;
 
         public Task<ICompileResult> Compile() {
-            IntPtr strPtr = Marshal.StringToHGlobalUni("source code goes here");
+            var strPtr = Marshal.StringToHGlobalUni("source code goes here");
             string result = Marshal.PtrToStringAnsi(Compile(strPtr));
             Marshal.FreeHGlobal(strPtr);
             throw new NotImplementedException();
         }
 
         public Task<IExecuteResult> Execute() {
-            IntPtr strPtr = Marshal.StringToHGlobalUni("assembly path goes here");
+            var strPtr = Marshal.StringToHGlobalUni("assembly path goes here");
             string result = Marshal.PtrToStringAnsi(Execute(strPtr));
             Marshal.FreeHGlobal(strPtr);
             throw new NotImplementedException();

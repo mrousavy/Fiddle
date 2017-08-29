@@ -120,13 +120,13 @@ namespace Fiddle.Compilers {
         /// <returns>The initialized Compiler</returns>
         public static ICompiler NewCompiler(Properties properties) {
             string code = properties.Code;
-            IExecutionProperties exProps = properties.ExecuteProperties;
-            ICompilerProperties comProps = properties.CompilerProperties;
+            var exProps = properties.ExecuteProperties;
+            var comProps = properties.CompilerProperties;
             string[] imports = properties.Imports;
             string pySearchPath = properties.PySearchPath;
             string jdkPath = properties.JdkPath;
-            Language language = properties.Language;
-            IGlobals globals = properties.Globals;
+            var language = properties.Language;
+            var globals = properties.Globals;
 
             switch (language) {
                 case Language.CSharp:

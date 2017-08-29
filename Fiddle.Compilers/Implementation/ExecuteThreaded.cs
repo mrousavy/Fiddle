@@ -16,12 +16,12 @@ namespace Fiddle.Compilers.Implementation {
             Stopwatch sw = null;
             bool graceful = false;
             Exception exception = null;
-            T returnValue = default(T);
+            var returnValue = default(T);
 
             //Spawn new thread so UI Thread isn't blocked
             new Thread(() => {
                 //Execute on runThread so we can Join/Abort it
-                Thread runThread = new Thread(() => {
+                var runThread = new Thread(() => {
                     try {
                         //Sync run - we're in a new thread anyway
                         returnValue = function.Invoke();
@@ -57,12 +57,12 @@ namespace Fiddle.Compilers.Implementation {
             Stopwatch sw = null;
             bool graceful = false;
             Exception exception = null;
-            T returnValue = default(T);
+            var returnValue = default(T);
 
             //Spawn new thread so UI Thread isn't blocked
             new Thread(() => {
                 //Execute on runThread so we can Join/Abort it
-                Thread runThread = new Thread(() => {
+                var runThread = new Thread(() => {
                     try {
                         //Sync run - we're in a new thread anyway
                         returnValue = function.Invoke().GetAwaiter().GetResult();

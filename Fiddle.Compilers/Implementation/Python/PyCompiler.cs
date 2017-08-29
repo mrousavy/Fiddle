@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Scripting;
@@ -41,14 +40,14 @@ namespace Fiddle.Compilers.Implementation.Python {
             TaskCompletionSource<ICompileResult> tcs = new TaskCompletionSource<ICompileResult>();
 
             new Thread(() => {
-                PyErrorListener listener = new PyErrorListener();
+                var listener = new PyErrorListener();
                 Init();
 
                 //Start the stopwatch
-                Stopwatch sw = Stopwatch.StartNew();
+                var sw = Stopwatch.StartNew();
                 //Spawn a new thread with the compile process
-                Thread compileThread = new Thread(() => {
-                    ScriptEngine engine = IronPython.Hosting.Python.CreateEngine();
+                var compileThread = new Thread(() => {
+                    var engine = IronPython.Hosting.Python.CreateEngine();
                     //Add library search path
                     if (!string.IsNullOrWhiteSpace(LibSearchPath)) {
                         ICollection<string> paths = engine.GetSearchPaths();
@@ -72,7 +71,7 @@ namespace Fiddle.Compilers.Implementation.Python {
                 tcs.SetResult(new PyCompileResult(sw.ElapsedMilliseconds, SourceCode, listener.Diagnostics));
             }).Start();
 
-            ICompileResult result = await tcs.Task;
+            var result = await tcs.Task;
             CompileResult = result;
             return result;
         }
@@ -85,7 +84,7 @@ namespace Fiddle.Compilers.Implementation.Python {
                 return new PyExecuteResult(-1, null, null, CompileResult,
                     new Exception("Compilation was not successful!"));
 
-            ExecuteThreaded<object>.ThreadRunResult result = await ExecuteThreaded<object>.Execute(() =>
+            var result = await ExecuteThreaded<object>.Execute(() =>
                     Compilation.Execute(Scope),
                 (int) ExecuteProperties.Timeout);
 
@@ -127,7 +126,7 @@ namespace Fiddle.Compilers.Implementation.Python {
             //Initialize Globals
             try {
                 if (Globals != null)
-                    foreach (PropertyInfo property in Globals.GetType().GetProperties())
+                    foreach (var property in Globals.GetType().GetProperties())
                         Scope.SetVariable(property.Name, property.GetValue(Globals));
             } catch {
                 //reflection can cause many exceptions

@@ -13,7 +13,7 @@ namespace Fiddle.Compilers.Implementation.Java {
         /// <param name="commandLineOptions">Any compiler options</param>
         public static async Task<string> CompileJava(string javacPathName, string javaFilePathName,
             ICompilerProperties properties, string commandLineOptions = "") {
-            ProcessStartInfo startInfo = new ProcessStartInfo {
+            var startInfo = new ProcessStartInfo {
                 CreateNoWindow = true,
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
@@ -22,7 +22,7 @@ namespace Fiddle.Compilers.Implementation.Java {
                 WindowStyle = ProcessWindowStyle.Hidden,
                 Arguments = commandLineOptions + " " + javaFilePathName
             };
-            using (Process javacProcess = Process.Start(startInfo)) {
+            using (var javacProcess = Process.Start(startInfo)) {
                 if (javacProcess == null)
                     throw new CompileException("javac.exe could not start!");
                 bool graceful = javacProcess.WaitForExit((int) properties.Timeout);
@@ -43,14 +43,14 @@ namespace Fiddle.Compilers.Implementation.Java {
         /// <param name="javaPath">Path to the Java dir (C:\Program Files\Java)</param>
         /// <returns>The found jdk path or null if not found</returns>
         public static string SearchJavaPath(string javaPath) {
-            DirectoryInfo javaInfo = new DirectoryInfo(javaPath);
+            var javaInfo = new DirectoryInfo(javaPath);
             if (javaInfo.Exists)
-                foreach (DirectoryInfo info in javaInfo.EnumerateDirectories())
+                foreach (var info in javaInfo.EnumerateDirectories())
                     if (info.Name.ToLower().Contains("jdk")) {
                         string javaBinJavac = Path.Combine(info.FullName, "bin", "javac.exe");
-                        FileInfo javac = new FileInfo(javaBinJavac);
+                        var javac = new FileInfo(javaBinJavac);
                         string javaBinJava = Path.Combine(info.FullName, "bin", "java.exe");
-                        FileInfo java = new FileInfo(javaBinJava);
+                        var java = new FileInfo(javaBinJava);
                         if (javac.Exists && java.Exists)
                             return info.FullName;
                     }

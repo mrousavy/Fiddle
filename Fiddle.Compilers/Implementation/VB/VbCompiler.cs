@@ -53,8 +53,8 @@ namespace Fiddle.Compilers.Implementation.VB {
                 CompilerResults results = null;
 
                 //Actual compilation
-                Stopwatch sw = Stopwatch.StartNew();
-                Thread compileThread = new Thread(() => {
+                var sw = Stopwatch.StartNew();
+                var compileThread = new Thread(() => {
                     results = CodeCompiler.CompileAssemblyFromSource(Parameters, SourceCode);
                 });
                 compileThread.Start();
@@ -69,7 +69,7 @@ namespace Fiddle.Compilers.Implementation.VB {
                 if (results.Errors.Count < 1)
                     ScriptAssembly = results.CompiledAssembly;
 
-                CompilerErrorCollection errors = results.Errors;
+                var errors = results.Errors;
                 if (errors == null)
                     throw new CompileException("The compiler Thread was not returning any diagnostics!");
 
@@ -80,7 +80,7 @@ namespace Fiddle.Compilers.Implementation.VB {
                     errors));
             }).Start();
 
-            ICompileResult compileResult = await tcs.Task;
+            var compileResult = await tcs.Task;
             CompileResult = compileResult;
             return compileResult;
         }
@@ -91,11 +91,11 @@ namespace Fiddle.Compilers.Implementation.VB {
                 return new VbExecuteResult(-1, null, null, CompileResult,
                     new CompileException("The compilation was not successful!"));
 
-            using (StringWriter writer = new StringWriter()) {
+            using (var writer = new StringWriter()) {
                 Console.SetOut(writer);
                 Console.SetError(writer);
 
-                ExecuteThreaded<object>.ThreadRunResult result = await ExecuteThreaded<object>.Execute(() =>
+                var result = await ExecuteThreaded<object>.Execute(() =>
                         ScriptAssembly.EntryPoint == null
                             ? ScriptAssembly.DefinedTypes.Last().DeclaredMethods.First().Invoke(null, null)
                             : ScriptAssembly.EntryPoint.Invoke(null, null),

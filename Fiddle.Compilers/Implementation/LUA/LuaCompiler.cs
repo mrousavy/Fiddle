@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using NLua;
@@ -41,7 +40,7 @@ namespace Fiddle.Compilers.Implementation.LUA {
                 //Initialize Globals
                 try {
                     if (Globals != null)
-                        foreach (PropertyInfo property in Globals.GetType().GetProperties())
+                        foreach (var property in Globals.GetType().GetProperties())
                             Lua[property.Name] = property.GetValue(Globals);
                 } catch {
                     //reflection can cause many exceptions
@@ -62,12 +61,12 @@ namespace Fiddle.Compilers.Implementation.LUA {
                 Globals.Console = Writer;
             }
 
-            ExecuteThreaded<object[]>.ThreadRunResult result = await ExecuteThreaded<object[]>.Execute(() =>
+            var result = await ExecuteThreaded<object[]>.Execute(() =>
                 Lua.DoString(SourceCode), (int) ExecuteProperties.Timeout);
 
             if (result.Exception is LuaScriptException scriptEx) {
-                Regex number = new Regex("[0-9]+");
-                Match match = number.Match(scriptEx.Message);
+                var number = new Regex("[0-9]+");
+                var match = number.Match(scriptEx.Message);
                 if (match.Success) {
                     int num = int.Parse(match.Value);
                     List<IDiagnostic> diagnostics =

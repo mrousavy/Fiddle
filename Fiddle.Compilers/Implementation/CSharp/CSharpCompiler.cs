@@ -44,11 +44,11 @@ namespace Fiddle.Compilers.Implementation.CSharp {
             if (Script.Code != SourceCode)
                 Create();
 
-            ExecuteThreaded<ImmutableArray<Diagnostic>>.ThreadRunResult runResult =
+            var runResult =
                 await ExecuteThreaded<ImmutableArray<Diagnostic>>.Execute(
                     () => {
                         //Actual compilation
-                        Compilation compilation = Script.GetCompilation();
+                        var compilation = Script.GetCompilation();
                         return compilation.GetDiagnostics();
                     }, (int) CompilerProperties.Timeout
                 );
@@ -102,12 +102,12 @@ namespace Fiddle.Compilers.Implementation.CSharp {
                     new CompileException("The compilation was not successful!"));
 
             //Reset builder/Clear console
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             Globals.Console?.Dispose();
             Globals.Console = new StringWriter(builder);
             int timeout = (int) ExecuteProperties.Timeout;
 
-            ExecuteThreaded<ScriptState<object>>.ThreadRunResult threadRunResult =
+            var threadRunResult =
                 await ExecuteThreaded<ScriptState<object>>.Execute(() =>
                     Script.RunAsync(Globals, CatchException), timeout);
 
@@ -162,7 +162,7 @@ namespace Fiddle.Compilers.Implementation.CSharp {
         }
 
         private void Create() {
-            ScriptOptions options = ScriptOptions.Default
+            var options = ScriptOptions.Default
                 .WithReferences(Imports)
                 .WithImports(Imports);
             Script = CSharpScript.Create(SourceCode, options, Globals.GetType());

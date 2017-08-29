@@ -13,7 +13,7 @@ namespace Fiddle.Compilers.Implementation.Java {
         /// <param name="commandLineOptions">Any compiler options</param>
         public static string ExecuteJava(string javacPathName, string className,
             IExecutionProperties properties, string commandLineOptions = "") {
-            ProcessStartInfo startInfo = new ProcessStartInfo {
+            var startInfo = new ProcessStartInfo {
                 CreateNoWindow = true,
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
@@ -23,7 +23,7 @@ namespace Fiddle.Compilers.Implementation.Java {
                 Arguments = commandLineOptions + " " + className,
                 WorkingDirectory = Path.GetTempPath()
             };
-            using (Process javaProcess = Process.Start(startInfo)) {
+            using (var javaProcess = Process.Start(startInfo)) {
                 bool graceful = javaProcess != null && javaProcess.WaitForExit((int) properties.Timeout);
 
                 if (graceful) {
