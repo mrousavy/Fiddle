@@ -42,21 +42,17 @@ namespace Fiddle.Compilers.Implementation.Java {
         public Language Language { get; set; } = Language.Java;
 
         public async Task<ICompileResult> Compile() {
-            Stopwatch sw = Stopwatch.StartNew();
             ToValidCode();
 
             string tmp = Path.Combine(Path.GetTempPath(), $"{ClassName}.java");
             File.WriteAllText(tmp, SourceCode);
-
-            string output = null;
-            Exception error = null;
-            try {
-                output = await JdkHelper.CompileJava(JavacPath, tmp, CompilerProperties);
-            } catch (Exception ex) {
-                error = ex;
-            }
-
-            sw.Stop();
+            
+            var runResult = await ExecuteThreaded<string>.Execute(
+                () => JdkHelper.CompileJava(JavacPath, tmp, CompilerProperties), (int)CompilerProperties.Timeout
+            );
+            string output = runResult.ReturnValue;
+            Exception error = runResult.Exception;
+            int time = runResult.ElapsedMilliseconds;
 
             IEnumerable<IDiagnostic> diagnostics = null;
             IEnumerable<Exception> errors = null;
@@ -69,7 +65,7 @@ namespace Fiddle.Compilers.Implementation.Java {
                 errors = new List<Exception> { error };
 
             JavaCompileResult result =
-                new JavaCompileResult(sw.ElapsedMilliseconds, SourceCode, diagnostics, null, errors);
+                new JavaCompileResult(time, SourceCode, diagnostics, null, errors);
             CompileResult = result;
             return result;
         }
@@ -82,20 +78,15 @@ namespace Fiddle.Compilers.Implementation.Java {
                 ExecuteResult = result;
                 return result;
             } else {
-                Stopwatch sw = Stopwatch.StartNew();
-
-                string output = null;
-                Exception error = null;
-                try {
-                    output = JreHelper.ExecuteJava(JavaPath, ClassName, ExecuteProperties);
-                } catch (Exception ex) {
-                    error = ex;
-                }
-
-                sw.Stop();
+                var runResult = await ExecuteThreaded<string>.Execute(
+                    () => JreHelper.ExecuteJava(JavaPath, ClassName, ExecuteProperties), (int)ExecuteProperties.Timeout
+                );
+                string output = runResult.ReturnValue;
+                int time = runResult.ElapsedMilliseconds;
+                Exception error = runResult.Exception;
 
                 JavaExecuteResult result =
-                    new JavaExecuteResult(sw.ElapsedMilliseconds, output, null, CompileResult, error);
+                    new JavaExecuteResult(time, output, null, CompileResult, error);
                 ExecuteResult = result;
                 return result;
             }
