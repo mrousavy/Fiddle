@@ -54,7 +54,7 @@ These features apply to [all imported languages](#languages)
 ## Cache
 A directory will be created at `%appdata%\Fiddle` containing `Preferences.json` (crash reports will be stored as "`error.txt`").
 
-`Preferences.json` can be edited with the Settings window in Fiddle or by manually changing it via any text editor. 
+`Preferences.json` can be edited with the Settings window in Fiddle or by manually changing it via any text editor.
 However, the settings window cannot modify the `imports[]`, `DefaultCode` and window dimensions/cursor position properties, this is not fully implemented. For now you can use `Preferences.json` to manually edit these.
 
 ## Build from Source
@@ -71,7 +71,7 @@ However, the settings window cannot modify the `imports[]`, `DefaultCode` and wi
 1. Fork **Fiddle** and **clone the fork**.
 2. Make changes
 	* Make **bugfixes** or **other changes**
-	
+
 	   **.. or ..**
 	* Add a **new Compiler**
 		1. Create new **classes** in `Fiddle.Compilers\Implementation\[LanguageName]\`:
@@ -80,12 +80,9 @@ However, the settings window cannot modify the `imports[]`, `DefaultCode` and wi
 			* `..\[LanguageName]Diagnostic.cs` : `IDiagnostic`
 			* `..\[LanguageName]ExecuteResult.cs` : `IExecuteResult`
 		2. **Implement Interface** functions and Constructor(s) _(Example: `CSharp\CSharpCompiler.cs`)_
-		3. Add **Language Name** (filename-friendly) to `Fiddle.Compilers\Host.Language` enum
-		4. Add **Language Name** to `Fiddle.UI\Editor.xaml` in `ComboBox` as `ComboBoxItem`
-		5. Add **Compiler initialization** to `Fiddle.UI\Helper.ChangeLanguage(..)` with name from `ComboBoxItem`
-		6. Add Language name to every other function that handles language names hardcoded in `Fiddle.UI\Helper.cs`
-		7. (Optionally) Add **file-extension** to `Fiddle.UI\Helper.GetFilterForLanguage(..)`
-		8. (Optionally) Add **Syntax highlighting definition** to `Fiddle.UI\Syntax\[LanguageName].xshd`
-		9. (Optionally) Add **Documentation** (using [this template](https://github.com/mrousavy/Fiddle/blob/master/Doc/Template.md), or [this example](https://github.com/mrousavy/Fiddle/blob/master/Doc/CSharp.md)) to `Doc\[LanguageName].md` and linking it in `Doc\README.md`		
+		3. Add **Language Name** (filename-friendly) to `Fiddle.Compilers\Host.Language` enum with user-friendly `[Description("..")]` Attribute
+		4. (Optionally) Add Language to **file-extension** converter functions in `Fiddle.UI\Helper.cs` (`Fiddle.UI\Helper.GetFilterForLanguage(..)`, ..)
+		5. (Optionally) Add **Syntax highlighting definition** to `Fiddle.UI\Syntax\[LanguageName].xshd`
+		6. (Optionally) Add **Documentation** (using [this template](https://github.com/mrousavy/Fiddle/blob/master/Doc/Template.md), or [this example](https://github.com/mrousavy/Fiddle/blob/master/Doc/CSharp.md)) to `Doc\[LanguageName].md` and linking it in `Doc\README.md`		
 3. **Commit & Push**
 4. Create a new **pull request** _(on your fork)_
