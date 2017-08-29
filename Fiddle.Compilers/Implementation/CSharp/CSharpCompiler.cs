@@ -130,25 +130,19 @@ namespace Fiddle.Compilers.Implementation.CSharp {
             ScriptState<object> state = threadRunResult.ReturnValue;
             int elapsed = threadRunResult.ElapsedMilliseconds;
 
-            IExecuteResult result;
-            if (threadRunResult.Successful) {
-                object returnValue = state.ReturnValue;
-                string stdout = builder.ToString();
-                result = new CSharpExecuteResult(
+            IExecuteResult result = threadRunResult.Successful
+                ? new CSharpExecuteResult(
                     elapsed,
-                    stdout,
-                    returnValue,
+                    builder.ToString(),
+                    state.ReturnValue,
                     CompileResult,
-                    state.Exception);
-            } else {
-                result = new CSharpExecuteResult(
+                    state.Exception) 
+                : new CSharpExecuteResult(
                     elapsed,
                     null,
                     null,
                     CompileResult,
-                    new TimeoutException("The execution timed out! " +
-                                         $"(Timeout: {timeout}ms)"));
-            }
+                    new TimeoutException($"The execution timed out! (Timeout: {timeout}ms)"));
             ExecuteResult = result;
             return result;
         }
