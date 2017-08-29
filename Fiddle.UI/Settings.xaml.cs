@@ -13,100 +13,6 @@ namespace Fiddle.UI {
     ///     Interaction logic for Settings.xaml
     /// </summary>
     public partial class Settings : INotifyPropertyChanged {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        #region MVVM Properties
-        private bool _uSettings, _wSize, _wPos, _wState, _lang, _rvSize, _sCode, _cPos;
-        private string _jdkPath, _pyPath;
-        private long _cTimeout, _eTimeout;
-
-        public bool USettings { //Remember any settings at all
-            get => _uSettings;
-            set {
-                _uSettings = value;
-                OnPropertyChanged();
-            }
-        }
-        public bool WSize { //Remember window size
-            get => _wSize;
-            set {
-                _wSize = value;
-                OnPropertyChanged();
-            }
-        }
-        public bool WPos { //Remember Window Position
-            get => _wPos;
-            set {
-                _wPos = value;
-                OnPropertyChanged();
-            }
-        }
-        public bool WState { //Remember Window State
-            get => _wState;
-            set {
-                _wState = value;
-                OnPropertyChanged();
-            }
-        }
-        public bool Lang { //Remember Language
-            get => _lang;
-            set {
-                _lang = value;
-                OnPropertyChanged();
-            }
-        }
-        public bool RvSize { //Remember results view size
-            get => _rvSize;
-            set {
-                _rvSize = value;
-                OnPropertyChanged();
-            }
-        }
-        public bool SCode { //Remember source code
-            get => _sCode;
-            set {
-                _sCode = value;
-                OnPropertyChanged();
-            }
-        }
-        public bool CPos { //Remember cursor position
-            get => _cPos;
-            set {
-                _cPos = value;
-                OnPropertyChanged();
-            }
-        }
-        public string JdkPath { //Path to JDK
-            get => _jdkPath;
-            set {
-                _jdkPath = value;
-                OnPropertyChanged();
-            }
-        }
-        public string PyPath { //Path to Python library
-            get => _pyPath;
-            set {
-                _pyPath = value;
-                OnPropertyChanged();
-            }
-        }
-        public long CTimeout { //Compile timeout
-            get => _cTimeout;
-            set {
-                _cTimeout = value;
-                OnPropertyChanged();
-            }
-        }
-        public long ETimeout { //Execute timeout
-            get => _eTimeout;
-            set {
-                _eTimeout = value;
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-
-
         public Settings() {
             InitializeComponent();
             DataContext = this;
@@ -122,6 +28,8 @@ namespace Fiddle.UI {
                 }
             }
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         //Save Preferences
         private async void ButtonSave(object sender, RoutedEventArgs e) {
@@ -207,7 +115,7 @@ namespace Fiddle.UI {
         // Use the DataObject.Pasting Handler 
         private void TextBoxPasting(object sender, DataObjectPastingEventArgs e) {
             if (e.DataObject.GetDataPresent(typeof(string))) {
-                string text = (string)e.DataObject.GetData(typeof(string));
+                string text = (string) e.DataObject.GetData(typeof(string));
                 if (!IsTextAllowed(text)) e.CancelCommand();
             } else {
                 e.CancelCommand();
@@ -218,5 +126,121 @@ namespace Fiddle.UI {
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        #region MVVM Properties
+
+        private bool _uSettings, _wSize, _wPos, _wState, _lang, _rvSize, _sCode, _cPos;
+        private string _jdkPath, _pyPath;
+        private long _cTimeout, _eTimeout;
+
+        public bool USettings {
+            //Remember any settings at all
+            get => _uSettings;
+            set {
+                _uSettings = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool WSize {
+            //Remember window size
+            get => _wSize;
+            set {
+                _wSize = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool WPos {
+            //Remember Window Position
+            get => _wPos;
+            set {
+                _wPos = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool WState {
+            //Remember Window State
+            get => _wState;
+            set {
+                _wState = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool Lang {
+            //Remember Language
+            get => _lang;
+            set {
+                _lang = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool RvSize {
+            //Remember results view size
+            get => _rvSize;
+            set {
+                _rvSize = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool SCode {
+            //Remember source code
+            get => _sCode;
+            set {
+                _sCode = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool CPos {
+            //Remember cursor position
+            get => _cPos;
+            set {
+                _cPos = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string JdkPath {
+            //Path to JDK
+            get => _jdkPath;
+            set {
+                _jdkPath = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string PyPath {
+            //Path to Python library
+            get => _pyPath;
+            set {
+                _pyPath = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public long CTimeout {
+            //Compile timeout
+            get => _cTimeout;
+            set {
+                _cTimeout = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public long ETimeout {
+            //Execute timeout
+            get => _eTimeout;
+            set {
+                _eTimeout = value;
+                OnPropertyChanged();
+            }
+        }
+
+        #endregion
     }
 }

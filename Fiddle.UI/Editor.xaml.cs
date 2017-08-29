@@ -21,7 +21,6 @@ namespace Fiddle.UI {
     ///     Interaction logic for Editor.xaml
     /// </summary>
     public partial class Editor : INotifyPropertyChanged {
-        public event PropertyChangedEventHandler PropertyChanged; //MVVM Prop changed event
         public static RoutedCommand CommandSave = new RoutedCommand(); //Ctrl + S
         public static RoutedCommand CommandCompile = new RoutedCommand(); //F6
         public static RoutedCommand CommandExecute = new RoutedCommand(); //F5
@@ -29,27 +28,10 @@ namespace Fiddle.UI {
         private Timer _dialogTimeout;
         private bool _dropIsOpen; //is Drag & Drop popup open?
         private string _filePath; //path to file - Ctrl + S will save without SaveFileDialog if not null
-        private bool _needsUpdate; //need to reset textbox underlines & statusmessage?
-        private ITextMarkerService _textMarkerService; //underlines
         private IEnumerable<Language> _languages;
+        private bool _needsUpdate; //need to reset textbox underlines & statusmessage?
         private Language _selectedLang;
-
-        public IEnumerable<Language> Languages {
-            get => _languages;
-            set {
-                _languages = value;
-                OnPropertyChanged();
-            }
-        }
-        public Language SelectedLanguage {
-            get => _selectedLang;
-            set {
-                _selectedLang = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string SourceCode => TextBoxCode.Text;
+        private ITextMarkerService _textMarkerService; //underlines
 
         //constructor
         public Editor() {
@@ -62,6 +44,25 @@ namespace Fiddle.UI {
             LoadHotkeys();
             TextBoxCode.Focus();
         }
+
+        public IEnumerable<Language> Languages {
+            get => _languages;
+            set {
+                _languages = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Language SelectedLanguage {
+            get => _selectedLang;
+            set {
+                _selectedLang = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string SourceCode => TextBoxCode.Text;
+        public event PropertyChangedEventHandler PropertyChanged; //MVVM Prop changed event
 
         #region Code
 
@@ -169,7 +170,7 @@ namespace Fiddle.UI {
         private async void ComboBoxLanguageSelected(object sender, SelectionChangedEventArgs e) {
             LockUi();
             ResetUnderline();
-            
+
             try {
                 _compiler?.Dispose();
                 _compiler = Helper.NewCompiler(SelectedLanguage, SourceCode, this);
@@ -287,6 +288,7 @@ namespace Fiddle.UI {
             Failure,
             Wait
         }
+
         #endregion
 
         #region Events
@@ -300,7 +302,7 @@ namespace Fiddle.UI {
         //Open Settings
         private void ButtonSettings(object sender, RoutedEventArgs e) {
             LockUi();
-            Settings settings = new Settings { Owner = this };
+            Settings settings = new Settings {Owner = this};
             settings.ShowDialog();
             if (_compiler != null)
                 _compiler = Helper.NewCompiler(_compiler.Language, SourceCode, this);
@@ -319,7 +321,7 @@ namespace Fiddle.UI {
 
         //Show results view raw button click
         private void ButtonShowRaw(object sender, RoutedEventArgs e) {
-            RawText window = new RawText(TextBlockResults.Text) { Owner = this };
+            RawText window = new RawText(TextBlockResults.Text) {Owner = this};
             window.ShowDialog();
         }
 
@@ -464,6 +466,7 @@ namespace Fiddle.UI {
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
         #endregion
     }
 }

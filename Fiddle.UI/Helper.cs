@@ -27,7 +27,6 @@ namespace Fiddle.UI {
 
         public static ICompiler NewCompiler(Language language, string sourceCode, Editor caller,
             string langVersion = null) {
-
             IExecutionProperties exProps = new ExecutionProperties(App.Preferences.ExecuteTimeout);
             ICompilerProperties comProps = new CompilerProperties(App.Preferences.ExecuteTimeout, langVersion);
             Compilers.Properties properties = new Compilers.Properties(language, sourceCode,
@@ -51,7 +50,9 @@ namespace Fiddle.UI {
             }
         }
 
-        public static IHighlightingDefinition LoadXshd(Language language) => LoadXshd($"{language}.xshd");
+        public static IHighlightingDefinition LoadXshd(Language language) {
+            return LoadXshd($"{language}.xshd");
+        }
 
         public static async Task<ICompiler> LoadDragDrop(DragEventArgs args, Editor caller, ICompiler currentCompiler) {
             ICompiler compiler = currentCompiler;
@@ -63,7 +64,7 @@ namespace Fiddle.UI {
                     FileInfo fileInfo = new FileInfo(file);
                     using (FileStream stream = fileInfo.OpenRead()) {
                         byte[] buffer = new byte[fileInfo.Length];
-                        await stream.ReadAsync(buffer, 0, (int)fileInfo.Length);
+                        await stream.ReadAsync(buffer, 0, (int) fileInfo.Length);
                         content = Encoding.Default.GetString(buffer);
                     }
 

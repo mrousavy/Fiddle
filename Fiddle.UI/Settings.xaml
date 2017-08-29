@@ -60,7 +60,7 @@
                     </Label>
                     <TextBox Grid.Column="1"
                              VerticalAlignment="Top"
-                             Text="{Binding JdkPath}"/>
+                             Text="{Binding JdkPath}" />
                 </Grid>
                 <Grid>
                     <Grid.ColumnDefinitions>

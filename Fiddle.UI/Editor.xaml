@@ -24,8 +24,8 @@
         DragLeave="OnWindowDragLeave"
         Drop="OnDragDrop">
     <Window.Resources>
-        <converter:LanguageToFriendlyConverter x:Key="LangToFriendlyConverter"/>
-        <converter:FriendlyToLanguageConverter x:Key="FriendlyToLangConverter"/>
+        <converter:LanguageToFriendlyConverter x:Key="LangToFriendlyConverter" />
+        <converter:FriendlyToLanguageConverter x:Key="FriendlyToLangConverter" />
     </Window.Resources>
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static local:Editor.CommandSave}" Executed="CtrlS" />
@@ -54,8 +54,7 @@
                           md:HintAssist.Hint="Language" Name="ComboBoxLanguage"
                           ItemsSource="{Binding Source={StaticResource LanguagesSource}, Converter={StaticResource LangToFriendlyConverter}}"
                           SelectedItem="{Binding SelectedLanguage, Converter={StaticResource FriendlyToLangConverter}}"
-                          SelectionChanged="ComboBoxLanguageSelected">
-                </ComboBox>
+                          SelectionChanged="ComboBoxLanguageSelected" />
 
                 <!--Compile Button-->
                 <Button Grid.Row="0" Grid.Column="1" Margin="10"

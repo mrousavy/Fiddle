@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Editor;
 
 namespace Fiddle.UI {
     /// <summary>
-    /// Contains all loading, initialization, preferences and Compiler calls
+    ///     Contains all loading, initialization, preferences and Compiler calls
     /// </summary>
     public partial class Editor {
         #region Prefs & Inits
@@ -34,7 +34,7 @@ namespace Fiddle.UI {
             TextBoxCode.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
             TextBoxCode.TextArea.TextView.LineTransformers.Add(textMarkerService);
             IServiceContainer services =
-                (IServiceContainer)TextBoxCode.Document.ServiceProvider.GetService(typeof(IServiceContainer));
+                (IServiceContainer) TextBoxCode.Document.ServiceProvider.GetService(typeof(IServiceContainer));
             services?.AddService(typeof(ITextMarkerService), textMarkerService);
             _textMarkerService = textMarkerService;
         }
