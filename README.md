@@ -1,11 +1,13 @@
 <p align="center">
 	<h1 align="center">
+		<img src="Images/icon.png" align="center" width=80>
+		<br/>
 		Fiddle
 	</h1>
 	<p align="center">
 		Fiddle is a lightweight tool to <strong>edit</strong>, <strong>compile</strong> and <strong>run</strong> simple <strong>scripts</strong>/<strong>snippets</strong> in any of the <a href="#languages">supported languages</a>.
 		<br/>
-		⚠️ Fiddle requires .NET Framework v4.6 or above (<a href="https://www.microsoft.com/net/download/framework">download</a>) ⚠️
+		⚠️ Fiddle requires .NET Framework v4.8 or above (<a href="https://www.microsoft.com/net/download/framework">download</a>) ⚠️
 	</p>
 	<p align="center">
 		<a href="https://ci.appveyor.com/project/mrousavy/fiddle"><img src="https://ci.appveyor.com/api/projects/status/1g0s56o0v1hdlqxu?svg=true" alt="AppVeyor Build"/></a>
@@ -58,7 +60,7 @@ A directory will be created at `%appdata%\Fiddle` containing `Preferences.json` 
 However, the settings window cannot modify the `imports[]`, `DefaultCode` and window dimensions/cursor position properties, this is not fully implemented. For now you can use `Preferences.json` to manually edit these.
 
 ## Build from Source
-+ **Visual Studio Way**
++ **Visual Studio**
     1. Open `Fiddle.sln`
     2. Set build target (**Debug**: development, **Release**: portable releases, **Publish**: InnoSetup installer)
     3. Build Solution/Fiddle.UI (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd>)
@@ -83,7 +85,7 @@ However, the settings window cannot modify the `imports[]`, `DefaultCode` and wi
 		3. Add **Language Name** (filename-friendly) to `Fiddle.Compilers\Host.Language` enum with user-friendly `[Description("..")]` Attribute
 		4. (Optionally) Add Language to **file-extension** converter functions in `Fiddle.UI\Helper.cs` (`Fiddle.UI\Helper.GetFilterForLanguage(..)`, ..)
 		5. (Optionally) Add **Syntax highlighting definition** to `Fiddle.UI\Syntax\[LanguageName].xshd`
-		6. (Optionally) Add **Documentation** (using [this template](https://github.com/mrousavy/Fiddle/blob/master/Doc/Template.md), or [this example](https://github.com/mrousavy/Fiddle/blob/master/Doc/CSharp.md)) to `Doc\[LanguageName].md` and linking it in `Doc\README.md`		
+		6. (Optionally) Add **Documentation** (using [this template](https://github.com/mrousavy/Fiddle/blob/master/Doc/Template.md), or [this example](https://github.com/mrousavy/Fiddle/blob/master/Doc/CSharp.md)) to `Doc\[LanguageName].md` and linking it in `Doc\README.md`
 3. **Commit & Push**
 4. Create a new **pull request** _(on your fork)_
 
