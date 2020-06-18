@@ -26,6 +26,8 @@
 
 [ToDo's](https://github.com/mrousavy/Fiddle/projects)
 
+<a href='https://ko-fi.com/F1F8CLXG' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://az743702.vo.msecnd.net/cdn/kofi2.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+
 ## Screenshots
 <p align="center">
 	<img src="https://github.com/mrousavy/Fiddle/raw/master/Images/Fiddle_slideshow.gif" alt="Fiddle Demo Slideshow"/>
@@ -88,5 +90,3 @@ However, the settings window cannot modify the `imports[]`, `DefaultCode` and wi
 		6. (Optionally) Add **Documentation** (using [this template](https://github.com/mrousavy/Fiddle/blob/master/Doc/Template.md), or [this example](https://github.com/mrousavy/Fiddle/blob/master/Doc/CSharp.md)) to `Doc\[LanguageName].md` and linking it in `Doc\README.md`
 3. **Commit & Push**
 4. Create a new **pull request** _(on your fork)_
-
-<a href='https://ko-fi.com/F1F8CLXG' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://az743702.vo.msecnd.net/cdn/kofi2.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
